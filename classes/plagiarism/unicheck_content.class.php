@@ -1,0 +1,163 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * unicheck_plagiarism_entity.class.php
+ *
+ * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+namespace plagiarism_unicheck\classes\plagiarism;
+
+use plagiarism_unicheck\classes\exception\unicheck_exception;
+use plagiarism_unicheck\classes\unicheck_core;
+use plagiarism_unicheck\classes\unicheck_plagiarism_entity;
+
+if (!defined('MOODLE_INTERNAL')) {
+    die('Direct access to this script is forbidden.');
+}
+
+/**
+ * Class unicheck_content
+ *
+ * @package   plagiarism_unicheck\classes\plagiarism
+ * @namespace plagiarism_unicheck\classes\plagiarism
+ *
+ */
+class unicheck_content extends unicheck_plagiarism_entity {
+    /**
+     * @var string
+     */
+    private $content;
+    /**
+     * @var string
+     */
+    private $name;
+    /**
+     * @var string
+     */
+    private $ext;
+    /**
+     * @var int
+     */
+    private $parentid;
+
+    /**
+     * unicheck_content constructor.
+     *
+     * @param unicheck_core $core
+     * @param string        $content
+     * @param             $name
+     * @param null          $ext
+     * @param null          $parentid
+     *
+     * @throws unicheck_exception
+     */
+    public function __construct(unicheck_core $core, $content = null, $name, $ext = null, $parentid = null) {
+        if (!$ext) {
+            $ext = 'html';
+        }
+
+        $this->core = $core;
+        $this->name = $name;
+        $this->ext = $ext;
+        $this->parentid = $parentid;
+
+        $this->set_content($content);
+    }
+
+    /**
+     * @return object
+     */
+    public function get_internal_file() {
+        global $DB;
+
+        if ($this->plagiarismfile) {
+            return $this->plagiarismfile;
+        }
+
+        $plagiarismfile = null;
+        try {
+            $filedata = array(
+                'cm'         => $this->cmid(),
+                'userid'     => $this->userid(),
+                'identifier' => sha1($this->name . $this->cmid() . UNICHECK_DEFAULT_FILES_AREA . $this->parentid),
+            );
+
+            if ($this->core->is_teamsubmission_mode()) {
+                unset($filedata['userid']);
+            }
+
+            // Now update or insert record into unicheck_files.
+            $plagiarismfile = $DB->get_record(UNICHECK_FILES_TABLE, $filedata);
+
+            if (empty($plagiarismfile)) {
+                $plagiarismfile = $this->new_plagiarismfile(array(
+                    'cm'         => $this->cmid(),
+                    'userid'     => $this->userid(),
+                    'identifier' => $filedata['identifier'],
+                    'filename'   => $this->name,
+                ));
+
+                if ($this->parentid) {
+                    $plagiarismfile->parent_id = $this->parentid;
+                }
+
+                if (!$pid = $DB->insert_record(UNICHECK_FILES_TABLE, $plagiarismfile)) {
+                    debugging("INSERT INTO {UNICHECK_FILES_TABLE}");
+                }
+
+                $plagiarismfile->id = $pid;
+            }
+        } catch (\Exception $ex) {
+            print_error($ex->getMessage());
+        }
+
+        $this->plagiarismfile = $plagiarismfile;
+
+        return $this->plagiarismfile;
+    }
+
+    /**
+     * @return string
+     */
+    public function get_content() {
+        return $this->content;
+    }
+
+    /**
+     * @param string $content
+     */
+    public function set_content($content) {
+        $this->content = $content;
+    }
+
+    /**
+     * @return array
+     */
+    protected function build_upload_data() {
+        return array(
+            $this->get_content(),
+            $this->name,
+            $this->ext,
+            $this->cmid(),
+            unicheck_core::get_user($this->userid())
+        );
+    }
+}
