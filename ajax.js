@@ -18,24 +18,24 @@
  *
  * @package   plagiarism_unicheck
  * @author    Vadim Titov <v.titov@p1k.co.uk>
- * @copyright Mikhail Grinenko <m.grinenko@p1k.co.uk>
+ * @copyright UKU Group, LTD, https://www.unicheck.com
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 /** global: M */
-M.plagiarism_unicheck = {
+M.plagiarismUnicheck = {
     interval: null,
     items: []
 };
 
-M.plagiarism_unicheck.init = function (Y, contextid) {
-    var handle_record = function (record) {
+M.plagiarismUnicheck.init = function(Y, contextid) {
+    var handleRecord = function(record) {
         var existing = Y.one('.un_report.fid-' + record.file_id);
         if (!existing) {
             return;
         }
 
         if (record.progress === 100 || record.statuscode === 613 || record.statuscode === "613") {
-            var items = M.plagiarism_unicheck.items;
+            var items = M.plagiarismUnicheck.items;
             items.splice(items.indexOf(record.file_id), 1);
 
             existing.insert(record.content, 'after').remove();
@@ -44,10 +44,10 @@ M.plagiarism_unicheck.init = function (Y, contextid) {
         }
     };
 
-    var track_progress = function (Y, items, contextid) {
+    var trackProgress = function(Y, items, contextid) {
 
         if (!items[0]) {
-            clearInterval(M.plagiarism_unicheck.interval);
+            clearInterval(M.plagiarismUnicheck.interval);
             return false;
         }
 
@@ -72,10 +72,10 @@ M.plagiarism_unicheck.init = function (Y, contextid) {
                         return false;
                     }
 
-                    Y.each(jsondata, handle_record);
+                    Y.each(jsondata, handleRecord);
                 },
                 failure: function () {
-                    M.plagiarism_unicheck.items = [];
+                    M.plagiarismUnicheck.items = [];
                 }
             }
         };
@@ -83,23 +83,23 @@ M.plagiarism_unicheck.init = function (Y, contextid) {
         Y.io(url, callback);
     };
 
-    var collect_items = function () {
+    var collectItems = function() {
         Y.all('.un_report .un_data').each(function (row) {
             var jsondata = Y.JSON.parse(row.getHTML());
-            M.plagiarism_unicheck.items.push(jsondata.fid);
+            M.plagiarismUnicheck.items.push(jsondata.fid);
         });
     };
 
-    var run_plagin = function () {
+    var runPlugin = function() {
 
-        collect_items();
+        collectItems();
 
-        if (M.plagiarism_unicheck.items.length) {
-            M.plagiarism_unicheck.interval = setInterval(function () {
-                track_progress(Y, M.plagiarism_unicheck.items, contextid);
+        if (M.plagiarismUnicheck.items.length) {
+            M.plagiarismUnicheck.interval = setInterval(function () {
+                trackProgress(Y, M.plagiarismUnicheck.items, contextid);
             }, 3000);
         }
     };
 
-    run_plagin();
+    runPlugin();
 };
