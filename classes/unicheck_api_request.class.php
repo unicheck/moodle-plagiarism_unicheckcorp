@@ -107,6 +107,14 @@ class unicheck_api_request {
             'CURLOPT_RETURNTRANSFER' => true,
             'CURLOPT_CONNECTTIMEOUT' => 10,
         ));
+
+        if (UNICHECK_DEBUG_MODE) {
+            $ch->setopt(array(
+                'CURLOPT_SSL_VERIFYHOST' => false,
+                'CURLOPT_SSL_VERIFYPEER' => false,
+            ));
+        }
+
         $resp = $ch->{$this->httpmethod}($this->url, $this->get_request_data());
 
         return $this->handle_response($resp);
@@ -181,11 +189,20 @@ class unicheck_api_request {
     }
 
     /**
-     * @param $resp
+     * @param $json
      *
      * @return \stdClass
      */
-    private function handle_response($resp) {
-        return json_decode($resp);
+    private function handle_response($json) {
+        $resp = json_decode($json);
+
+        if (json_last_error()) {
+            $resp = (object) array(
+                'result' => false,
+                'errors' => $json,
+            );
+        }
+
+        return $resp;
     }
 }

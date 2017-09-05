@@ -65,3 +65,5 @@ define('UNICHECK_WORKSHOP_GRADING_PHASE', 40);
 define('UNICHECK_MODNAME_WORKSHOP', 'workshop');
 define('UNICHECK_MODNAME_FORUM', 'forum');
 define('UNICHECK_MODNAME_ASSIGN', 'assign');
+
+define('UNICHECK_DEBUG_MODE', false);
