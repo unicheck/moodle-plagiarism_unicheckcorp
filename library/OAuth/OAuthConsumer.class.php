@@ -16,6 +16,10 @@
 
 namespace plagiarism_unicheck\library\OAuth;
 
+if (!defined('MOODLE_INTERNAL')) {
+    die('Direct access to this script is forbidden.');
+}
+
 /**
  * Class OAuthConsumer
  *
@@ -30,12 +34,12 @@ class OAuthConsumer {
      *
      * @param      $key
      * @param      $secret
-     * @param null $callback_url
+     * @param null $callbackurl
      */
-    public function __construct($key, $secret, $callback_url = null) {
+    public function __construct($key, $secret, $callbackurl = null) {
         $this->key = $key;
         $this->secret = $secret;
-        $this->callback_url = $callback_url;
+        $this->callback_url = $callbackurl;
     }
 
     /**

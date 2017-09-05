@@ -18,6 +18,10 @@ namespace plagiarism_unicheck\library\OAuth\Signature;
 
 use plagiarism_unicheck\library\OAuth\OAuthRequest;
 
+if (!defined('MOODLE_INTERNAL')) {
+    die('Direct access to this script is forbidden.');
+}
+
 /**
  * Class OAuthSignatureMethod
  *

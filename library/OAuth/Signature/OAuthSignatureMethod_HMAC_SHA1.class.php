@@ -19,6 +19,10 @@ namespace plagiarism_unicheck\library\OAuth\Signature;
 use plagiarism_unicheck\library\OAuth\OAuthRequest;
 use plagiarism_unicheck\library\OAuth\OAuthUtil;
 
+if (!defined('MOODLE_INTERNAL')) {
+    die('Direct access to this script is forbidden.');
+}
+
 /**
  * Class OAuthSignatureMethod_HMAC_SHA1
  *
@@ -40,23 +44,19 @@ class OAuthSignatureMethod_HMAC_SHA1 extends OAuthSignatureMethod {
      * @return string
      */
     public function build_signature(OAuthRequest $request, $consumer, $token) {
-        global $oauth_last_computed_signature;
-        $oauth_last_computed_signature = false;
+        $basestring = $request->get_signature_base_string();
+        $request->basestring = $basestring;
 
-        $base_string = $request->get_signature_base_string();
-        $request->base_string = $base_string;
-
-        $key_parts = array(
-                $consumer->secret,
-                ($token) ? $token->secret : "",
+        $keyparts = array(
+            $consumer->secret,
+            ($token) ? $token->secret : "",
         );
 
-        $key_parts = OAuthUtil::urlencode_rfc3986($key_parts);
-        $key = implode('&', $key_parts);
+        $keyparts = OAuthUtil::urlencode_rfc3986($keyparts);
+        $key = implode('&', $keyparts);
 
-        $computed_signature = base64_encode(hash_hmac('sha1', $base_string, $key, true));
-        $oauth_last_computed_signature = $computed_signature;
+        $computedsignature = base64_encode(hash_hmac('sha1', $basestring, $key, true));
 
-        return $computed_signature;
+        return $computedsignature;
     }
 }

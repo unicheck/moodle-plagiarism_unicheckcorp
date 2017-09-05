@@ -16,6 +16,10 @@
 
 namespace plagiarism_unicheck\library\OAuth;
 
+if (!defined('MOODLE_INTERNAL')) {
+    die('Direct access to this script is forbidden.');
+}
+
 /**
  * Class OAuthException
  *
