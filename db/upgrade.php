@@ -58,7 +58,7 @@ function xmldb_plagiarism_unicheck_upgrade($oldversion) {
         $dbman->change_field_type($table, $field);
 
         // Unicheck savepoint reached.
-        upgrade_plugin_savepoint(true, 2016041600, 'plagiarism', 'unicheck');
+        xmldb_plagiarism_unicheck_savepoint(2016041600);
     }
 
     if ($oldversion < 2016100500) {
@@ -80,7 +80,7 @@ function xmldb_plagiarism_unicheck_upgrade($oldversion) {
         }
 
         // Unicheck savepoint reached.
-        upgrade_plugin_savepoint(true, 2016100500, 'plagiarism', 'unicheck');
+        xmldb_plagiarism_unicheck_savepoint(2016100500);
     }
 
     if ($oldversion < 2016112200) {
@@ -99,11 +99,18 @@ function xmldb_plagiarism_unicheck_upgrade($oldversion) {
         $table->add_key('user_id', XMLDB_KEY_FOREIGN, array('user_id'), 'user', 'id');
 
         $dbman->create_table($table);
+
+        xmldb_plagiarism_unicheck_savepoint(2016112200);
     }
 
     if ($oldversion < 2017012300) {
         unicheck_core::migrate_users_access();
+        xmldb_plagiarism_unicheck_savepoint(2017012300);
     }
 
     return true;
+}
+
+function xmldb_plagiarism_unicheck_savepoint($version) {
+    upgrade_plugin_savepoint(true, $version, 'plagiarism', 'unicheck');
 }
