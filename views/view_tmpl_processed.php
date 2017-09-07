@@ -49,7 +49,7 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
     // User is allowed to view the report.
     // Score is contained in report, so they can see the score too.
     $htmlparts[] = sprintf('<img  width="32" height="32" src="%s" title="%s"> ',
-        $OUTPUT->pix_url('logo', UNICHECK_PLAGIN_NAME), plagiarism_unicheck::trans('pluginname')
+        $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME), plagiarism_unicheck::trans('pluginname')
     );
 
     // This is a teacher viewing the responses.
@@ -90,7 +90,7 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
             $htmlparts[] = sprintf('<a title="%s" href="%s" target="_blank">',
                 plagiarism_unicheck::trans('report'), $canvieweditreport ? $editreporturl : $reporturl
             );
-            $htmlparts[] = '<img class="un_tooltip" src="' . $OUTPUT->pix_url('link', UNICHECK_PLAGIN_NAME) . '">';
+            $htmlparts[] = '<img class="un_tooltip" src="' . $OUTPUT->image_url('link', UNICHECK_PLAGIN_NAME) . '">';
             $htmlparts[] = '</a></span>';
         }
     }

@@ -47,7 +47,7 @@ if (has_capability('plagiarism/unicheck:checkfile', $modulecontext) && empty($fi
 
     $check = sprintf('&nbsp;<a href="%1$s" class="un-check"><img src="%2$s" title="%3$s" width="32" height="32">%4$s</a>',
         $url,
-        $OUTPUT->pix_url('logo', UNICHECK_PLAGIN_NAME),
+        $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME),
         plagiarism_unicheck::trans('check_file'),
         plagiarism_unicheck::trans('check_file')
     );

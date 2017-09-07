@@ -50,13 +50,13 @@ if (has_capability('plagiarism/unicheck:resetfile', $modulecontext) && !empty($f
         'sesskey' => sesskey(),
     ));
     $reset = sprintf('<a href="%1$s"><img src="%2$s" title="%3$s"></a>',
-        $url, $OUTPUT->pix_url('reset', UNICHECK_PLAGIN_NAME), get_string('reset')
+        $url, $OUTPUT->image_url('reset', UNICHECK_PLAGIN_NAME), get_string('reset')
     );
 }
 
 $htmlparts = array('<span class="un_report">');
 $htmlparts[] = sprintf('<img class="un_tooltip" src="%1$s" alt="%2$s" title="%3$s" />%4$s',
-    $OUTPUT->pix_url('error', UNICHECK_PLAGIN_NAME),
+    $OUTPUT->image_url('error', UNICHECK_PLAGIN_NAME),
     plagiarism_unicheck::trans('unknownwarning'), $title, $reset
 );
 

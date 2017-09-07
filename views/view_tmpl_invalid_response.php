@@ -35,7 +35,7 @@ if (AJAX_SCRIPT) {
 
 $htmlparts = array('<span class="un_report">');
 $htmlparts[] = sprintf('<img  width="32" height="32" src="%s" title="%s"> ',
-    $OUTPUT->pix_url('logo', UNICHECK_PLAGIN_NAME), plagiarism_unicheck::trans('pluginname')
+    $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME), plagiarism_unicheck::trans('pluginname')
 );
 
 $erroresponse = plagiarism_unicheck::error_resp_handler($fileobj->errorresponse);
