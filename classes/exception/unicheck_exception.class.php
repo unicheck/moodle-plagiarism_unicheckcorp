@@ -13,6 +13,14 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * unicheck_exception.class.php
+ *
+ * @package     plagiarism_unicheck
+ * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 namespace plagiarism_unicheck\classes\exception;
 
@@ -21,13 +29,9 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 /**
- * Class UnicheckException
+ * Class unicheck_exception
  *
- * @package     plagiarism_unicheck\classes\exception
- * @subpackage  plagiarism
- * @namespace   plagiarism_unicheck\classes\exception
- *
- * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @package     plagiarism_unicheck
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

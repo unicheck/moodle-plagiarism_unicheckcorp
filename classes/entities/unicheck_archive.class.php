@@ -26,7 +26,6 @@
 namespace plagiarism_unicheck\classes\entities;
 
 use plagiarism_unicheck\classes\exception\unicheck_exception;
-use plagiarism_unicheck\classes\helpers\unicheck_stored_file;
 use plagiarism_unicheck\classes\plagiarism\unicheck_content;
 use plagiarism_unicheck\classes\task\unicheck_upload_and_check_task;
 use plagiarism_unicheck\classes\unicheck_api;
@@ -42,7 +41,10 @@ define('ARCHIVE_CANT_BE_OPEN', 'Can\'t open zip archive');
 
 /**
  * Class unicheck_archive
- * @package plagiarism_unicheck\classes\entities
+ *
+ * @package     plagiarism_unicheck
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unicheck_archive {
     /**
@@ -68,6 +70,8 @@ class unicheck_archive {
     }
 
     /**
+     * Run check
+     *
      * @return bool
      */
     public function run_checks() {
@@ -117,10 +121,12 @@ class unicheck_archive {
     }
 
     /**
+     * Process archive files
+     *
      * @param \zip_archive $ziparch
      * @param null         $parentid
      */
-    private function process_archive_files(\zip_archive&$ziparch, $parentid = null) {
+    private function process_archive_files(\zip_archive &$ziparch, $parentid = null) {
         global $CFG;
 
         $processed = array();
@@ -165,22 +171,25 @@ class unicheck_archive {
             $plagiarismentity->get_internal_file();
 
             unicheck_upload_and_check_task::add_task(array(
-                'tmpfile'    => $tmpfile,
-                'filename'   => $name,
-                'core' => $this->core,
-                'format'     => $format,
-                'parent_id'  => $parentid,
+                'tmpfile'   => $tmpfile,
+                'filename'  => $name,
+                'core'      => $this->core,
+                'format'    => $format,
+                'parent_id' => $parentid,
             ));
         }
     }
 
+    /**
+     * Restart check
+     */
     public function restart_check() {
         global $DB;
 
         $internalfile = $this->core->get_plagiarism_entity($this->file)->get_internal_file();
         $childs = $DB->get_records_list(UNICHECK_FILES_TABLE, 'parent_id', array($internalfile->id));
         if ($childs) {
-            foreach ((object)$childs as $child) {
+            foreach ((object) $childs as $child) {
                 if ($child->check_id) {
                     unicheck_api::instance()->delete_check($child);
                 }
@@ -193,7 +202,9 @@ class unicheck_archive {
     }
 
     /**
-     * @param $file
+     * Delete file
+     *
+     * @param string $file
      */
     private function unlink($file) {
         if (!unlink($file)) {
@@ -202,6 +213,8 @@ class unicheck_archive {
     }
 
     /**
+     * Check response validation
+     *
      * @param \stdClass $archivefile
      * @param string    $reason
      */

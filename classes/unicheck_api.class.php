@@ -31,16 +31,43 @@ if (!defined('MOODLE_INTERNAL')) {
 
 /**
  * Class unicheck_api
- * @package plagiarism_unicheck\classes
+ *
+ * @package     plagiarism_unicheck
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unicheck_api {
+    /**
+     * ACCESS_SCOPE_WRITE
+     */
     const ACCESS_SCOPE_WRITE = 'w';
+    /**
+     * ACCESS_SCOPE_READ
+     */
     const ACCESS_SCOPE_READ = 'r';
+    /**
+     * CHECK_PROGRESS
+     */
     const CHECK_PROGRESS = 'check/progress';
+    /**
+     * CHECK_GET
+     */
     const CHECK_GET = 'check/get';
+    /**
+     * FILE_UPLOAD
+     */
     const FILE_UPLOAD = 'file/upload';
+    /**
+     * CHECK_CREATE
+     */
     const CHECK_CREATE = 'check/create';
+    /**
+     * CHECK_DELETE
+     */
     const CHECK_DELETE = 'check/delete';
+    /**
+     * USER_CREATE
+     */
     const USER_CREATE = 'user/create';
     /**
      * @var null|unicheck_api
@@ -48,6 +75,8 @@ class unicheck_api {
     private static $instance = null;
 
     /**
+     * Get instance
+     *
      * @return null|static
      */
     final public static function instance() {
@@ -55,6 +84,8 @@ class unicheck_api {
     }
 
     /**
+     * Upload file
+     *
      * @param string|resource $content
      * @param string          $filename
      * @param string          $format
@@ -91,6 +122,8 @@ class unicheck_api {
     }
 
     /**
+     * Run check
+     *
      * @param \stdClass $file
      *
      * @return \stdClass
@@ -122,6 +155,8 @@ class unicheck_api {
     }
 
     /**
+     * Get check progress
+     *
      * @param array $checkids
      *
      * @return mixed
@@ -137,7 +172,9 @@ class unicheck_api {
     }
 
     /**
-     * @param $id
+     * Get check data
+     *
+     * @param int $id
      *
      * @return \stdClass
      */
@@ -152,6 +189,8 @@ class unicheck_api {
     }
 
     /**
+     * Delete check
+     *
      * @param \stdClass $file
      *
      * @return mixed
@@ -167,8 +206,10 @@ class unicheck_api {
     }
 
     /**
-     * @param      $user
-     * @param bool $cancomment
+     * Create user
+     *
+     * @param object $user
+     * @param bool   $cancomment
      *
      * @return mixed
      */
@@ -185,8 +226,10 @@ class unicheck_api {
     }
 
     /**
-     * @param $cmid
-     * @param $options
+     * Set advanced check options
+     *
+     * @param int   $cmid
+     * @param array $options
      */
     private function advanced_check_options($cmid, &$options) {
         $options['exclude_self_plagiarism'] = 1;

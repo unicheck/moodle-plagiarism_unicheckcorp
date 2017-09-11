@@ -33,17 +33,20 @@ if (!defined('MOODLE_INTERNAL')) {
 
 /**
  * Interface unicheck_abstract_task
- * @package classes\task
+ *
+ * @package     plagiarism_unicheck
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class unicheck_abstract_task extends adhoc_task {
     /**
      * Add new task for execution
      *
-     * @param $data
+     * @param array $data
      *
      * @return bool
      */
-    public static function add_task($data) {
+    public static function add_task(array $data) {
         $task = new static();
         $task->set_component(UNICHECK_PLAGIN_NAME);
         $task->set_custom_data($data);

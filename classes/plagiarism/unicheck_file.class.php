@@ -36,8 +36,9 @@ if (!defined('MOODLE_INTERNAL')) {
 /**
  * Class unicheck_file
  *
- * @package   plagiarism_unicheck\classes\plagiarism
- * @namespace plagiarism_unicheck\classes\plagiarism
+ * @package     plagiarism_unicheck
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  */
 class unicheck_file extends unicheck_plagiarism_entity {
@@ -45,27 +46,26 @@ class unicheck_file extends unicheck_plagiarism_entity {
      * @var \stored_file
      */
     private $file;
-
     /**
      * @var array
      */
     private $mimetypes = [
-            'application/pdf'                                                           => 'pdf',
-            'application/vnd.oasis.opendocument.text'                                   => 'odt',
-            'application/vnd.oasis.opendocument.presentation'                           => 'odp',
-            'application/msword'                                                        => 'doc',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'   => 'docx',
-            'text/html'                                                                 => 'html',
-            'text/plain'                                                                => 'txt',
-            'text/rtf'                                                                  => 'rtf',
-            'text/x-rtf'                                                                => 'rtf',
-            'text/richtext'                                                             => 'rtf',
-            'text/mspowerpoint'                                                         => 'ppt',
-            'text/powerpoint'                                                           => 'ppt',
-            'text/vnd.ms-powerpoint'                                                    => 'ppt',
-            'text/x-mspowerpoint'                                                       => 'ppt',
-            'application/vnd.openxmlformats-officedocument.presentationml.presentation' => 'pptx',
-            'application/x-iwork-pages-sffpages'                                        => 'pages'
+        'application/pdf'                                                           => 'pdf',
+        'application/vnd.oasis.opendocument.text'                                   => 'odt',
+        'application/vnd.oasis.opendocument.presentation'                           => 'odp',
+        'application/msword'                                                        => 'doc',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'   => 'docx',
+        'text/html'                                                                 => 'html',
+        'text/plain'                                                                => 'txt',
+        'text/rtf'                                                                  => 'rtf',
+        'text/x-rtf'                                                                => 'rtf',
+        'text/richtext'                                                             => 'rtf',
+        'text/mspowerpoint'                                                         => 'ppt',
+        'text/powerpoint'                                                           => 'ppt',
+        'text/vnd.ms-powerpoint'                                                    => 'ppt',
+        'text/x-mspowerpoint'                                                       => 'ppt',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation' => 'pptx',
+        'application/x-iwork-pages-sffpages'                                        => 'pages',
     ];
 
     /**
@@ -86,6 +86,8 @@ class unicheck_file extends unicheck_plagiarism_entity {
     }
 
     /**
+     * Get internal file
+     *
      * @return object
      */
     public function get_internal_file() {
@@ -98,9 +100,9 @@ class unicheck_file extends unicheck_plagiarism_entity {
         $plagiarismfile = null;
         try {
             $filedata = [
-                    'cm'         => $this->cmid(),
-                    'userid'     => $this->userid(),
-                    'identifier' => $this->stored_file()->get_pathnamehash(),
+                'cm'         => $this->cmid(),
+                'userid'     => $this->userid(),
+                'identifier' => $this->stored_file()->get_pathnamehash(),
             ];
 
             if ($this->core->is_teamsubmission_mode()) {
@@ -112,10 +114,10 @@ class unicheck_file extends unicheck_plagiarism_entity {
 
             if (empty($plagiarismfile)) {
                 $plagiarismfile = $this->new_plagiarismfile([
-                        'cm'         => $this->cmid(),
-                        'userid'     => $this->userid(),
-                        'identifier' => $this->stored_file()->get_pathnamehash(),
-                        'filename'   => $this->stored_file()->get_filename(),
+                    'cm'         => $this->cmid(),
+                    'userid'     => $this->userid(),
+                    'identifier' => $this->stored_file()->get_pathnamehash(),
+                    'filename'   => $this->stored_file()->get_filename(),
                 ]);
 
                 if (\plagiarism_unicheck::is_archive($this->stored_file())) {
@@ -138,6 +140,8 @@ class unicheck_file extends unicheck_plagiarism_entity {
     }
 
     /**
+     * Get stored file
+     *
      * @return \stored_file
      */
     public function stored_file() {
@@ -145,7 +149,10 @@ class unicheck_file extends unicheck_plagiarism_entity {
     }
 
     /**
-     * @param $mimetype
+     * Convert mimetype to ext
+     *
+     * @param string $mimetype
+     *
      * @return string|null
      */
     public function mimetype_to_format($mimetype) {
@@ -153,6 +160,8 @@ class unicheck_file extends unicheck_plagiarism_entity {
     }
 
     /**
+     * Prepare file for upload
+     *
      * @return array
      */
     protected function build_upload_data() {

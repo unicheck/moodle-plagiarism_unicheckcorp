@@ -26,10 +26,15 @@ defined('MOODLE_INTERNAL') || die();
 
 /**
  * Class restore_plagiarism_unicheck_plugin
+ *
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_plagiarism_unicheck_plugin extends restore_plagiarism_plugin {
     /**
-     * @param $data
+     * process_unicheckconfig
+     *
+     * @param mixed $data
      */
     public function process_unicheckconfig($data) {
         $data = (object) $data;
@@ -38,7 +43,9 @@ class restore_plagiarism_unicheck_plugin extends restore_plagiarism_plugin {
     }
 
     /**
-     * @param $data
+     * process_unicheckconfigmod
+     *
+     * @param mixed $data
      */
     public function process_unicheckconfigmod($data) {
         global $DB;
@@ -50,7 +57,9 @@ class restore_plagiarism_unicheck_plugin extends restore_plagiarism_plugin {
     }
 
     /**
-     * @param $data
+     * process_unicheckfiles
+     *
+     * @param mixed $data
      */
     public function process_unicheckfiles($data) {
         global $DB;
@@ -92,6 +101,5 @@ class restore_plagiarism_unicheck_plugin extends restore_plagiarism_plugin {
         $paths[] = new restore_path_element($elename, $elepath);
 
         return $paths; // And we return the interesting paths.
-
     }
 }

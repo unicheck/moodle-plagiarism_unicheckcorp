@@ -43,6 +43,9 @@ require_once($CFG->libdir . '/filelib.php');
 
 /**
  * Class plagiarism_unicheck
+ *
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class plagiarism_unicheck {
     use unicheck_translate;
@@ -69,6 +72,8 @@ class plagiarism_unicheck {
     );
 
     /**
+     * Handle all system events
+     *
      * @param base $event
      */
     public static function event_handler(base $event) {
@@ -79,7 +84,9 @@ class plagiarism_unicheck {
     }
 
     /**
-     * @param $modname
+     * Verify supporting for modules like: assign, workshop, forum
+     *
+     * @param string $modname
      *
      * @return bool
      */
@@ -88,7 +95,9 @@ class plagiarism_unicheck {
     }
 
     /**
-     * @param $filearea
+     * Verify supporting for file areas
+     *
+     * @param string $filearea
      *
      * @return bool
      */
@@ -97,6 +106,8 @@ class plagiarism_unicheck {
     }
 
     /**
+     * Verify supporting for file mimetype
+     *
      * @param stored_file $file
      *
      * @return bool
@@ -112,7 +123,9 @@ class plagiarism_unicheck {
     }
 
     /**
-     * @param $obj
+     * Convert object to array
+     *
+     * @param object $obj
      *
      * @return array
      */
@@ -133,7 +146,9 @@ class plagiarism_unicheck {
     }
 
     /**
-     * @param        $contextid
+     * Get list of files for current context
+     *
+     * @param int    $contextid
      * @param string $filearea
      * @param null   $itemid
      *
@@ -149,6 +164,8 @@ class plagiarism_unicheck {
     }
 
     /**
+     * Check whether the plugin is enabled
+     *
      * @return null|false
      */
     public static function is_plugin_enabled() {
@@ -156,12 +173,14 @@ class plagiarism_unicheck {
     }
 
     /**
-     * @param $context
-     * @param $linkarray
+     * Get forum topic results
+     *
+     * @param context_module $context
+     * @param array          $linkarray
      *
      * @return null|stored_file
      */
-    public static function get_forum_topic_results($context, $linkarray) {
+    public static function get_forum_topic_results(context_module $context, array $linkarray) {
         $contenthash = unicheck_core::content_hash($linkarray['content']);
         $file = unicheck_core::get_file_by_hash($context->id, $contenthash);
 
@@ -169,6 +188,8 @@ class plagiarism_unicheck {
     }
 
     /**
+     * Error handler
+     *
      * @param string $errorresponse
      *
      * @return string
@@ -185,7 +206,9 @@ class plagiarism_unicheck {
     }
 
     /**
-     * @param $data
+     * Track current file status
+     *
+     * @param string $data
      *
      * @return string
      */
@@ -221,7 +244,9 @@ class plagiarism_unicheck {
     }
 
     /**
-     * @param $token
+     * Callback handler
+     *
+     * @param string $token
      *
      * @throws moodle_exception
      */
@@ -242,7 +267,9 @@ class plagiarism_unicheck {
     }
 
     /**
-     * @param $token
+     * Check access grunt
+     *
+     * @param string $token
      *
      * @return bool
      */

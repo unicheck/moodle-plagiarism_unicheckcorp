@@ -36,7 +36,10 @@ if (!defined('MOODLE_INTERNAL')) {
 
 /**
  * Class unicheck_api_request
- * @package plagiarism_unicheck\classes
+ *
+ * @package     plagiarism_unicheck
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unicheck_api_request {
     /**
@@ -61,6 +64,8 @@ class unicheck_api_request {
     private $httpmethod = 'get';
 
     /**
+     * Get instance
+     *
      * @return null|static
      */
     final public static function instance() {
@@ -68,6 +73,8 @@ class unicheck_api_request {
     }
 
     /**
+     * Set request method post
+     *
      * @return $this
      */
     public function http_post() {
@@ -77,6 +84,8 @@ class unicheck_api_request {
     }
 
     /**
+     * Set request method get
+     *
      * @return $this
      */
     public function http_get() {
@@ -86,8 +95,10 @@ class unicheck_api_request {
     }
 
     /**
-     * @param $method
-     * @param $data
+     * Make request
+     *
+     * @param string $method
+     * @param array  $data
      *
      * @return \stdClass
      * @throws \coding_exception
@@ -121,7 +132,9 @@ class unicheck_api_request {
     }
 
     /**
-     * @param $requestdata
+     * Set request data
+     *
+     * @param array $requestdata
      */
     private function set_request_data(&$requestdata) {
         if ($this->httpmethod === 'get') {
@@ -131,12 +144,18 @@ class unicheck_api_request {
         }
     }
 
-    /* @param mixed $url */
+    /**
+     * Set action
+     *
+     * @param string $url
+     */
     private function set_action($url) {
         $this->url = UNICHECK_API_URL . $url;
     }
 
     /**
+     * Generate oauth headers
+     *
      * @return string
      */
     private function gen_oauth_headers() {
@@ -161,6 +180,8 @@ class unicheck_api_request {
     }
 
     /**
+     * gen_oauth_body_hash
+     *
      * @return string
      */
     private function gen_oauth_body_hash() {
@@ -168,6 +189,8 @@ class unicheck_api_request {
     }
 
     /**
+     * get_request_data
+     *
      * @return string
      */
     public function get_request_data() {
@@ -175,6 +198,8 @@ class unicheck_api_request {
     }
 
     /**
+     * get_token_secret
+     *
      * @return string
      */
     public function get_token_secret() {
@@ -182,6 +207,8 @@ class unicheck_api_request {
     }
 
     /**
+     * Get request url
+     *
      * @return string
      */
     public function get_url() {
@@ -189,7 +216,9 @@ class unicheck_api_request {
     }
 
     /**
-     * @param $json
+     * Handle response
+     *
+     * @param string $json
      *
      * @return \stdClass
      */

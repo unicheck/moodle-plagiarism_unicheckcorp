@@ -48,7 +48,7 @@ M.plagiarismUnicheck.init = function(Y, contextid) {
 
         if (!items[0]) {
             clearInterval(M.plagiarismUnicheck.interval);
-            return false;
+            return;
         }
 
         var url = M.cfg.wwwroot + '/plagiarism/unicheck/ajax.php';
@@ -66,15 +66,15 @@ M.plagiarismUnicheck.init = function(Y, contextid) {
                 })
             },
             on: {
-                success: function (tid, response) {
+                success: function(tid, response) {
                     var jsondata = Y.JSON.parse(response.responseText);
                     if (!jsondata) {
-                        return false;
+                        return;
                     }
 
                     Y.each(jsondata, handleRecord);
                 },
-                failure: function () {
+                failure: function() {
                     M.plagiarismUnicheck.items = [];
                 }
             }
@@ -84,7 +84,7 @@ M.plagiarismUnicheck.init = function(Y, contextid) {
     };
 
     var collectItems = function() {
-        Y.all('.un_report .un_data').each(function (row) {
+        Y.all('.un_report .un_data').each(function(row) {
             var jsondata = Y.JSON.parse(row.getHTML());
             M.plagiarismUnicheck.items.push(jsondata.fid);
         });
@@ -95,7 +95,7 @@ M.plagiarismUnicheck.init = function(Y, contextid) {
         collectItems();
 
         if (M.plagiarismUnicheck.items.length) {
-            M.plagiarismUnicheck.interval = setInterval(function () {
+            M.plagiarismUnicheck.interval = setInterval(function() {
                 trackProgress(Y, M.plagiarismUnicheck.items, contextid);
             }, 3000);
         }

@@ -35,12 +35,14 @@ if (!defined('MOODLE_INTERNAL')) {
 
 /**
  * Class unicheck_upload_and_check_task
- *
- * @package   plagiarism_unicheck\classes\task
- * @namespace plagiarism_unicheck\classes\task
- *
+ * @package     plagiarism_unicheck
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unicheck_upload_and_check_task extends unicheck_abstract_task {
+    /**
+     * Execute task
+     */
     public function execute() {
         $data = $this->get_custom_data();
         if (file_exists($data->tmpfile)) {

@@ -13,6 +13,14 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * Class unicheck_progress
+ *
+ * @package     plagiarism_unicheck
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 namespace plagiarism_unicheck\classes\helpers;
 
@@ -27,18 +35,18 @@ if (!defined('MOODLE_INTERNAL')) {
 /**
  * Class unicheck_progress
  *
- * @package plagiarism_unicheck\classes\helpers
- * @subpackage  plagiarism
- * @namespace plagiarism_unicheck\classes\helpers
- * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @package     plagiarism_unicheck
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unicheck_progress {
     /**
-     * @param $record
-     * @param $cid
-     * @param $checkstatusforids
+     * get_file_progress_info
+     *
+     * @param object $record
+     * @param int    $cid
+     * @param array  $checkstatusforids
+     *
      * @return array|bool
      */
     public static function get_file_progress_info($record, $cid, &$checkstatusforids) {
@@ -69,18 +77,21 @@ class unicheck_progress {
         }
 
         $info = array(
-                'file_id' => $record->id,
-                'statuscode' => $record->statuscode,
-                'progress' => (int) $record->progress,
-                'content' => self::gen_row_content_score($cid, $record),
+            'file_id'    => $record->id,
+            'statuscode' => $record->statuscode,
+            'progress'   => (int) $record->progress,
+            'content'    => self::gen_row_content_score($cid, $record),
         );
+
         return $info;
     }
 
     /**
-     * @param $cid
-     * @param $checkstatusforids
-     * @param $resp
+     * check_real_file_progress
+     *
+     * @param int   $cid
+     * @param array $checkstatusforids
+     * @param array $resp
      *
      * @throws unicheck_exception
      */
@@ -109,7 +120,7 @@ class unicheck_progress {
                     $childscount = $DB->count_records_select(UNICHECK_FILES_TABLE, "parent_id = ? AND statuscode in (?,?,?)",
                         [
                             $recordid, UNICHECK_STATUSCODE_PROCESSED, UNICHECK_STATUSCODE_ACCEPTED,
-                            UNICHECK_STATUSCODE_PENDING
+                            UNICHECK_STATUSCODE_PENDING,
                         ]) ?: 1;
 
                     $progress = 0;
@@ -128,8 +139,11 @@ class unicheck_progress {
     }
 
     /**
-     * @param $cid
-     * @param $fileobj
+     * gen_row_content_score
+     *
+     * @param int    $cid
+     * @param object $fileobj
+     *
      * @return bool|mixed
      */
     public static function gen_row_content_score($cid, $fileobj) {
@@ -145,8 +159,10 @@ class unicheck_progress {
     }
 
     /**
-     * @param $id
-     * @param $progress
+     * update_file_progress
+     *
+     * @param int $id
+     * @param int $progress
      *
      * @return mixed
      * @throws unicheck_exception
@@ -174,8 +190,11 @@ class unicheck_progress {
     }
 
     /**
-     * @param $fileid
-     * @param $progress
+     * update_parent_progress
+     *
+     * @param int $fileid
+     * @param int $progress
+     *
      * @return mixed
      */
     private static function update_parent_progress($fileid, $progress) {

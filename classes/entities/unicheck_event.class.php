@@ -40,11 +40,14 @@ if (!defined('MOODLE_INTERNAL')) {
 
 /**
  * Class unicheck_event
- * @package plagiarism_unicheck\classes\entities
+ * @package     plagiarism_unicheck
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unicheck_event {
-
     /**
+     * Process event
+     *
      * @param base $event
      */
     public function process(base $event) {
@@ -83,22 +86,27 @@ class unicheck_event {
     }
 
     /**
+     * Check is upload event detected
+     *
      * @param base $event
      *
      * @return bool
      */
     private static function is_upload_event(base $event) {
         $eventdata = $event->get_data();
+
         return in_array($eventdata['eventname'], array(
-                '\assignsubmission_file\event\submission_updated',
-                '\assignsubmission_file\event\assessable_uploaded',
-                '\assignsubmission_onlinetext\event\assessable_uploaded',
-                '\mod_forum\event\assessable_uploaded',
-                '\mod_workshop\event\assessable_uploaded'
+            '\assignsubmission_file\event\submission_updated',
+            '\assignsubmission_file\event\assessable_uploaded',
+            '\assignsubmission_onlinetext\event\assessable_uploaded',
+            '\mod_forum\event\assessable_uploaded',
+            '\mod_workshop\event\assessable_uploaded',
         ));
     }
 
     /**
+     * Check is assign submitted
+     *
      * @param base $event
      *
      * @return bool
@@ -108,6 +116,8 @@ class unicheck_event {
     }
 
     /**
+     * Check is workshop swiched
+     *
      * @param base $event
      *
      * @return bool

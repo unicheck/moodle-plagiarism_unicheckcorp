@@ -35,7 +35,9 @@ if (!defined('MOODLE_INTERNAL')) {
 
 /**
  * Class unicheck_bulk_check_assign_files
- * @package plagiarism_unicheck\classes\task
+ * @package plagiarism_unicheck
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unicheck_bulk_check_assign_files extends unicheck_abstract_task {
     /** @var  unicheck_core */
@@ -43,6 +45,9 @@ class unicheck_bulk_check_assign_files extends unicheck_abstract_task {
     /** @var  \stored_file */
     private $assignfile;
 
+    /**
+     * Execute task
+     */
     public function execute() {
         $data = $this->get_custom_data();
 
@@ -71,7 +76,9 @@ class unicheck_bulk_check_assign_files extends unicheck_abstract_task {
     }
 
     /**
-     * @param $contextid
+     * Process archives
+     *
+     * @param int $contextid
      */
     private function handle_archive($contextid) {
         if (!is_null(unicheck_core::get_file_by_hash($contextid, $this->assignfile->get_pathnamehash()))) {
@@ -85,6 +92,9 @@ class unicheck_bulk_check_assign_files extends unicheck_abstract_task {
         mtrace('... archive send to Unicheck');
     }
 
+    /**
+     * Process files besides archives
+     */
     private function handle_non_archive() {
         $plagiarismentity = $this->core->get_plagiarism_entity($this->assignfile);
         $internalfile = $plagiarismentity->upload_file_on_server();

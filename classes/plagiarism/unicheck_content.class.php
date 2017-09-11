@@ -36,9 +36,9 @@ if (!defined('MOODLE_INTERNAL')) {
 /**
  * Class unicheck_content
  *
- * @package   plagiarism_unicheck\classes\plagiarism
- * @namespace plagiarism_unicheck\classes\plagiarism
- *
+ * @package     plagiarism_unicheck
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unicheck_content extends unicheck_plagiarism_entity {
     /**
@@ -63,9 +63,9 @@ class unicheck_content extends unicheck_plagiarism_entity {
      *
      * @param unicheck_core $core
      * @param string        $content
-     * @param             $name
-     * @param null          $ext
-     * @param null          $parentid
+     * @param string        $name
+     * @param string|null   $ext
+     * @param int|null      $parentid
      *
      * @throws unicheck_exception
      */
@@ -83,6 +83,8 @@ class unicheck_content extends unicheck_plagiarism_entity {
     }
 
     /**
+     * Get internal file
+     *
      * @return object
      */
     public function get_internal_file() {
@@ -135,6 +137,8 @@ class unicheck_content extends unicheck_plagiarism_entity {
     }
 
     /**
+     * Get content
+     *
      * @return string
      */
     public function get_content() {
@@ -142,6 +146,8 @@ class unicheck_content extends unicheck_plagiarism_entity {
     }
 
     /**
+     * Set content
+     *
      * @param string $content
      */
     public function set_content($content) {
@@ -149,6 +155,8 @@ class unicheck_content extends unicheck_plagiarism_entity {
     }
 
     /**
+     * Build upload data
+     *
      * @return array
      */
     protected function build_upload_data() {
@@ -157,7 +165,7 @@ class unicheck_content extends unicheck_plagiarism_entity {
             $this->name,
             $this->ext,
             $this->cmid(),
-            unicheck_core::get_user($this->userid())
+            unicheck_core::get_user($this->userid()),
         );
     }
 }

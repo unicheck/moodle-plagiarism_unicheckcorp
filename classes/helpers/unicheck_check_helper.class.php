@@ -13,6 +13,14 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * Class unicheck_check_helper
+ *
+ * @package     plagiarism_unicheck
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 namespace plagiarism_unicheck\classes\helpers;
 
@@ -29,15 +37,13 @@ if (!defined('MOODLE_INTERNAL')) {
 /**
  * Class unicheck_check_helper
  *
- * @package     plagiarism_unicheck\classes\helpers
- * @subpackage  plagiarism
- * @namespace   plagiarism_unicheck\classes\helpers
- * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unicheck_check_helper {
     /**
+     * check_complete
+     *
      * @param \stdClass $record
      * @param \stdClass $check
      * @param int       $progress
@@ -64,7 +70,10 @@ class unicheck_check_helper {
         if ($updated && $record->parent_id !== null) {
             $parentrecord = $DB->get_record(UNICHECK_FILES_TABLE, array('id' => $record->parent_id));
             $childs = $DB->get_records_select(UNICHECK_FILES_TABLE, "parent_id = ? AND statuscode in (?,?,?)",
-                array($record->parent_id, UNICHECK_STATUSCODE_PROCESSED, UNICHECK_STATUSCODE_ACCEPTED, UNICHECK_STATUSCODE_PENDING)
+                array(
+                    $record->parent_id, UNICHECK_STATUSCODE_PROCESSED, UNICHECK_STATUSCODE_ACCEPTED,
+                    UNICHECK_STATUSCODE_PENDING,
+                )
             );
 
             $similarity = 0;
@@ -94,6 +103,8 @@ class unicheck_check_helper {
     }
 
     /**
+     * upload_and_run_detection
+     *
      * @param unicheck_plagiarism_entity $plagiarismentity
      *
      * @return bool
@@ -120,8 +131,10 @@ class unicheck_check_helper {
     }
 
     /**
+     * run_plagiarism_detection
+     *
      * @param unicheck_plagiarism_entity $plagiarismentity
-     * @param                            $internalfile
+     * @param object                     $internalfile
      */
     public static function run_plagiarism_detection($plagiarismentity, $internalfile) {
         if (!$plagiarismentity) {

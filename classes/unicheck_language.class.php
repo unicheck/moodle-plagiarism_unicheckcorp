@@ -13,6 +13,14 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * Class unicheck_language
+ *
+ * @package     plagiarism_unicheck
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 namespace plagiarism_unicheck\classes;
 
@@ -23,30 +31,29 @@ if (!defined('MOODLE_INTERNAL')) {
 /**
  * Class unicheck_language
  *
- * @package plagiarism_unicheck\classes
- * @subpackage  plagiarism
- * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @package     plagiarism_unicheck
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unicheck_language {
-
     /**
      * @var array
      */
     private static $supportedlanguage = array(
-            'en' => 'en_EN',
-            'es' => 'es_ES',
-            'es_mx' => 'es_ES',
-            'es_ve' => 'es_ES',
-            'uk' => 'uk_UA',
-            'nl' => 'nl_BE',
-            'tr' => 'tr_TR',
-            'fr' => 'fr_FR',
-            'fr_ca' => 'fr_FR'
+        'en'    => 'en_EN',
+        'es'    => 'es_ES',
+        'es_mx' => 'es_ES',
+        'es_ve' => 'es_ES',
+        'uk'    => 'uk_UA',
+        'nl'    => 'nl_BE',
+        'tr'    => 'tr_TR',
+        'fr'    => 'fr_FR',
+        'fr_ca' => 'fr_FR',
     );
 
     /**
+     * get_plugin_language
+     *
      * @return array|bool|mixed
      */
     public static function get_plugin_language() {
@@ -61,8 +68,10 @@ class unicheck_language {
     }
 
     /**
-     * @param $url
-     * @param int $showlangpicker
+     * inject_language_to_url
+     *
+     * @param string $url
+     * @param int    $showlangpicker
      */
     public static function inject_language_to_url(&$url, $showlangpicker = 0) {
         if (!filter_var($url, FILTER_VALIDATE_URL) === false) {

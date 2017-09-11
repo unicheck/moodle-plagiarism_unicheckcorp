@@ -22,6 +22,7 @@
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace plagiarism_unicheck\classes\event;
 
 use core\event\base;
@@ -37,7 +38,9 @@ if (!defined('MOODLE_INTERNAL')) {
 /**
  * Class unicheck_abstract_event
  *
- * @package plagiarism_unicheck\classes\event
+ * @package     plagiarism_unicheck
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class unicheck_abstract_event {
     /** @var */
@@ -48,6 +51,8 @@ abstract class unicheck_abstract_event {
     protected $core;
 
     /**
+     * Get instance
+     *
      * @return static
      */
     public static function instance() {
@@ -61,6 +66,8 @@ abstract class unicheck_abstract_event {
     }
 
     /**
+     * is_submition_draft
+     *
      * @param base $event
      *
      * @return bool
@@ -83,7 +90,7 @@ abstract class unicheck_abstract_event {
     }
 
     /**
-     *
+     * after_handle_event
      */
     protected function after_handle_event() {
         if (empty($this->tasks)) {
@@ -103,13 +110,17 @@ abstract class unicheck_abstract_event {
     }
 
     /**
-     * @param $plagiarismentity
+     * add_after_handle_task
+     *
+     * @param unicheck_plagiarism_entity $plagiarismentity
      */
-    protected function add_after_handle_task($plagiarismentity) {
+    protected function add_after_handle_task(unicheck_plagiarism_entity $plagiarismentity) {
         array_push($this->tasks, $plagiarismentity);
     }
 
     /**
+     * handle_event
+     *
      * @param unicheck_core $core
      * @param base          $event
      */
