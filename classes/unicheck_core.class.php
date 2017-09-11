@@ -13,6 +13,14 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * Class unicheck_core
+ *
+ * @package     plagiarism_unicheck
+ * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 namespace plagiarism_unicheck\classes;
 
@@ -30,9 +38,7 @@ if (!defined('MOODLE_INTERNAL')) {
 /**
  * Class unicheck_core
  *
- * @package     plagiarism_unicheck\classes
- * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @package     plagiarism_unicheck
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -55,8 +61,8 @@ class unicheck_core {
     /**
      * unicheck_core constructor.
      *
-     * @param $cmid
-     * @param $userid
+     * @param int $cmid
+     * @param int $userid
      */
     public function __construct($cmid, $userid) {
         $this->cmid = $cmid;
@@ -64,7 +70,9 @@ class unicheck_core {
     }
 
     /**
-     * @param $data
+     * Convert array to json
+     *
+     * @param array $data
      *
      * @return string
      */
@@ -73,7 +81,9 @@ class unicheck_core {
     }
 
     /**
-     * @param $id
+     * resubmit_file
+     *
+     * @param int $id
      *
      * @return null
      * @throws \coding_exception
@@ -108,7 +118,9 @@ class unicheck_core {
     }
 
     /**
-     * @param      $file
+     * get_plagiarism_entity
+     *
+     * @param \stored_file $file
      *
      * @return null|unicheck_file|unicheck_plagiarism_entity
      */
@@ -123,7 +135,9 @@ class unicheck_core {
     }
 
     /**
-     * @param $data
+     * parse_json
+     *
+     * @param string $data
      *
      * @return mixed
      */
@@ -132,8 +146,10 @@ class unicheck_core {
     }
 
     /**
-     * @param $contextid
-     * @param $contenthash
+     * get_file_by_hash
+     *
+     * @param int    $contextid
+     * @param string $contenthash
      *
      * @return null|\stored_file
      */
@@ -153,6 +169,9 @@ class unicheck_core {
         return get_file_storage()->get_file_instance(array_shift($filerecord));
     }
 
+    /**
+     * migrate_users_access
+     */
     public static function migrate_users_access() {
         global $DB;
 
@@ -170,6 +189,8 @@ class unicheck_core {
     }
 
     /**
+     * create_file_from_content
+     *
      * @param base $event
      *
      * @return bool|\stored_file
@@ -212,7 +233,9 @@ class unicheck_core {
     }
 
     /**
-     * @param $content
+     * Get content hash
+     *
+     * @param mixed $content
      *
      * @return string
      */
@@ -221,6 +244,8 @@ class unicheck_core {
     }
 
     /**
+     * inject_comment_token
+     *
      * @param string $url
      * @param int    $cmid
      */
@@ -229,7 +254,9 @@ class unicheck_core {
     }
 
     /**
-     * @param             $cmid
+     * get_external_token
+     *
+     * @param int         $cmid
      * @param null|object $user
      *
      * @return mixed
@@ -260,7 +287,9 @@ class unicheck_core {
     }
 
     /**
-     * @param $cmid
+     * is_teacher
+     *
+     * @param int $cmid
      *
      * @return bool
      */
@@ -269,8 +298,10 @@ class unicheck_core {
     }
 
     /**
-     * @param $cmid
-     * @param $permission
+     * Check capability
+     *
+     * @param string $permission
+     * @param int    $cmid
      *
      * @return bool
      */
@@ -281,6 +312,8 @@ class unicheck_core {
     }
 
     /**
+     * delete_old_file_from_content
+     *
      * @param \stored_file $storedfile
      */
     private function delete_old_file_from_content(\stored_file $storedfile) {
@@ -296,6 +329,8 @@ class unicheck_core {
     }
 
     /**
+     * enable_teamsubmission
+     *
      * @return $this
      */
     public function enable_teamsubmission() {
@@ -305,6 +340,8 @@ class unicheck_core {
     }
 
     /**
+     * is_teamsubmission_mode
+     *
      * @return bool
      */
     public function is_teamsubmission_mode() {
@@ -312,6 +349,8 @@ class unicheck_core {
     }
 
     /**
+     * Get user
+     *
      * @param null|int $uid
      *
      * @return object

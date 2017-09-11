@@ -14,6 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * File upgrade.php
+ *
+ * @package     plagiarism_unicheck
+ * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 use plagiarism_unicheck\classes\unicheck_core;
 
 if (!defined('MOODLE_INTERNAL')) {
@@ -24,7 +33,11 @@ require_once(dirname(__FILE__) . '/../constants.php');
 require_once(dirname(__FILE__) . '/../autoloader.php');
 
 /**
- * @param $oldversion
+ * db plagiarism unicheck upgrade
+ *
+ * @package     plagiarism_unicheck
+ *
+ * @param int $oldversion
  *
  * @return bool
  * @throws ddl_exception
@@ -58,7 +71,7 @@ function xmldb_plagiarism_unicheck_upgrade($oldversion) {
         $dbman->change_field_type($table, $field);
 
         // Unicheck savepoint reached.
-        xmldb_plagiarism_unicheck_savepoint(2016041600);
+        upgrade_plugin_savepoint(true, 2016041600, 'plagiarism', 'unicheck');
     }
 
     if ($oldversion < 2016100500) {
@@ -80,7 +93,7 @@ function xmldb_plagiarism_unicheck_upgrade($oldversion) {
         }
 
         // Unicheck savepoint reached.
-        xmldb_plagiarism_unicheck_savepoint(2016100500);
+        upgrade_plugin_savepoint(true, 2016100500, 'plagiarism', 'unicheck');
     }
 
     if ($oldversion < 2016112200) {
@@ -100,17 +113,13 @@ function xmldb_plagiarism_unicheck_upgrade($oldversion) {
 
         $dbman->create_table($table);
 
-        xmldb_plagiarism_unicheck_savepoint(2016112200);
+        upgrade_plugin_savepoint(true, 2016112200, 'plagiarism', 'unicheck');
     }
 
     if ($oldversion < 2017012300) {
         unicheck_core::migrate_users_access();
-        xmldb_plagiarism_unicheck_savepoint(2017012300);
+        upgrade_plugin_savepoint(true, 2017012300, 'plagiarism', 'unicheck');
     }
 
     return true;
-}
-
-function xmldb_plagiarism_unicheck_savepoint($version) {
-    upgrade_plugin_savepoint(true, $version, 'plagiarism', 'unicheck');
 }

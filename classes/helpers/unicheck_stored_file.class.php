@@ -32,14 +32,16 @@ if (!defined('MOODLE_INTERNAL')) {
 /**
  * Class unicheck_stored_file
  *
- * @package plagiarism_unicheck\classes\helpers
- * @namespace plagiarism_unicheck\classes\helpers
- *
+ * @package     plagiarism_unicheck
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unicheck_stored_file extends \stored_file {
-
     /**
+     * Get file pathname
+     *
      * @param \stored_file $file
+     *
      * @return string
      */
     public static function get_protected_pathname(\stored_file $file) {
@@ -47,7 +49,9 @@ class unicheck_stored_file extends \stored_file {
     }
 
     /**
-     * @param $id
+     * Get file childs
+     *
+     * @param int $id
      *
      * @return array
      */
@@ -58,7 +62,9 @@ class unicheck_stored_file extends \stored_file {
     }
 
     /**
-     * @param $id
+     * Get internal file
+     *
+     * @param int $id
      *
      * @return mixed
      */

@@ -13,6 +13,15 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * OAuthSignatureMethod_HMAC_SHA1.class.php
+ *
+ * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ * @author      Vadim Titov <v.titov@p1k.co.uk>
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 namespace plagiarism_unicheck\library\OAuth\Signature;
 
@@ -26,10 +35,14 @@ if (!defined('MOODLE_INTERNAL')) {
 /**
  * Class OAuthSignatureMethod_HMAC_SHA1
  *
- * @package plagiarism_unicheck\library\OAuth\Signature
+ * @package     plagiarism_unicheck
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class OAuthSignatureMethod_HMAC_SHA1 extends OAuthSignatureMethod {
     /**
+     * Get method name
+     *
      * @return string
      */
     public function get_name() {
@@ -37,9 +50,11 @@ class OAuthSignatureMethod_HMAC_SHA1 extends OAuthSignatureMethod {
     }
 
     /**
-     * @param $request
-     * @param $consumer
-     * @param $token
+     * Build signature
+     *
+     * @param OAuthRequest $request
+     * @param object       $consumer
+     * @param mixed        $token
      *
      * @return string
      */

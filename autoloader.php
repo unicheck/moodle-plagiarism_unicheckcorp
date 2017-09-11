@@ -32,11 +32,15 @@ if (!defined('MOODLE_INTERNAL')) {
 /**
  * Class unicheck_autoloader
  *
- * @package plagiarism_unicheck\library
+ * @package     plagiarism_unicheck
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unicheck_autoloader {
     /**
-     * @param $class
+     * Init autoloader
+     *
+     * @param string $class
      */
     public static function init($class) {
         if (strpos($class, 'plagiarism_unicheck') === false) {

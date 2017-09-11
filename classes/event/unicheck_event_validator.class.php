@@ -13,6 +13,14 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * Class unicheck_event_validator
+ *
+ * @package     plagiarism_unicheck
+ * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 namespace plagiarism_unicheck\classes\event;
 
@@ -29,10 +37,7 @@ use plagiarism_unicheck\classes\unicheck_settings;
 /**
  * Class unicheck_event_validator
  *
- * @package     plagiarism_unicheck\classes\event
- * @subpackage  plagiarism
- * @namespace   plagiarism_unicheck\classes\event
- * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @package     plagiarism_unicheck
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -49,6 +54,8 @@ class unicheck_event_validator {
     );
 
     /**
+     * validate_event
+     *
      * @param base $event
      *
      * @return bool
@@ -82,7 +89,9 @@ class unicheck_event_validator {
     }
 
     /**
-     * @param $component
+     * is_allowed_component
+     *
+     * @param string $component
      *
      * @return bool
      */
@@ -91,7 +100,9 @@ class unicheck_event_validator {
     }
 
     /**
-     * @param $cmid
+     * is_mod_enabled
+     *
+     * @param int $cmid
      *
      * @return bool
      */

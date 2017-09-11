@@ -13,6 +13,15 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * unicheck_linkarray.class.php
+ *
+ * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ * @author      Vadim Titov <v.titov@p1k.co.uk>
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 namespace plagiarism_unicheck\classes\helpers;
 
@@ -27,17 +36,17 @@ if (!defined('MOODLE_INTERNAL')) {
 /**
  * Class unicheck_linkarray
  *
- * @package     plagiarism_unicheck\classes
- * @subpackage  plagiarism
- * @namespace   plagiarism_unicheck\classes
+ * @package     plagiarism_unicheck
  * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unicheck_linkarray {
     /**
-     * @param $cm
-     * @param $linkarray
+     * Get file from linkarray
+     *
+     * @param object $cm
+     * @param array  $linkarray
      *
      * @return mixed|null|\stored_file
      */
@@ -79,9 +88,11 @@ class unicheck_linkarray {
     }
 
     /**
+     * Get output for linkarray
+     *
      * @param \stdClass $fileobj
-     * @param           $cm
-     * @param           $linkarray
+     * @param object    $cm
+     * @param array     $linkarray
      *
      * @return mixed
      */
@@ -127,8 +138,10 @@ class unicheck_linkarray {
     }
 
     /**
-     * @param $cm
-     * @param $fileobj
+     * Check is file already pending
+     *
+     * @param object $cm
+     * @param object $fileobj
      *
      * @return bool
      */
@@ -137,7 +150,9 @@ class unicheck_linkarray {
     }
 
     /**
-     * @param $linkarray
+     * Check is submission submitted
+     *
+     * @param array $linkarray
      *
      * @return bool
      */

@@ -17,7 +17,6 @@
  * unicheck_event_group_submition.class.php
  *
  * @package     plagiarism_unicheck
- * @subpackage  plagiarism
  * @author      Vadim Titov <v.titov@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -36,10 +35,15 @@ if (!defined('MOODLE_INTERNAL')) {
 
 /**
  * Class unicheck_event_group_submition
- * @package plagiarism_unicheck\classes\event
+ *
+ * @package     plagiarism_unicheck
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unicheck_event_group_submition extends unicheck_abstract_event {
     /**
+     * handle_event
+     *
      * @param unicheck_core $core
      * @param base          $event
      */
@@ -94,7 +98,9 @@ class unicheck_event_group_submition extends unicheck_abstract_event {
     }
 
     /**
-     * @param $assign
+     * all_users_confirm_submition
+     *
+     * @param mixed $assign
      *
      * @return bool
      */

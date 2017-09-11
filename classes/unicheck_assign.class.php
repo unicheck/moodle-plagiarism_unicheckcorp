@@ -13,6 +13,15 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * unicheck_assign.class.php
+ *
+ * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ * @author      Vadim Titov <v.titov@p1k.co.uk>
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 namespace plagiarism_unicheck\classes;
 
@@ -30,17 +39,20 @@ if (!defined('MOODLE_INTERNAL')) {
 /**
  * Class unicheck_assign
  *
- * @package     plagiarism_unicheck\classes
- * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @package     plagiarism_unicheck
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unicheck_assign {
+    /**
+     * DB_NAME
+     */
     const DB_NAME = 'assign';
 
     /**
-     * @param      $cmid
+     * get_user_submission_by_cmid
+     *
+     * @param int  $cmid
      * @param null $userid
      *
      * @return bool|\stdClass
@@ -59,7 +71,9 @@ class unicheck_assign {
     }
 
     /**
-     * @param $id
+     * check_submitted_assignment
+     *
+     * @param int $id
      *
      * @throws coding_exception
      */
@@ -86,6 +100,8 @@ class unicheck_assign {
     }
 
     /**
+     * get_area_files
+     *
      * @param int  $contextid
      * @param bool $itemid
      *
@@ -96,7 +112,9 @@ class unicheck_assign {
     }
 
     /**
-     * @param $id
+     * Check is draft
+     *
+     * @param int $id
      *
      * @return bool
      */
@@ -109,7 +127,9 @@ class unicheck_assign {
     }
 
     /**
-     * @param $id
+     * Get assign
+     *
+     * @param int $id
      *
      * @return \stdClass
      */
@@ -120,6 +140,8 @@ class unicheck_assign {
     }
 
     /**
+     * Get assign by cmid
+     *
      * @param integer $cmid
      *
      * @return \stdClass
@@ -131,8 +153,10 @@ class unicheck_assign {
     }
 
     /**
+     * Run process detection
+     *
      * @param \stored_file $file
-     * @param              $plagiarismfile
+     * @param  object      $plagiarismfile
      */
     private static function run_process_detection(\stored_file $file, $plagiarismfile) {
 

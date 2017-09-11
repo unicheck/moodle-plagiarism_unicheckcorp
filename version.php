@@ -29,7 +29,7 @@ if (!isset($plugin)) {
 }
 
 $plugin->version = 2017090700; // YYYYMMDDVV.
-$plugin->requires = 2017051501; // Requires Moodle 3.3
+$plugin->requires = 2017051501; // Requires Moodle 3.3 .
 $plugin->maturity = MATURITY_STABLE;
 
 $plugin->component = 'plagiarism_unicheck';

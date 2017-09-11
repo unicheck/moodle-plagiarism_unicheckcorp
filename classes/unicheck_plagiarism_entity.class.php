@@ -34,10 +34,18 @@ if (!defined('MOODLE_INTERNAL')) {
 /**
  * Class unicheck_plagiarism_entity
  *
- * @package plagiarism_unicheck\classes
+ * @package     plagiarism_unicheck
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class unicheck_plagiarism_entity {
+    /**
+     * TYPE_ARCHIVE
+     */
     const TYPE_ARCHIVE = 'archive';
+    /**
+     * TYPE_DOCUMENT
+     */
     const TYPE_DOCUMENT = 'document';
     /** @var unicheck_core */
     protected $core;
@@ -45,16 +53,22 @@ abstract class unicheck_plagiarism_entity {
     protected $plagiarismfile;
 
     /**
+     * get_internal_file
+     *
      * @return object
      */
     abstract public function get_internal_file();
 
     /**
+     * build_upload_data
+     *
      * @return array
      */
     abstract protected function build_upload_data();
 
     /**
+     * Get cmid
+     *
      * @return integer
      */
     protected function cmid() {
@@ -62,6 +76,8 @@ abstract class unicheck_plagiarism_entity {
     }
 
     /**
+     * Get userid
+     *
      * @return integer
      */
     protected function userid() {
@@ -69,6 +85,8 @@ abstract class unicheck_plagiarism_entity {
     }
 
     /**
+     * store_file_errors
+     *
      * @param \stdClass $response
      *
      * @return bool
@@ -102,6 +120,8 @@ abstract class unicheck_plagiarism_entity {
     }
 
     /**
+     * handle_check_response
+     *
      * @param \stdClass $checkresp
      */
     public function handle_check_response(\stdClass $checkresp) {
@@ -113,7 +133,9 @@ abstract class unicheck_plagiarism_entity {
     }
 
     /**
-     * @param $check
+     * update_file_accepted
+     *
+     * @param object $check
      *
      * @return bool
      */
@@ -130,7 +152,9 @@ abstract class unicheck_plagiarism_entity {
     }
 
     /**
-     * @param $data
+     * Create new plagiarismfile
+     *
+     * @param array $data
      *
      * @return null|\stdClass
      */
@@ -159,6 +183,8 @@ abstract class unicheck_plagiarism_entity {
     }
 
     /**
+     * Upload file on server
+     *
      * @return object
      */
     public function upload_file_on_server() {
@@ -186,6 +212,8 @@ abstract class unicheck_plagiarism_entity {
     }
 
     /**
+     * Trigger process after upload
+     *
      * @param object $internalfile
      * @param object $uploadresponse
      */

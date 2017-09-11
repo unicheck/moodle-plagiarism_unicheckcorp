@@ -26,9 +26,14 @@ defined('MOODLE_INTERNAL') || die();
 
 /**
  * Class backup_plagiarism_unicheck_plugin
+ *
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class backup_plagiarism_unicheck_plugin extends backup_plagiarism_plugin {
     /**
+     * define_module_plugin_structure
+     *
      * @return mixed
      */
     public function define_module_plugin_structure() {
@@ -50,8 +55,8 @@ class backup_plagiarism_unicheck_plugin extends backup_plagiarism_plugin {
         // Now information about files to module.
         $ufiles = new backup_nested_element('unicheck_files');
         $ufile = new backup_nested_element('unicheck_file', array('id'), array(
-                'userid', 'identifier', 'filename', 'progress', 'reporturl', 'optout', 'statuscode',
-                'similarityscore', 'errorresponse', 'timesubmitted',
+            'userid', 'identifier', 'filename', 'progress', 'reporturl', 'optout', 'statuscode',
+            'similarityscore', 'errorresponse', 'timesubmitted',
         ));
 
         $pluginwrapper->add_child($ufiles);
@@ -67,6 +72,8 @@ class backup_plagiarism_unicheck_plugin extends backup_plagiarism_plugin {
     }
 
     /**
+     * define_course_plugin_structure
+     *
      * @return mixed
      */
     public function define_course_plugin_structure() {
@@ -84,7 +91,7 @@ class backup_plagiarism_unicheck_plugin extends backup_plagiarism_plugin {
         $pluginwrapper->add_child($unconfigs);
         $unconfigs->add_child($unconfig);
         $unconfig->set_source_table('config_plugins', array(
-                'name' => backup::VAR_PARENTID, 'plugin' => backup_helper::is_sqlparam('plagiarism_unicheck_course'),
+            'name' => backup::VAR_PARENTID, 'plugin' => backup_helper::is_sqlparam('plagiarism_unicheck_course'),
         ));
 
         return $plugin;

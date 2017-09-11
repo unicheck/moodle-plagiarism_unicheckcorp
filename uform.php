@@ -36,10 +36,14 @@ require_once($CFG->libdir . '/formslib.php');
 
 /**
  * Class unicheck_setup_form
+ *
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unicheck_setup_form extends moodleform {
-    // Define the form.
     /**
+     * Define the form
+     *
      * @throws coding_exception
      */
     public function definition() {
@@ -49,7 +53,7 @@ class unicheck_setup_form extends moodleform {
         $settingstext = '<div id="fitem_id_settings_link" class="fitem fitem_ftext ">
                             <div class="felement ftext">
                                 <a href="' . UNICHECK_DOMAIN . 'profile/apisettings" target="_blank"> '
-                                    . plagiarism_unicheck::trans('unicheck_settings_url_text'). '
+                                    . plagiarism_unicheck::trans('unicheck_settings_url_text') . '
                                 </a>
                             </div>
                         </div>';
@@ -85,6 +89,9 @@ class unicheck_setup_form extends moodleform {
 
 /**
  * Class unicheck_defaults_form
+ *
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unicheck_defaults_form extends moodleform {
     /** @var bool */
@@ -114,9 +121,9 @@ class unicheck_defaults_form extends moodleform {
         }
     }
 
-    // Define the form.
-
     /**
+     * Define the form
+     *
      * @throws coding_exception
      */
     public function definition() {
@@ -195,8 +202,16 @@ class unicheck_defaults_form extends moodleform {
     }
 }
 
+/**
+ * Class unicheck_form_rule_range
+ *
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class unicheck_form_rule_range extends HTML_QuickForm_Rule {
     /**
+     * validate
+     *
      * @param int        $value Value to check
      * @param array|null $options
      *

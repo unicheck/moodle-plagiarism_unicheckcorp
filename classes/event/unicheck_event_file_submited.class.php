@@ -36,10 +36,14 @@ if (!defined('MOODLE_INTERNAL')) {
 /**
  * Class unicheck_event_file_submited
  *
- * @package plagiarism_unicheck\classes\event
+ * @package     plagiarism_unicheck
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unicheck_event_file_submited extends unicheck_abstract_event {
     /**
+     * handle_event
+     *
      * @param unicheck_core $core
      * @param base          $event
      */
@@ -60,7 +64,9 @@ class unicheck_event_file_submited extends unicheck_abstract_event {
     }
 
     /**
-     * @param $pathnamehash
+     * handle_uploaded_file
+     *
+     * @param string $pathnamehash
      *
      * @return null|unicheck_plagiarism_entity
      */

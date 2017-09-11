@@ -13,6 +13,14 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * Class unicheck_translate
+ *
+ * @package     plagiarism_unicheck
+ * @author      Vadim Titov <v.titov@p1k.co.uk>
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 namespace plagiarism_unicheck\classes\helpers;
 
@@ -23,17 +31,16 @@ if (!defined('MOODLE_INTERNAL')) {
 /**
  * Class unicheck_translate
  *
- * @package     plagiarism_unicheck\classes\helpers
- * @subpackage  plagiarism
- * @namespace   plagiarism_unicheck\classes\helpers
- * @author      Vadim Titov <v.titov@p1k.co.uk>
+ * @package     plagiarism_unicheck
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 trait unicheck_translate {
     /**
-     * @param      $message
-     * @param null $param
+     * Translate
+     *
+     * @param string $message
+     * @param null   $param
      *
      * @return string
      */
@@ -42,7 +49,9 @@ trait unicheck_translate {
     }
 
     /**
-     * @param $error
+     * Translate api error response
+     *
+     * @param array $error
      *
      * @return string
      */

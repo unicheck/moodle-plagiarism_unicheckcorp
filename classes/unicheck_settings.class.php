@@ -14,6 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * unicheck_settings.class.php
+ *
+ * @package     plagiarism_unicheck
+ * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace plagiarism_unicheck\classes;
 
 if (!defined('MOODLE_INTERNAL')) {
@@ -23,31 +32,65 @@ if (!defined('MOODLE_INTERNAL')) {
 /**
  * Class unicheck_settings
  *
- * @package     plagiarism_unicheck\classes
+ * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- * @namespace   plagiarism_unicheck\classes
  * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unicheck_settings {
+    /**
+     * SENSITIVITY_SETTING_NAME
+     */
     const SENSITIVITY_SETTING_NAME = 'similarity_sensitivity';
+    /**
+     * WORDS_SENSITIVITY
+     */
     const WORDS_SENSITIVITY = 'similarity_words_sensitivity';
+    /**
+     * USE_UNICHECK
+     */
     const USE_UNICHECK = 'use_unicheck';
+    /**
+     * SHOW_STUDENT_SCORE
+     */
     const SHOW_STUDENT_SCORE = 'show_student_score';
+    /**
+     * SHOW_STUDENT_REPORT
+     */
     const SHOW_STUDENT_REPORT = 'show_student_report';
+    /**
+     * DRAFT_SUBMIT
+     */
     const DRAFT_SUBMIT = 'draft_submit';
+    /**
+     * CHECK_TYPE
+     */
     const CHECK_TYPE = 'check_type';
+    /**
+     * EXCLUDE_CITATIONS
+     */
     const EXCLUDE_CITATIONS = 'exclude_citations';
+    /**
+     * EXCLUDE_SELF_PLAGIARISM
+     */
     const EXCLUDE_SELF_PLAGIARISM = 'exclude_self_plagiarism';
+    /**
+     * CHECK_ALL_SUBMITTED_ASSIGNMENTS
+     */
     const CHECK_ALL_SUBMITTED_ASSIGNMENTS = 'check_all_submitted_assignments';
+    /**
+     * NO_INDEX_FILES
+     */
     const NO_INDEX_FILES = 'no_index_files';
 
     /**
-     * @param      $cmid
+     * Get assign settings
+     *
+     * @param int  $cmid
      * @param null $name
      *
-     * @param      $assoc
+     * @param bool $assoc
      *
      * @return \stdClass|array
      */
@@ -81,7 +124,7 @@ class unicheck_settings {
     /**
      * This function should be used to initialise settings and check if plagiarism is enabled.
      *
-     * @param null $key
+     * @param null|string $key
      *
      * @return array|bool
      * @throws \dml_exception
@@ -110,8 +153,10 @@ class unicheck_settings {
     }
 
     /**
-     * @param      $settings
-     * @param null $key
+     * Get item settings
+     *
+     * @param array $settings
+     * @param null  $key
      *
      * @return null
      */

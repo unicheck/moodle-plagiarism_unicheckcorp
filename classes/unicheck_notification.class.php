@@ -34,7 +34,9 @@ if (!defined('MOODLE_INTERNAL')) {
 /**
  * Class unicheck_notification
  *
- * @package plagiarism_unicheck\classes
+ * @package     plagiarism_unicheck
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unicheck_notification {
     /** @var string */
@@ -45,17 +47,21 @@ class unicheck_notification {
     private static $notifymessage = 'notifymessage';
 
     /**
-     * @param      string $message
-     * @param      boolean $translate
+     * Set error notification
+     *
+     * @param string  $message
+     * @param boolean $translate
      */
     public static function error($message, $translate) {
         echo self::notify($message, self::$notifyerror, $translate);
     }
 
     /**
-     * @param      $message
-     * @param      string $level
-     * @param      $translate
+     * Set notification
+     *
+     * @param string  $message
+     * @param string  $level
+     * @param boolean $translate
      *
      * @return string
      */
@@ -72,22 +78,28 @@ class unicheck_notification {
     }
 
     /**
-     * @param      string $message
-     * @param      boolean $translate
+     * Set success notification
+     *
+     * @param string  $message
+     * @param boolean $translate
      */
     public static function success($message, $translate) {
         echo self::notify($message, self::$notifysuccess, $translate);
     }
 
     /**
-     * @param      $message
-     * @param      $translate
+     * Set message notification
+     *
+     * @param string  $message
+     * @param boolean $translate
      */
     public static function message($message, $translate) {
         echo self::notify($message, self::$notifymessage, $translate);
     }
 
     /**
+     * Send student email notification
+     *
      * @param \stdClass $plagiarismfile
      *
      * @return bool|null
