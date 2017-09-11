@@ -13,6 +13,15 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * OAuthUtil.class.php
+ *
+ * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ * @author      Vadim Titov <v.titov@p1k.co.uk>
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 namespace plagiarism_unicheck\library\OAuth;
 
@@ -23,12 +32,16 @@ if (!defined('MOODLE_INTERNAL')) {
 /**
  * Class OAuthUtil
  *
- * @package plagiarism_unicheck\library\OAuth
+ * @package     plagiarism_unicheck
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class OAuthUtil {
     /**
-     * @param      $header
-     * @param bool $onlyallowoauthparameters
+     * split_header
+     *
+     * @param string $header
+     * @param bool   $onlyallowoauthparameters
      *
      * @return array
      */
@@ -57,7 +70,7 @@ class OAuthUtil {
      * modifications to the encoding process. However, this method doesn't
      * seem to be used anywhere so leaving it as is.
      *
-     * @param $string
+     * @param string $string
      *
      * @return string
      */
@@ -119,7 +132,7 @@ class OAuthUtil {
      * Helper to deal with proxy configurations that "eat" the Authorization:
      * header on our behalf - fall back to the alternate Authorization header.
      *
-     * @param $input
+     * @param array $input
      *
      * @return array
      */
@@ -155,7 +168,7 @@ class OAuthUtil {
      * parameters like this
      * array('a' => array('b','c'), 'd' => 'e')
      *
-     * @param $params
+     * @param array $params
      *
      * @return string
      */
@@ -189,7 +202,9 @@ class OAuthUtil {
     }
 
     /**
-     * @param $input
+     * urlencode_rfc3986
+     *
+     * @param mixed $input
      *
      * @return array|mixed|string
      */

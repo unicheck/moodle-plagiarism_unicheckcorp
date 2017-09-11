@@ -13,6 +13,15 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * OAuthConsumer.class.php
+ *
+ * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ * @author      Vadim Titov <v.titov@p1k.co.uk>
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 namespace plagiarism_unicheck\library\OAuth;
 
@@ -23,18 +32,22 @@ if (!defined('MOODLE_INTERNAL')) {
 /**
  * Class OAuthConsumer
  *
- * @package plagiarism_unicheck\library\OAuth
+ * @package     plagiarism_unicheck
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class OAuthConsumer {
+    /** @var string */
     public $key;
+    /** @var string */
     public $secret;
 
     /**
      * OAuthConsumer constructor.
      *
-     * @param      $key
-     * @param      $secret
-     * @param null $callbackurl
+     * @param string $key
+     * @param string $secret
+     * @param null   $callbackurl
      */
     public function __construct($key, $secret, $callbackurl = null) {
         $this->key = $key;
@@ -43,6 +56,8 @@ class OAuthConsumer {
     }
 
     /**
+     * To string
+     *
      * @return string
      */
     public function __toString() {
