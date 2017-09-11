@@ -24,6 +24,8 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 use core\event\base;
 use plagiarism_unicheck\classes\entities\unicheck_event;
 use plagiarism_unicheck\classes\event\unicheck_event_validator;
