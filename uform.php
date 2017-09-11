@@ -171,14 +171,13 @@ class unicheck_defaults_form extends moodleform {
             $addyesnoelem(unicheck_settings::NO_INDEX_FILES, true);
         }
 
+        $checktypedata = array();
+        foreach (unicheck_settings::$supportedchecktypes as $checktype) {
+            $checktypedata[$checktype] = plagiarism_unicheck::trans($checktype);
+        }
+
         $setting = unicheck_settings::CHECK_TYPE;
-        $mform->addElement('select', $setting, plagiarism_unicheck::trans($setting), array(
-            UNICHECK_CHECK_TYPE_WEB__LIBRARY             => plagiarism_unicheck::trans(UNICHECK_CHECK_TYPE_WEB__LIBRARY),
-            UNICHECK_CHECK_TYPE_WEB                      => plagiarism_unicheck::trans(UNICHECK_CHECK_TYPE_WEB),
-            UNICHECK_CHECK_TYPE_MY_LIBRARY               => plagiarism_unicheck::trans(UNICHECK_CHECK_TYPE_MY_LIBRARY),
-            UNICHECK_CHECK_TYPE_EXTERNAL_DB              => plagiarism_unicheck::trans(UNICHECK_CHECK_TYPE_EXTERNAL_DB),
-            UNICHECK_CHECK_TYPE_WEB__MY_LIB__EXTERNAL_DB => plagiarism_unicheck::trans(UNICHECK_CHECK_TYPE_WEB__MY_LIB__EXTERNAL_DB),
-        ));
+        $mform->addElement('select', $setting, plagiarism_unicheck::trans($setting), $checktypedata);
         $mform->addHelpButton($setting, $setting, UNICHECK_PLAGIN_NAME);
 
         $addtextelem(unicheck_settings::SENSITIVITY_SETTING_NAME, 10);

@@ -83,6 +83,14 @@ class unicheck_settings {
      * NO_INDEX_FILES
      */
     const NO_INDEX_FILES = 'no_index_files';
+    /** @var array */
+    public static $supportedchecktypes = array(
+        UNICHECK_CHECK_TYPE_WEB__LIBRARY,
+        UNICHECK_CHECK_TYPE_WEB,
+        UNICHECK_CHECK_TYPE_MY_LIBRARY,
+        UNICHECK_CHECK_TYPE_EXTERNAL_DB,
+        UNICHECK_CHECK_TYPE_WEB__MY_LIB__EXTERNAL_DB,
+    );
 
     /**
      * Get assign settings

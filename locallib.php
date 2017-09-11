@@ -33,13 +33,13 @@ use plagiarism_unicheck\classes\helpers\unicheck_translate;
 use plagiarism_unicheck\classes\unicheck_core;
 use plagiarism_unicheck\classes\unicheck_settings;
 
-require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
-require_once(dirname(__FILE__) . '/constants.php');
-require_once(dirname(__FILE__) . '/autoloader.php');
-
 global $CFG;
 
+require_once($CFG->dirroot . '/config.php');
 require_once($CFG->libdir . '/filelib.php');
+
+require_once(dirname(__FILE__) . '/constants.php');
+require_once(dirname(__FILE__) . '/autoloader.php');
 
 /**
  * Class plagiarism_unicheck
