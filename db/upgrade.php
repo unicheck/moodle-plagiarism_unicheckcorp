@@ -46,5 +46,5 @@ require_once(dirname(__FILE__) . '/../autoloader.php');
  * @throws upgrade_exception
  */
 function xmldb_plagiarism_unicheck_upgrade($oldversion) {
-
+    return true;
 }
