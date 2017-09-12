@@ -170,25 +170,6 @@ class unicheck_core {
     }
 
     /**
-     * migrate_users_access
-     */
-    public static function migrate_users_access() {
-        global $DB;
-
-        $users = $DB->get_records_sql(sprintf('SELECT user_id
-            FROM {%s}
-            JOIN {%s} ON (user_id = userid)
-            GROUP BY user_id', UNICHECK_USER_DATA_TABLE, UNICHECK_FILES_TABLE));
-
-        foreach ($users as $user) {
-            $user = $DB->get_record('user', array('id' => $user->user_id));
-            if ($user) {
-                unicheck_api::instance()->user_create($user);
-            }
-        }
-    }
-
-    /**
      * create_file_from_content
      *
      * @param base $event
