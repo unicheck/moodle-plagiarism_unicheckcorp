@@ -136,6 +136,13 @@ class unicheck_progress {
                 }
             }
         }
+
+        if ($progresses->errors) {
+            foreach ($progresses->errors as $id => $error) {
+                $fileobj = self::update_file_progress_error($id, $error);
+                $resp[$fileobj->id]['content'] = self::gen_row_content_score($cid, $fileobj);
+            }
+        }
     }
 
     /**
@@ -207,6 +214,25 @@ class unicheck_progress {
                 $DB->update_record(UNICHECK_FILES_TABLE, $record);
             }
         }
+
+        return $record;
+    }
+
+    /**
+     * update_file_progress_error
+     *
+     * @param int    $id
+     * @param object $error
+     *
+     * @return mixed
+     */
+    private static function update_file_progress_error($id, $error) {
+        global $DB;
+
+        $record = $DB->get_record(UNICHECK_FILES_TABLE, array('check_id' => $id));
+        $record->statuscode = UNICHECK_STATUSCODE_INVALID_RESPONSE;
+        $record->errorresponse = json_encode([$error]);
+        $DB->update_record(UNICHECK_FILES_TABLE, $record);
 
         return $record;
     }
