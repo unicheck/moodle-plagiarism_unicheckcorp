@@ -38,6 +38,9 @@ use plagiarism_unicheck\classes\unicheck_settings;
 global $CFG;
 
 require_once($CFG->dirroot . '/config.php');
+
+require_login();
+
 require_once($CFG->libdir . '/filelib.php');
 
 require_once(dirname(__FILE__) . '/constants.php');
