@@ -188,9 +188,6 @@ class unicheck_defaults_form extends moodleform {
 
         $mform::registerRule('range', null, new unicheck_form_rule_range);
 
-        $mform->addRule(unicheck_settings::WORDS_SENSITIVITY, 'You must supply a value 8-999 here',
-            'required', null, 'client'
-        );
         $mform->addRule(unicheck_settings::WORDS_SENSITIVITY, 'Invalid value range. Allowed 8-999',
             'range', array('min' => 8, 'max' => 999), 'server'
         );

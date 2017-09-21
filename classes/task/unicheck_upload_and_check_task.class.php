@@ -24,8 +24,7 @@
 
 namespace plagiarism_unicheck\classes\task;
 
-use plagiarism_unicheck\classes\helpers\unicheck_check_helper;
-use plagiarism_unicheck\classes\plagiarism\unicheck_content;
+use plagiarism_unicheck\classes\entities\unicheck_archive;
 use plagiarism_unicheck\classes\unicheck_assign;
 use plagiarism_unicheck\classes\unicheck_core;
 
@@ -45,27 +44,40 @@ class unicheck_upload_and_check_task extends unicheck_abstract_task {
      */
     public function execute() {
         $data = $this->get_custom_data();
-        if (file_exists($data->tmpfile)) {
-            $ucore = new unicheck_core($data->core->cmid, $data->core->userid);
 
-            if ((bool) unicheck_assign::get_by_cmid($ucore->cmid)->teamsubmission) {
-                $ucore->enable_teamsubmission();
-            }
+        $this->ucore = new unicheck_core($data->ucore->cmid, $data->ucore->userid);
 
-            $content = file_get_contents($data->tmpfile);
-            $plagiarismentity = new unicheck_content($ucore, $content, $data->filename, $data->format, $data->parent_id);
-
-            unset($content, $ucore);
-
-            if (!unlink($data->tmpfile)) {
-                mtrace('Error deleting ' . $data->tmpfile);
-            }
-
-            unicheck_check_helper::upload_and_run_detection($plagiarismentity);
-
-            unset($internalfile, $plagiarismentity, $checkresp);
-        } else {
-            mtrace('file ' . $data->tmpfile . 'not exist');
+        if ((bool) unicheck_assign::get_by_cmid($this->ucore->cmid)->teamsubmission) {
+            $this->ucore->enable_teamsubmission();
         }
+
+        $file = get_file_storage()->get_file_by_hash($data->pathnamehash);
+        $this->archiveinternalfile = $this->ucore->get_plagiarism_entity($file)->get_internal_file();
+
+        try {
+            foreach ((new unicheck_archive($file, $this->ucore))->extract() as $item) {
+                $this->process_archive_item($item);
+            }
+        } catch (\Exception $e) {
+            $this->invalid_response($e->getMessage());
+            mtrace('Archive error ' . $e->getMessage());
+        }
+        unset($this->ucore, $file);
+    }
+
+    /**
+     * Check response validation
+     *
+     * @param string $reason
+     */
+    private function invalid_response($reason) {
+        global $DB;
+
+        $this->archiveinternalfile->statuscode = UNICHECK_STATUSCODE_INVALID_RESPONSE;
+        $this->archiveinternalfile->errorresponse = json_encode([
+            ["message" => $reason],
+        ]);
+
+        $DB->update_record(UNICHECK_FILES_TABLE, $this->archiveinternalfile);
     }
 }

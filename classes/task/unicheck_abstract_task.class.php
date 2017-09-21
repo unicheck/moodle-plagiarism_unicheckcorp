@@ -26,6 +26,10 @@ namespace plagiarism_unicheck\classes\task;
 
 use core\task\adhoc_task;
 use core\task\manager;
+use plagiarism_unicheck\classes\entities\unicheck_archive;
+use plagiarism_unicheck\classes\helpers\unicheck_check_helper;
+use plagiarism_unicheck\classes\plagiarism\unicheck_content;
+use plagiarism_unicheck\classes\unicheck_core;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -40,6 +44,15 @@ if (!defined('MOODLE_INTERNAL')) {
  */
 abstract class unicheck_abstract_task extends adhoc_task {
     /**
+     * @var unicheck_core
+     */
+    protected $ucore;
+    /**
+     * @var object
+     */
+    protected $archiveinternalfile;
+
+    /**
      * Add new task for execution
      *
      * @param array $data
@@ -52,5 +65,28 @@ abstract class unicheck_abstract_task extends adhoc_task {
         $task->set_custom_data($data);
 
         return manager::queue_adhoc_task($task);
+    }
+
+    /**
+     * process_archive_item
+     *
+     * @param array $item
+     */
+    protected function process_archive_item(array $item) {
+        $content = file_get_contents($item['path']);
+        $plagiarismentity = new unicheck_content(
+            $this->ucore,
+            $content,
+            $item['filename'],
+            $item['format'],
+            $this->archiveinternalfile->id
+        );
+        $plagiarismentity->get_internal_file();
+
+        unicheck_check_helper::upload_and_run_detection($plagiarismentity);
+
+        unset($plagiarismentity, $content);
+
+        unicheck_archive::unlink($item['path']);
     }
 }
