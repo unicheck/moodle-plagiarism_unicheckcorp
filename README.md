@@ -21,3 +21,16 @@ QUICK INSTALL
 2. Follow the instructions described [here](https://docs.moodle.org/31/en/Installing_plugins#Installing_via_uploaded_ZIP_file) to install plugin
 3. Enable the Plagiarism API under admin > Advanced Features  
 4. Configure the Unicheck plugin under admin > plugins > Plagiarism > Unicheck  
+
+## Dependencies  
+
+1. For supporting RAR archives you have to install php-ext using command bellow 
+```sh
+pecl install rar
+```
+
+## Changelog
+
+| Version | Date | Changelog |
+| ------- | ---- | --------- |
+| 1.1.0 | Sept 21, 2017 | * Added support RAR files |
