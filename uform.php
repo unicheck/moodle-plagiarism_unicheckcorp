@@ -180,7 +180,7 @@ class unicheck_defaults_form extends moodleform {
         $mform->addElement('select', $setting, plagiarism_unicheck::trans($setting), $checktypedata);
         $mform->addHelpButton($setting, $setting, UNICHECK_PLAGIN_NAME);
 
-        $addtextelem(unicheck_settings::SENSITIVITY_SETTING_NAME, 10);
+        $addtextelem(unicheck_settings::SENSITIVITY_SETTING_NAME, 0);
         $addtextelem(unicheck_settings::WORDS_SENSITIVITY, 8);
         $addyesnoelem(unicheck_settings::EXCLUDE_CITATIONS, true, 1);
         $addyesnoelem(unicheck_settings::SHOW_STUDENT_SCORE, true);
