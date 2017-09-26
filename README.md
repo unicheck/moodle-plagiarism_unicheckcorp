@@ -1,13 +1,13 @@
 # moodle-plagiarism_unicheck  
 
-[![Build Status](https://travis-ci.org/Unplag/moodle-plagiarism_unplag.svg?branch=master)](https://travis-ci.org/Unplag/moodle-plagiarism_unplag)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Unplag/moodle-plagiarism_unplag/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Unplag/moodle-plagiarism_unplag/?branch=master)
+[![Build Status](https://travis-ci.org/unicheck/moodle-plagiarism_unicheckcorp.svg?branch=master)](https://travis-ci.org/unicheck/moodle-plagiarism_unicheckcorp)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/unicheck/moodle-plagiarism_unicheckcorp/badges/quality-score.png?b=release%2F1.x)](https://scrutinizer-ci.com/g/unicheck/moodle-plagiarism_unicheckcorp/?branch=release%2F1.x)
 
 Unicheck Plagiarism plugin for Moodle
 
-**Supported Moodle versions:** 2.7 - 3.3  
-**Supported PHP versions:** 5.4 - 7.1  
-**Moodle plugins directory:** https://moodle.org/plugins/plagiarism_unplag
+**Supported Moodle versions:** 2.7 - 3.2
+**Supported PHP versions:** 5.5 - 7.1  
+**Moodle plugins directory:** https://moodle.org/plugins/plagiarism_unicheckcorp
 
 Author: Ben Larson <developer@unicheck.com>  
 Copyright: UKU Group, LTD, https://www.unicheck.com  
@@ -17,7 +17,8 @@ Copyright: UKU Group, LTD, https://www.unicheck.com
 QUICK INSTALL  
 ==============  
 
-1. Get latest release (zip file) on [GitHub](https://github.com/Unplag/moodle-plagiarism_unplag/releases) or [Moodle plugins directory](https://moodle.org/plugins/plagiarism_unplag)
+1. Get latest release (zip file) on [GitHub](https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases) or 
+[Moodle plugins directory](https://moodle.org/plugins/plagiarism_unicheckcorp)
 2. Follow the instructions described [here](https://docs.moodle.org/31/en/Installing_plugins#Installing_via_uploaded_ZIP_file) to install plugin
 3. Enable the Plagiarism API under admin > Advanced Features  
 4. Configure the Unicheck plugin under admin > plugins > Plagiarism > Unicheck  
