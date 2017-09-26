@@ -35,13 +35,11 @@ if (!defined('MOODLE_INTERNAL')) {
 
 /**
  * Class unicheck_bulk_check_assign_files
- * @package plagiarism_unicheck
+ * @package     plagiarism_unicheck
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unicheck_bulk_check_assign_files extends unicheck_abstract_task {
-    /** @var  unicheck_core */
-    private $core;
     /** @var  \stored_file */
     private $assignfile;
 
@@ -62,7 +60,7 @@ class unicheck_bulk_check_assign_files extends unicheck_abstract_task {
                 continue;
             }
 
-            $this->core = new unicheck_core($data->cmid, $this->assignfile->get_userid());
+            $this->ucore = new unicheck_core($data->cmid, $this->assignfile->get_userid());
 
             $pattern = '%s with uuid ' . $this->assignfile->get_pathnamehash() . ' ready to send';
             if (\plagiarism_unicheck::is_archive($this->assignfile)) {
@@ -87,8 +85,7 @@ class unicheck_bulk_check_assign_files extends unicheck_abstract_task {
             return;
         }
 
-        $archive = new unicheck_archive($this->assignfile, $this->core);
-        $archive->run_checks();
+        (new unicheck_archive($this->assignfile, $this->ucore))->run_checks();
         mtrace('... archive send to Unicheck');
     }
 
@@ -96,7 +93,7 @@ class unicheck_bulk_check_assign_files extends unicheck_abstract_task {
      * Process files besides archives
      */
     private function handle_non_archive() {
-        $plagiarismentity = $this->core->get_plagiarism_entity($this->assignfile);
+        $plagiarismentity = $this->ucore->get_plagiarism_entity($this->assignfile);
         $internalfile = $plagiarismentity->upload_file_on_server();
         if (isset($internalfile->check_id)) {
             mtrace('... file already sent to Unicheck');

@@ -180,7 +180,7 @@ class unicheck_defaults_form extends moodleform {
         $mform->addElement('select', $setting, plagiarism_unicheck::trans($setting), $checktypedata);
         $mform->addHelpButton($setting, $setting, UNICHECK_PLAGIN_NAME);
 
-        $addtextelem(unicheck_settings::SENSITIVITY_SETTING_NAME, 10);
+        $addtextelem(unicheck_settings::SENSITIVITY_SETTING_NAME, 0);
         $addtextelem(unicheck_settings::WORDS_SENSITIVITY, 8);
         $addyesnoelem(unicheck_settings::EXCLUDE_CITATIONS, true, 1);
         $addyesnoelem(unicheck_settings::SHOW_STUDENT_SCORE, true);
@@ -188,9 +188,6 @@ class unicheck_defaults_form extends moodleform {
 
         $mform::registerRule('range', null, new unicheck_form_rule_range);
 
-        $mform->addRule(unicheck_settings::WORDS_SENSITIVITY, 'You must supply a value 8-999 here',
-            'required', null, 'client'
-        );
         $mform->addRule(unicheck_settings::WORDS_SENSITIVITY, 'Invalid value range. Allowed 8-999',
             'range', array('min' => 8, 'max' => 999), 'server'
         );

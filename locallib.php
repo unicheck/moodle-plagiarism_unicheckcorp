@@ -27,6 +27,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 use core\event\base;
+use plagiarism_unicheck\classes\entities\unicheck_archive;
 use plagiarism_unicheck\classes\entities\unicheck_event;
 use plagiarism_unicheck\classes\event\unicheck_event_validator;
 use plagiarism_unicheck\classes\helpers\unicheck_check_helper;
@@ -39,7 +40,10 @@ global $CFG;
 
 require_once($CFG->dirroot . '/config.php');
 
-require_login();
+$token = optional_param('token', '', PARAM_RAW);
+if (!$token) {
+    require_login();
+}
 
 require_once($CFG->libdir . '/filelib.php');
 
@@ -57,24 +61,25 @@ class plagiarism_unicheck {
     /**
      * @var array
      */
-    private static $supportedplagiarismmods = array(
+    private static $supportedplagiarismmods = [
         UNICHECK_MODNAME_ASSIGN, UNICHECK_MODNAME_WORKSHOP, UNICHECK_MODNAME_FORUM,
-    );
+    ];
     /**
      * @var array
      */
-    private static $supportedarchivemimetypes = array(
-        'application/zip',
-    );
+    private static $supportedarchivemimetypes = [
+        unicheck_archive::RAR_MIMETYPE,
+        unicheck_archive::ZIP_MIMETYPE,
+    ];
     /** @var array */
-    private static $supportedfilearea = array(
+    private static $supportedfilearea = [
         UNICHECK_WORKSHOP_FILES_AREA,
         UNICHECK_DEFAULT_FILES_AREA,
         UNICHECK_FORUM_FILES_AREA,
         'submission_files',
         'submission_attachment',
         'attachment',
-    );
+    ];
 
     /**
      * Handle all system events
@@ -139,7 +144,7 @@ class plagiarism_unicheck {
             $obj = (array) $obj;
         }
         if (is_array($obj)) {
-            $new = array();
+            $new = [];
             foreach ($obj as $key => $val) {
                 $new[$key] = self::object_to_array($val);
             }
@@ -225,7 +230,7 @@ class plagiarism_unicheck {
         $records = $DB->get_records_list(UNICHECK_FILES_TABLE, 'id', $data->ids);
 
         if ($records) {
-            $checkstatusforids = array();
+            $checkstatusforids = [];
 
             foreach ($records as $record) {
                 $progressinfo = unicheck_progress::get_file_progress_info($record, $data->cid, $checkstatusforids);
@@ -259,13 +264,14 @@ class plagiarism_unicheck {
         global $DB;
 
         if (self::access_granted($token)) {
-            $record = $DB->get_record(UNICHECK_FILES_TABLE, array('identifier' => $token));
+            $record = $DB->get_record(UNICHECK_FILES_TABLE, ['identifier' => $token]);
             $rawjson = file_get_contents('php://input');
             $respcheck = unicheck_core::parse_json($rawjson);
             if ($record && isset($respcheck->check)) {
-                $progress = 100 * $respcheck->check->progress;
-                unicheck_check_helper::check_complete($record, $respcheck->check, $progress);
+                unicheck_check_helper::check_complete($record, $respcheck->check, 100 * $respcheck->check->progress);
             }
+
+            return unicheck_core::json_response('Ok');
         } else {
             print_error('error');
         }

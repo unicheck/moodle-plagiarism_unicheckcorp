@@ -25,8 +25,10 @@
 
 namespace plagiarism_unicheck\classes\entities;
 
+use plagiarism_unicheck\classes\entities\extractors\unicheck_extractor_interface;
+use plagiarism_unicheck\classes\entities\extractors\unicheck_rar_extractor;
+use plagiarism_unicheck\classes\entities\extractors\unicheck_zip_extractor;
 use plagiarism_unicheck\classes\exception\unicheck_exception;
-use plagiarism_unicheck\classes\plagiarism\unicheck_content;
 use plagiarism_unicheck\classes\task\unicheck_upload_and_check_task;
 use plagiarism_unicheck\classes\unicheck_api;
 use plagiarism_unicheck\classes\unicheck_core;
@@ -37,16 +39,24 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 define('ARCHIVE_IS_EMPTY', 'Archive is empty or contains document(s) with no text');
-define('ARCHIVE_CANT_BE_OPEN', 'Can\'t open zip archive');
+define('ARCHIVE_CANT_BE_OPEN', 'Can\'t open archive file');
 
 /**
  * Class unicheck_archive
  *
- * @package     plagiarism_unicheck
- * @copyright   UKU Group, LTD, https://www.unicheck.com
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   plagiarism_unicheck
+ * @copyright UKU Group, LTD, https://www.unicheck.com
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unicheck_archive {
+    /**
+     * ZIP_MIMETYPE
+     */
+    const ZIP_MIMETYPE = 'application/zip';
+    /**
+     * RAR_MIMETYPE
+     */
+    const RAR_MIMETYPE = 'application/x-rar-compressed';
     /**
      * @var \stored_file
      */
@@ -55,6 +65,14 @@ class unicheck_archive {
      * @var unicheck_core
      */
     private $core;
+    /**
+     * @var unicheck_extractor_interface
+     */
+    private $extractor;
+    /**
+     * @var object
+     */
+    private $archive;
 
     /**
      * unicheck_archive constructor.
@@ -67,6 +85,32 @@ class unicheck_archive {
     public function __construct(\stored_file $file, unicheck_core $core) {
         $this->file = $file;
         $this->core = $core;
+
+        $this->archive = $this->core->get_plagiarism_entity($this->file)->get_internal_file();
+
+        switch ($file->get_mimetype()) {
+            case self::RAR_MIMETYPE:
+                $this->extractor = new unicheck_rar_extractor($file);
+                break;
+            case self::ZIP_MIMETYPE:
+                $this->extractor = new unicheck_zip_extractor($file);
+                break;
+            default:
+                throw new unicheck_exception('Unsupported mimetype');
+        }
+    }
+
+    /**
+     * Extract each file
+     *
+     * @return \Generator
+     */
+    public function extract() {
+        try {
+            return $this->extractor->extract();
+        } catch (\Exception $ex) {
+            $this->invalid_response($ex->getMessage());
+        }
     }
 
     /**
@@ -76,108 +120,17 @@ class unicheck_archive {
      */
     public function run_checks() {
         global $DB;
-        global $CFG;
 
-        $archiveinternalfile = $this->core->get_plagiarism_entity($this->file)->get_internal_file();
+        unicheck_upload_and_check_task::add_task([
+            'pathnamehash' => $this->file->get_pathnamehash(),
+            'ucore'        => $this->core,
+        ]);
 
-        $ziparch = new \zip_archive();
-
-        $tmpzipfile = tempnam($CFG->tempdir, 'unicheck_zip');
-        $this->file->copy_content_to($tmpzipfile);
-        if (!$ziparch->open($tmpzipfile, \file_archive::OPEN)) {
-            $this->invalid_response($archiveinternalfile, ARCHIVE_CANT_BE_OPEN);
-
-            return false;
-        }
-
-        $fileexist = false;
-        foreach ($ziparch as $file) {
-            if (!$file->is_directory) {
-                $fileexist = true;
-                break;
-            }
-        }
-
-        if (!$fileexist) {
-            $this->invalid_response($archiveinternalfile, ARCHIVE_IS_EMPTY);
-
-            return false;
-        }
-
-        try {
-            $this->process_archive_files($ziparch, $archiveinternalfile->id);
-        } catch (\Exception $e) {
-            mtrace('Archive error ' . $e->getMessage());
-        }
-
-        $archiveinternalfile->statuscode = UNICHECK_STATUSCODE_ACCEPTED;
-        $archiveinternalfile->errorresponse = null;
-
-        $DB->update_record(UNICHECK_FILES_TABLE, $archiveinternalfile);
-
-        $ziparch->close();
+        $this->archive->statuscode = UNICHECK_STATUSCODE_ACCEPTED;
+        $this->archive->errorresponse = null;
+        $DB->update_record(UNICHECK_FILES_TABLE, $this->archive);
 
         return true;
-    }
-
-    /**
-     * Process archive files
-     *
-     * @param \zip_archive $ziparch
-     * @param null         $parentid
-     */
-    private function process_archive_files(\zip_archive &$ziparch, $parentid = null) {
-        global $CFG;
-
-        $processed = array();
-        foreach ($ziparch as $file) {
-            if ($file->is_directory) {
-                continue;
-            }
-
-            $name = fix_utf8($file->pathname);
-            $tmpfile = tempnam($CFG->tempdir, 'unicheck_unzip');
-
-            if (!$fp = fopen($tmpfile, 'wb')) {
-                $this->unlink($tmpfile);
-                $processed[$name] = 'Can not write temp file';
-                continue;
-            }
-
-            if ($name === '' or array_key_exists($name, $processed)) {
-                $this->unlink($tmpfile);
-                continue;
-            }
-
-            if (!$fz = $ziparch->get_stream($file->index)) {
-                $this->unlink($tmpfile);
-                $processed[$name] = 'Can not read file from zip archive';
-                continue;
-            }
-
-            $bytescopied = stream_copy_to_stream($fz, $fp);
-
-            fclose($fz);
-            fclose($fp);
-
-            if ($bytescopied != $file->size) {
-                $this->unlink($tmpfile);
-                $processed[$name] = 'Can not read file from zip archive';
-                continue;
-            }
-
-            $format = pathinfo($name, PATHINFO_EXTENSION);
-            $plagiarismentity = new unicheck_content($this->core, null, $name, $format, $parentid);
-            $plagiarismentity->get_internal_file();
-
-            unicheck_upload_and_check_task::add_task(array(
-                'tmpfile'   => $tmpfile,
-                'filename'  => $name,
-                'core'      => $this->core,
-                'format'    => $format,
-                'parent_id' => $parentid,
-            ));
-        }
     }
 
     /**
@@ -187,7 +140,7 @@ class unicheck_archive {
         global $DB;
 
         $internalfile = $this->core->get_plagiarism_entity($this->file)->get_internal_file();
-        $childs = $DB->get_records_list(UNICHECK_FILES_TABLE, 'parent_id', array($internalfile->id));
+        $childs = $DB->get_records_list(UNICHECK_FILES_TABLE, 'parent_id', [$internalfile->id]);
         if ($childs) {
             foreach ((object) $childs as $child) {
                 if ($child->check_id) {
@@ -206,7 +159,7 @@ class unicheck_archive {
      *
      * @param string $file
      */
-    private function unlink($file) {
+    public static function unlink($file) {
         if (!unlink($file)) {
             mtrace('Error deleting ' . $file);
         }
@@ -215,17 +168,16 @@ class unicheck_archive {
     /**
      * Check response validation
      *
-     * @param \stdClass $archivefile
-     * @param string    $reason
+     * @param string $reason
      */
-    private function invalid_response($archivefile, $reason) {
+    private function invalid_response($reason) {
         global $DB;
 
-        $archivefile->statuscode = UNICHECK_STATUSCODE_INVALID_RESPONSE;
-        $archivefile->errorresponse = json_encode(array(
-            array("message" => $reason),
-        ));
+        $this->archive->statuscode = UNICHECK_STATUSCODE_INVALID_RESPONSE;
+        $this->archive->errorresponse = json_encode([
+            ["message" => $reason],
+        ]);
 
-        $DB->update_record(UNICHECK_FILES_TABLE, $archivefile);
+        $DB->update_record(UNICHECK_FILES_TABLE, $this->archive);
     }
 }
