@@ -4,7 +4,7 @@
        xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
     <TABLES>
-        <TABLE NAME="plagiarism_unplag_files" COMMENT="info about submitted files" NEXT="plagiarism_unplag_config">
+        <TABLE NAME="plagiarism_unicheck_files" COMMENT="info about submitted files" NEXT="plagiarism_unicheck_config">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"
                        NEXT="parent_id"/>
@@ -47,7 +47,7 @@
                 <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" PREVIOUS="cm"/>
             </KEYS>
         </TABLE>
-        <TABLE NAME="plagiarism_unplag_config" COMMENT="config for modules" PREVIOUS="plagiarism_unplag_files">
+        <TABLE NAME="plagiarism_unicheck_config" COMMENT="config for modules" PREVIOUS="plagiarism_unicheck_files">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="cm"/>
                 <FIELD NAME="cm" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"
@@ -61,7 +61,7 @@
                 <KEY NAME="cm" TYPE="foreign" FIELDS="cm" REFTABLE="course_modules" REFFIELDS="id" PREVIOUS="primary"/>
             </KEYS>
         </TABLE>
-        <TABLE NAME="plagiarism_unplag_user_data" COMMENT="user external data" PREVIOUS="plagiarism_unplag_config">
+        <TABLE NAME="plagiarism_unicheck_users" COMMENT="user external data" PREVIOUS="plagiarism_unicheck_config">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="user_id"/>
                 <FIELD NAME="user_id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="id" NEXT="external_user_id"/>
