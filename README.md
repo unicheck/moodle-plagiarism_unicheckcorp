@@ -5,7 +5,7 @@
 
 Unicheck Plagiarism plugin for Moodle
 
-**Supported Moodle versions:** 2.7 - 3.2
+**Supported Moodle versions:** 2.7 - 3.2  
 **Supported PHP versions:** 5.5 - 7.1  
 **Moodle plugins directory:** https://moodle.org/plugins/plagiarism_unicheckcorp
 
