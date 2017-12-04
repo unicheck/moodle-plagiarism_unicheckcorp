@@ -18,6 +18,7 @@
  * unicheck_settings.class.php
  *
  * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
  * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -83,14 +84,18 @@ class unicheck_settings {
      * NO_INDEX_FILES
      */
     const NO_INDEX_FILES = 'no_index_files';
+    /**
+     * MAX_SUPPORTED_ARCHIVE_FILES_COUNT
+     */
+    const MAX_SUPPORTED_ARCHIVE_FILES_COUNT = 'max_supported_archive_files_count';
     /** @var array */
-    public static $supportedchecktypes = array(
+    public static $supportedchecktypes = [
         UNICHECK_CHECK_TYPE_WEB__LIBRARY,
         UNICHECK_CHECK_TYPE_WEB,
         UNICHECK_CHECK_TYPE_MY_LIBRARY,
         UNICHECK_CHECK_TYPE_EXTERNAL_DB,
         UNICHECK_CHECK_TYPE_WEB__MY_LIB__EXTERNAL_DB,
-    );
+    ];
 
     /**
      * Get assign settings
@@ -105,16 +110,16 @@ class unicheck_settings {
     public static function get_assign_settings($cmid, $name = null, $assoc = null) {
         global $DB;
 
-        $condition = array(
+        $condition = [
             'cm' => $cmid,
-        );
+        ];
 
         if (isset($name)) {
             $condition['name'] = $name;
         }
 
         $data = $DB->get_records(UNICHECK_CONFIG_TABLE, $condition, '', 'name,value');
-        $data = array_map(function ($item) {
+        $data = array_map(function($item) {
             return $item->value;
         }, $data);
 
@@ -145,7 +150,7 @@ class unicheck_settings {
             return self::get_settings_item($settings, $key);
         }
 
-        $settings = (array) get_config('plagiarism');
+        $settings = (array)get_config('plagiarism');
 
         // Check if enabled.
         if (isset($settings['unicheck_use']) && $settings['unicheck_use']) {

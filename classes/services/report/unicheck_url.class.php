@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * unicheck_plagiarism_entity.class.php
+ * unicheck_url.class.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
@@ -23,14 +23,18 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plagiarism_unicheck\classes\helpers;
+namespace plagiarism_unicheck\classes\services\report;
+
+use plagiarism_unicheck\classes\unicheck_core;
+use plagiarism_unicheck\classes\unicheck_language;
+use plagiarism_unicheck\classes\unicheck_plagiarism_entity;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
 /**
- * Class unicheck_stored_file
+ * Class unicheck_url
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
@@ -38,40 +42,57 @@ if (!defined('MOODLE_INTERNAL')) {
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class unicheck_stored_file extends \stored_file {
+class unicheck_url {
+
+    /** @var  \stdClass */
+    private $file;
+
     /**
-     * Get file pathname
+     * unicheck_url constructor.
      *
-     * @param \stored_file $file
-     *
-     * @return string
+     * @param \stdClass $file
      */
-    public static function get_protected_pathname(\stored_file $file) {
-        return $file->get_pathname_by_contenthash();
+    public function __construct(\stdClass $file) {
+        $this->file = $file;
     }
 
     /**
-     * Get file childs
+     * Get report non-edit URL
      *
-     * @param int $id
+     * @param int $cid
      *
-     * @return array
+     * @return \moodle_url
      */
-    public static function get_plagiarism_file_childs_by_id($id) {
-        global $DB;
-
-        return $DB->get_records_list(UNICHECK_FILES_TABLE, 'parent_id', [$id]);
+    public function get_view_url($cid) {
+        return $this->get_moodle_url($this->file->reporturl, $cid);
     }
 
     /**
-     * get_plagiarism_file_by_identifier
+     * Get report edit URL
      *
-     * @param string $identifier
-     * @return mixed
+     * @param int $cid
+     *
+     * @return \moodle_url
      */
-    public static function get_plagiarism_file_by_identifier($identifier) {
-        global $DB;
+    public function get_edit_url($cid) {
+        return $this->get_moodle_url($this->file->reportediturl, $cid);
+    }
 
-        return $DB->get_record(UNICHECK_FILES_TABLE, ['identifier' => $identifier], '*', MUST_EXIST);
+    /**
+     * Create moodle URL based on string URL
+     *
+     * @param string $url
+     * @param int    $cid
+     * @return \moodle_url
+     */
+    private function get_moodle_url($url, $cid) {
+        if ($this->file->type == unicheck_plagiarism_entity::TYPE_ARCHIVE) {
+            $url = str_replace('unplag', 'unicheck', $url);
+        } else {
+            unicheck_language::inject_language_to_url($url);
+            unicheck_core::inject_comment_token($url, $cid);
+        }
+
+        return new \moodle_url($url);
     }
 }

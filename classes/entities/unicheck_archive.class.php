@@ -28,8 +28,9 @@ namespace plagiarism_unicheck\classes\entities;
 use plagiarism_unicheck\classes\entities\extractors\unicheck_extractor_interface;
 use plagiarism_unicheck\classes\entities\extractors\unicheck_rar_extractor;
 use plagiarism_unicheck\classes\entities\extractors\unicheck_zip_extractor;
+use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\exception\unicheck_exception;
-use plagiarism_unicheck\classes\task\unicheck_upload_and_check_task;
+use plagiarism_unicheck\classes\unicheck_adhoc;
 use plagiarism_unicheck\classes\unicheck_api;
 use plagiarism_unicheck\classes\unicheck_core;
 use plagiarism_unicheck\classes\unicheck_notification;
@@ -38,17 +39,30 @@ if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
-define('ARCHIVE_IS_EMPTY', 'Archive is empty or contains document(s) with no text');
-define('ARCHIVE_CANT_BE_OPEN', 'Can\'t open archive file');
-
 /**
  * Class unicheck_archive
  *
- * @package   plagiarism_unicheck
- * @copyright UKU Group, LTD, https://www.unicheck.com
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unicheck_archive {
+
+    /**
+     * DEFAULT_SUPPORTED_FILES_COUNT
+     */
+    const DEFAULT_SUPPORTED_FILES_COUNT = 10;
+    /**
+     * MIN_SUPPORTED_FILES_COUNT
+     */
+    const MIN_SUPPORTED_FILES_COUNT = 1;
+    /**
+     * MAX_SUPPORTED_FILES_COUNT
+     */
+    const MAX_SUPPORTED_FILES_COUNT = 100;
+
     /**
      * ZIP_MIMETYPE
      */
@@ -96,53 +110,42 @@ class unicheck_archive {
                 $this->extractor = new unicheck_zip_extractor($file);
                 break;
             default:
-                throw new unicheck_exception('Unsupported mimetype');
+                throw new unicheck_exception(unicheck_exception::UNSUPPORTED_MIMETYPE);
         }
     }
 
     /**
      * Extract each file
      *
-     * @return \Generator
+     * @return array
+     *
+     * @throws unicheck_exception
      */
     public function extract() {
         try {
             return $this->extractor->extract();
         } catch (\Exception $ex) {
-            $this->invalid_response($ex->getMessage());
+            throw new unicheck_exception($ex->getMessage());
         }
     }
 
     /**
-     * Run check
+     * Upload archive for check
      *
      * @return bool
      */
-    public function run_checks() {
-        global $DB;
-
-        unicheck_upload_and_check_task::add_task([
-            'pathnamehash' => $this->file->get_pathnamehash(),
-            'ucore'        => $this->core,
-        ]);
-
-        $this->archive->statuscode = UNICHECK_STATUSCODE_ACCEPTED;
-        $this->archive->errorresponse = null;
-        $DB->update_record(UNICHECK_FILES_TABLE, $this->archive);
-
-        return true;
+    public function upload() {
+        return unicheck_adhoc::upload($this->file, $this->core);
     }
 
     /**
      * Restart check
      */
     public function restart_check() {
-        global $DB;
-
         $internalfile = $this->core->get_plagiarism_entity($this->file)->get_internal_file();
-        $childs = $DB->get_records_list(UNICHECK_FILES_TABLE, 'parent_id', [$internalfile->id]);
-        if ($childs) {
-            foreach ((object) $childs as $child) {
+        $childs = unicheck_file_provider::get_file_list_by_parent_id($internalfile->id);
+        if (count($childs)) {
+            foreach ((object)$childs as $child) {
                 if ($child->check_id) {
                     unicheck_api::instance()->delete_check($child);
                 }
@@ -150,12 +153,12 @@ class unicheck_archive {
 
             unicheck_notification::success('plagiarism_run_success', true);
 
-            $this->run_checks();
+            $this->upload();
         }
     }
 
     /**
-     * Delete file
+     * Delete
      *
      * @param string $file
      */
@@ -163,21 +166,5 @@ class unicheck_archive {
         if (!unlink($file)) {
             mtrace('Error deleting ' . $file);
         }
-    }
-
-    /**
-     * Check response validation
-     *
-     * @param string $reason
-     */
-    private function invalid_response($reason) {
-        global $DB;
-
-        $this->archive->statuscode = UNICHECK_STATUSCODE_INVALID_RESPONSE;
-        $this->archive->errorresponse = json_encode([
-            ["message" => $reason],
-        ]);
-
-        $DB->update_record(UNICHECK_FILES_TABLE, $this->archive);
     }
 }

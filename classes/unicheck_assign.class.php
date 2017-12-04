@@ -29,8 +29,8 @@ use assign;
 use coding_exception;
 use context_module;
 use plagiarism_unicheck;
+use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\entities\unicheck_archive;
-use plagiarism_unicheck\classes\helpers\unicheck_check_helper;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -40,12 +40,14 @@ if (!defined('MOODLE_INTERNAL')) {
  * Class unicheck_assign
  *
  * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unicheck_assign {
     /**
-     * DB_NAME
+     * Mod name in DB
      */
     const DB_NAME = 'assign';
 
@@ -78,11 +80,8 @@ class unicheck_assign {
      * @throws coding_exception
      */
     public static function check_submitted_assignment($id) {
-        global $DB;
-
-        $plagiarismfile = $DB->get_record(UNICHECK_FILES_TABLE, array('id' => $id), '*', MUST_EXIST);
-        if (in_array($plagiarismfile->statuscode, array(UNICHECK_STATUSCODE_PROCESSED, UNICHECK_STATUSCODE_ACCEPTED))) {
-            // Sanity Check.
+        $plagiarismfile = unicheck_file_provider::get_by_id($id);
+        if (!unicheck_file_provider::can_start_check($plagiarismfile)) {
             return;
         }
 
@@ -95,7 +94,12 @@ class unicheck_assign {
                 return;
             }
 
-            self::run_process_detection($file, $plagiarismfile);
+            $ucore = new unicheck_core($plagiarismfile->cm, $plagiarismfile->userid, $cm->modname);
+            if (plagiarism_unicheck::is_archive($file)) {
+                (new unicheck_archive($file, $ucore))->upload();
+            } else {
+                unicheck_adhoc::upload($file, $ucore);
+            }
         }
     }
 
@@ -123,7 +127,7 @@ class unicheck_assign {
 
         $sql = 'SELECT COUNT(id) FROM {assign_submission} WHERE id = ? AND status = ?';
 
-        return (bool) $DB->count_records_sql($sql, array($id, 'draft'));
+        return (bool)$DB->count_records_sql($sql, [$id, 'draft']);
     }
 
     /**
@@ -136,7 +140,7 @@ class unicheck_assign {
     public static function get($id) {
         global $DB;
 
-        return $DB->get_record(self::DB_NAME, array('id' => $id), '*', MUST_EXIST);
+        return $DB->get_record(self::DB_NAME, ['id' => $id], '*', MUST_EXIST);
     }
 
     /**
@@ -150,24 +154,5 @@ class unicheck_assign {
         $cm = get_coursemodule_from_id('', $cmid, 0, false, MUST_EXIST);
 
         return self::get($cm->instance);
-    }
-
-    /**
-     * Run process detection
-     *
-     * @param \stored_file $file
-     * @param  object      $plagiarismfile
-     */
-    private static function run_process_detection(\stored_file $file, $plagiarismfile) {
-
-        $ucore = new unicheck_core($plagiarismfile->cm, $plagiarismfile->userid);
-
-        if (plagiarism_unicheck::is_archive($file)) {
-            (new unicheck_archive($file, $ucore))->run_checks();
-        } else {
-            $plagiarismentity = $ucore->get_plagiarism_entity($file);
-            $internalfile = $plagiarismentity->upload_file_on_server();
-            unicheck_check_helper::run_plagiarism_detection($plagiarismentity, $internalfile);
-        }
     }
 }

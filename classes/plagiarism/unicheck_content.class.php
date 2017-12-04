@@ -37,6 +37,8 @@ if (!defined('MOODLE_INTERNAL')) {
  * Class unicheck_content
  *
  * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -96,11 +98,11 @@ class unicheck_content extends unicheck_plagiarism_entity {
 
         $plagiarismfile = null;
         try {
-            $filedata = array(
+            $filedata = [
                 'cm'         => $this->cmid(),
                 'userid'     => $this->userid(),
                 'identifier' => sha1($this->name . $this->cmid() . UNICHECK_DEFAULT_FILES_AREA . $this->parentid),
-            );
+            ];
 
             if ($this->core->is_teamsubmission_mode()) {
                 unset($filedata['userid']);
@@ -110,12 +112,12 @@ class unicheck_content extends unicheck_plagiarism_entity {
             $plagiarismfile = $DB->get_record(UNICHECK_FILES_TABLE, $filedata);
 
             if (empty($plagiarismfile)) {
-                $plagiarismfile = $this->new_plagiarismfile(array(
+                $plagiarismfile = $this->new_plagiarismfile([
                     'cm'         => $this->cmid(),
                     'userid'     => $this->userid(),
                     'identifier' => $filedata['identifier'],
                     'filename'   => $this->name,
-                ));
+                ]);
 
                 if ($this->parentid) {
                     $plagiarismfile->parent_id = $this->parentid;
@@ -160,12 +162,12 @@ class unicheck_content extends unicheck_plagiarism_entity {
      * @return array
      */
     protected function build_upload_data() {
-        return array(
+        return [
             $this->get_content(),
             $this->name,
             $this->ext,
             $this->cmid(),
             unicheck_core::get_user($this->userid()),
-        );
+        ];
     }
 }

@@ -58,7 +58,7 @@ class OAuthRequest {
      * @param null   $parameters
      */
     public function __construct($httpmethod, $httpurl, $parameters = null) {
-        @$parameters or $parameters = array();
+        @$parameters or $parameters = [];
         $this->parameters = $parameters;
         $this->httpmethod = $httpmethod;
         $this->httpurl = $httpurl;
@@ -100,7 +100,7 @@ class OAuthRequest {
             // Deal with magic_quotes
             // http://www.php.net/manual/en/security.magicquotes.disabling.php.
             if (get_magic_quotes_gpc()) {
-                $outpost = array();
+                $outpost = [];
                 foreach ($_POST as $k => $v) {
                     $v = stripslashes($v);
                     $ourpost[$k] = $v;
@@ -132,13 +132,13 @@ class OAuthRequest {
      * @return OAuthRequest
      */
     public static function from_consumer_and_token($consumer, $token, $httpmethod, $httpurl, $parameters = null) {
-        @$parameters or $parameters = array();
-        $defaults = array(
+        @$parameters or $parameters = [];
+        $defaults = [
             "oauth_version"      => self::$version,
             "oauth_nonce"        => self::generate_nonce(),
             "oauth_timestamp"    => self::generate_timestamp(),
             "oauth_consumer_key" => $consumer->key,
-        );
+        ];
         if ($token) {
             $defaults['oauth_token'] = $token->key;
         }
@@ -207,11 +207,11 @@ class OAuthRequest {
      * and the concated with &.
      */
     public function get_signature_base_string() {
-        $parts = array(
+        $parts = [
             $this->get_normalized_http_method(),
             $this->get_normalized_http_url(),
             $this->get_signable_parameters(),
-        );
+        ];
         $parts = OAuthUtil::urlencode_rfc3986($parts);
 
         return implode('&', $parts);
@@ -367,7 +367,7 @@ class OAuthRequest {
             if (is_scalar($this->parameters[$name])) {
                 // This is the first duplicate, so transform scalar (string)
                 // into an array so we can add the duplicates.
-                $this->parameters[$name] = array($this->parameters[$name]);
+                $this->parameters[$name] = [$this->parameters[$name]];
             }
             $this->parameters[$name][] = $value;
         } else {

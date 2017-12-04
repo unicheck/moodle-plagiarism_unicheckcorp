@@ -25,7 +25,8 @@
 
 namespace plagiarism_unicheck\classes;
 
-use plagiarism_unicheck\classes\helpers\unicheck_stored_file;
+use plagiarism_unicheck\classes\helpers\unicheck_response;
+use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -35,6 +36,8 @@ if (!defined('MOODLE_INTERNAL')) {
  * Class unicheck_plagiarism_entity
  *
  * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -85,73 +88,6 @@ abstract class unicheck_plagiarism_entity {
     }
 
     /**
-     * store_file_errors
-     *
-     * @param \stdClass $response
-     *
-     * @return bool
-     */
-    protected function store_file_errors(\stdClass $response) {
-        global $DB;
-
-        $plagiarismfile = $this->get_internal_file();
-        $plagiarismfile->statuscode = UNICHECK_STATUSCODE_INVALID_RESPONSE;
-        $plagiarismfile->errorresponse = json_encode($response->errors);
-
-        $result = $DB->update_record(UNICHECK_FILES_TABLE, $plagiarismfile);
-
-        if ($result && $plagiarismfile->parent_id) {
-            $hasgoodchild = $DB->count_records_select(UNICHECK_FILES_TABLE, "parent_id = ? AND statuscode in (?,?,?)",
-                array(
-                    $plagiarismfile->parent_id, UNICHECK_STATUSCODE_PROCESSED, UNICHECK_STATUSCODE_ACCEPTED,
-                    UNICHECK_STATUSCODE_PENDING,
-                ));
-
-            if (!$hasgoodchild) {
-                $parentplagiarismfile = unicheck_stored_file::get_internal_file($plagiarismfile->parent_id);
-                $parentplagiarismfile->statuscode = UNICHECK_STATUSCODE_INVALID_RESPONSE;
-                $parentplagiarismfile->errorresponse = json_encode($response->errors);
-
-                $DB->update_record(UNICHECK_FILES_TABLE, $parentplagiarismfile);
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * handle_check_response
-     *
-     * @param \stdClass $checkresp
-     */
-    public function handle_check_response(\stdClass $checkresp) {
-        if ($checkresp->result === true) {
-            $this->update_file_accepted($checkresp->check);
-        } else {
-            $this->store_file_errors($checkresp);
-        }
-    }
-
-    /**
-     * update_file_accepted
-     *
-     * @param object $check
-     *
-     * @return bool
-     */
-    protected function update_file_accepted($check) {
-        global $DB;
-
-        $plagiarismfile = $this->get_internal_file();
-        $plagiarismfile->attempt = 0; // Reset attempts for status checks.
-        $plagiarismfile->check_id = $check->id;
-        $plagiarismfile->statuscode = UNICHECK_STATUSCODE_ACCEPTED;
-        $plagiarismfile->errorresponse = null;
-
-        return $DB->update_record(UNICHECK_FILES_TABLE, $plagiarismfile);
-    }
-
-    /**
      * Create new plagiarismfile
      *
      * @param array $data
@@ -160,7 +96,7 @@ abstract class unicheck_plagiarism_entity {
      */
     public function new_plagiarismfile($data) {
 
-        foreach (array('cm', 'userid', 'identifier', 'filename') as $key) {
+        foreach (['cm', 'userid', 'identifier', 'filename'] as $key) {
             if (empty($data[$key])) {
                 print_error($key . ' value is empty');
 
@@ -173,7 +109,7 @@ abstract class unicheck_plagiarism_entity {
         $plagiarismfile->userid = $data['userid'];
         $plagiarismfile->identifier = $data['identifier'];
         $plagiarismfile->filename = $data['filename'];
-        $plagiarismfile->statuscode = UNICHECK_STATUSCODE_PENDING;
+        $plagiarismfile->state = unicheck_file_state::CREATED;
         $plagiarismfile->attempt = 0;
         $plagiarismfile->progress = 0;
         $plagiarismfile->timesubmitted = time();
@@ -196,35 +132,18 @@ abstract class unicheck_plagiarism_entity {
         }
 
         // Check if $internalfile actually needs to be submitted.
-        if ($internalfile->statuscode !== UNICHECK_STATUSCODE_PENDING) {
+        if ($internalfile->state !== unicheck_file_state::UPLOADING) {
             return $internalfile;
         }
 
         list($content, $name, $ext, $cmid, $owner) = $this->build_upload_data();
-        $uploadresponse = unicheck_api::instance()->upload_file($content, $name, $ext, $cmid, $owner);
+        $uploadresponse = unicheck_api::instance()->upload_file($content, $name, $ext, $cmid, $owner, $internalfile);
 
         // Increment attempt number.
         $internalfile->attempt++;
 
-        $this->process_after_upload($internalfile, $uploadresponse);
+        unicheck_response::process_after_upload($uploadresponse, $internalfile);
 
         return $internalfile;
-    }
-
-    /**
-     * Trigger process after upload
-     *
-     * @param object $internalfile
-     * @param object $uploadresponse
-     */
-    private function process_after_upload(&$internalfile, $uploadresponse) {
-        global $DB;
-
-        if ($uploadresponse->result) {
-            $internalfile->external_file_id = $uploadresponse->file->id;
-            $DB->update_record(UNICHECK_FILES_TABLE, $internalfile);
-        } else {
-            $this->store_file_errors($uploadresponse);
-        }
     }
 }

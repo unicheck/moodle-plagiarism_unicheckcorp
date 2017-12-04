@@ -23,7 +23,6 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
@@ -35,6 +34,10 @@ require_once(dirname(__FILE__) . '/../autoloader.php');
  * db plagiarism unicheck upgrade
  *
  * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @param int $oldversion
  *
@@ -46,5 +49,54 @@ require_once(dirname(__FILE__) . '/../autoloader.php');
  * @throws upgrade_exception
  */
 function xmldb_plagiarism_unicheck_upgrade($oldversion) {
+    global $DB;
+
+    $dbman = $DB->get_manager();
+
+    if ($oldversion < 2017120100) {
+
+        $table = new xmldb_table('plagiarism_unicheck_files');
+
+        $field = new xmldb_field('state', XMLDB_TYPE_CHAR, '63', null, XMLDB_NOTNULL, null, 'CREATED', 'reportediturl');
+        // Conditionally launch add field type.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+
+            $files = $DB->get_recordset('plagiarism_unicheck_files', null, 'id asc', '*');
+            foreach ($files as $file) {
+                switch ($file->statuscode) {
+                    case 200:
+                        $file->state = 'CHECKED';
+                        break;
+                    case 202:
+                        if ($file->check_id) {
+                            $file->state = 'CHECKING';
+
+                            break;
+                        }
+
+                        $file->state = 'UPLOADED';
+                        break;
+                    case 'pending':
+                        $file->state = 'CREATED';
+                        break;
+                    default:
+                        $file->state = 'HAS_ERROR';
+                        break;
+                }
+                $DB->update_record('plagiarism_unicheck_files', $file);
+            }
+            $files->close(); // Don't forget to close the recordset!
+        }
+
+        $field = new xmldb_field('external_file_uuid', XMLDB_TYPE_CHAR, '63', null, null, null, null, 'state');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Unicheck savepoint reached.
+        upgrade_plugin_savepoint(true, 2017120100, 'plagiarism', 'unicheck');
+    }
+
     return true;
 }

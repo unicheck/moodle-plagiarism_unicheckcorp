@@ -35,22 +35,22 @@ if (AJAX_SCRIPT) {
 
 if (!$iterator) {
     // Now add JS to validate receiver indicator using Ajax.
-    $jsmodule = array(
-        'name' => UNICHECK_PLAGIN_NAME,
+    $jsmodule = [
+        'name'     => UNICHECK_PLAGIN_NAME,
         'fullpath' => '/plagiarism/unicheck/ajax.js',
-        'requires' => array('json'),
-    );
+        'requires' => ['json'],
+    ];
 
-    $PAGE->requires->js_init_call('M.plagiarismUnicheck.init', array($linkarray['cmid']), true, $jsmodule);
+    $PAGE->requires->js_init_call('M.plagiarismUnicheck.init', [$linkarray['cmid']], true, $jsmodule);
 }
 
-$htmlparts = array(sprintf('<div class="un_report fid-%1$s"><div class="un_data">{"fid":"%1$s"}</div>', $fileobj->id));
+$htmlparts = [sprintf('<div class="un_report fid-%1$s"><div class="un_data">{"fid":"%1$s"}</div>', $fileobj->id)];
 $htmlparts[] = sprintf('<img  class="un_progress un_tooltip" src="%1$s" alt="%2$s" title="%2$s" />',
-        $OUTPUT->image_url('loader', UNICHECK_PLAGIN_NAME),
-        plagiarism_unicheck::trans('processing')
+    $OUTPUT->image_url('loader', UNICHECK_PLAGIN_NAME),
+    plagiarism_unicheck::trans('processing')
 );
 $htmlparts[] = sprintf('%s: <span class="un_progress-val" >%d%%</span>',
-        plagiarism_unicheck::trans('progress'), intval($fileobj->progress)
+    plagiarism_unicheck::trans('progress'), intval($fileobj->progress)
 );
 
 $htmlparts[] = '</div>';

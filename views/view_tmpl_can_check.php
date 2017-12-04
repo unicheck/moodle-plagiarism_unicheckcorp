@@ -39,11 +39,11 @@ $modulecontext = context_module::instance($linkarray['cmid']);
 
 if (has_capability('plagiarism/unicheck:checkfile', $modulecontext) && empty($fileobj->check_id) && !empty($fileobj->id)) {
 
-    $url = new moodle_url('/plagiarism/unicheck/check.php', array(
+    $url = new moodle_url('/plagiarism/unicheck/check.php', [
         'cmid'    => $linkarray['cmid'],
         'pf'      => $fileobj->id,
         'sesskey' => sesskey(),
-    ));
+    ]);
 
     $check = sprintf('&nbsp;<a href="%1$s" class="un-check"><img src="%2$s" title="%3$s" width="32" height="32">%4$s</a>',
         $url,
@@ -53,7 +53,7 @@ if (has_capability('plagiarism/unicheck:checkfile', $modulecontext) && empty($fi
     );
 }
 
-$htmlparts = array('<span class="un_report">');
+$htmlparts = ['<span class="un_report">'];
 $htmlparts[] = sprintf('%1$s', $check);
 $htmlparts[] = '</span>';
 

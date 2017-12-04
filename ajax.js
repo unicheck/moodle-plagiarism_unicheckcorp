@@ -31,10 +31,10 @@ M.plagiarismUnicheck.init = function(Y, contextid) {
     var handleRecord = function(record) {
         var existing = Y.one('.un_report.fid-' + record.file_id);
         if (!existing) {
-            return;
+            return false;
         }
 
-        if (record.progress === 100 || record.statuscode === 613 || record.statuscode === "613") {
+        if (record.progress === 100 || record.state === 'HAS_ERROR') {
             var items = M.plagiarismUnicheck.items;
             items.splice(items.indexOf(record.file_id), 1);
 
@@ -69,7 +69,7 @@ M.plagiarismUnicheck.init = function(Y, contextid) {
                 success: function(tid, response) {
                     var jsondata = Y.JSON.parse(response.responseText);
                     if (!jsondata) {
-                        return;
+                        return false;
                     }
 
                     Y.each(jsondata, handleRecord);

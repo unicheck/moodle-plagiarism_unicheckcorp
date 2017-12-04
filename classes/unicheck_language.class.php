@@ -17,6 +17,7 @@
  * Class unicheck_language
  *
  * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
  * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -39,7 +40,7 @@ class unicheck_language {
     /**
      * @var array
      */
-    private static $supportedlanguage = array(
+    private static $supportedlanguage = [
         'en'    => 'en_EN',
         'es'    => 'es_ES',
         'es_mx' => 'es_ES',
@@ -49,10 +50,10 @@ class unicheck_language {
         'tr'    => 'tr_TR',
         'fr'    => 'fr_FR',
         'fr_ca' => 'fr_FR',
-    );
+    ];
 
     /**
-     * get_plugin_language
+     * Get plugin language
      *
      * @return array|bool|mixed
      */
@@ -68,7 +69,7 @@ class unicheck_language {
     }
 
     /**
-     * inject_language_to_url
+     * Inject language key to URL
      *
      * @param string $url
      * @param int    $showlangpicker
@@ -80,7 +81,7 @@ class unicheck_language {
 
             if ($parsedurl) {
                 $url = $parsedurl['scheme'] . '://' . $parsedurl['host'] . $parsedurl['path'];
-                $slugs = array();
+                $slugs = [];
                 if (!empty($parsedurl['query'])) {
                     parse_str(html_entity_decode($parsedurl['query']), $slugs);
                 }

@@ -5,7 +5,7 @@
 
 Unicheck Plagiarism plugin for Moodle
 
-**Supported Moodle versions:** 3.3  
+**Supported Moodle versions:** 3.3-3.4  
 **Supported PHP versions:** 5.6 - 7.1  
 **Moodle plugins directory:** https://moodle.org/plugins/plagiarism_unicheckcorp
 
@@ -32,4 +32,5 @@ pecl install rar
 
 | Version | Date | Changelog |
 | ------- | ---- | --------- |
-| 2.1.0 | Sept 21, 2017 | * Added support RAR files |
+| 2.2.0 | Dec 1, 2017 | <ul><li>Async upload</li><li>Max supported archive files setting</li><li>Change base urls</li></ul>|
+| 2.1.0 | Sept 21, 2017 | Added support RAR files |
