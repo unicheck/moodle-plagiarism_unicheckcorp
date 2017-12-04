@@ -25,21 +25,18 @@
  */
 
 use core\event\base;
+use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\entities\unicheck_archive;
 use plagiarism_unicheck\classes\entities\unicheck_event;
 use plagiarism_unicheck\classes\event\unicheck_event_validator;
 use plagiarism_unicheck\classes\helpers\unicheck_check_helper;
 use plagiarism_unicheck\classes\helpers\unicheck_progress;
 use plagiarism_unicheck\classes\helpers\unicheck_translate;
+use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\unicheck_core;
 use plagiarism_unicheck\classes\unicheck_settings;
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
-
-$token = optional_param('token', '', PARAM_RAW);
-if (!$token) {
-    require_login();
-}
 
 require_once(dirname(__FILE__) . '/constants.php');
 require_once(dirname(__FILE__) . '/autoloader.php');
@@ -78,6 +75,26 @@ class plagiarism_unicheck {
         'submission_attachment',
         'attachment',
     ];
+    /**
+     * @var array
+     */
+    private static $supportedextension = [
+        'pdf',
+        'odt',
+        'odp',
+        'doc',
+        'docx',
+        'html',
+        'txt',
+        'rtf',
+        'ppt',
+        'pptx',
+        'pages',
+        'htm',
+        'xls',
+        'xlsx',
+        'ods'
+    ];
 
     /**
      * Handle all system events
@@ -114,6 +131,17 @@ class plagiarism_unicheck {
     }
 
     /**
+     * Verify supporting for file extension
+     *
+     * @param string $ext
+     *
+     * @return bool
+     */
+    public static function is_supported_extension($ext) {
+        return in_array(strtolower($ext), self::$supportedextension);
+    }
+
+    /**
      * Verify supporting for file mimetype
      *
      * @param stored_file $file
@@ -139,7 +167,7 @@ class plagiarism_unicheck {
      */
     public static function object_to_array($obj) {
         if (is_object($obj)) {
-            $obj = (array) $obj;
+            $obj = (array)$obj;
         }
         if (is_array($obj)) {
             $new = [];
@@ -221,27 +249,38 @@ class plagiarism_unicheck {
      * @return string
      */
     public function track_progress($data) {
-        global $DB;
-
         $data = unicheck_core::parse_json($data);
-        $resp = null;
-        $records = $DB->get_records_list(UNICHECK_FILES_TABLE, 'id', $data->ids);
-
-        if ($records) {
+        $resp = [];
+        $records = unicheck_file_provider::find_by_ids($data->ids);
+        if (!empty($records)) {
             $checkstatusforids = [];
-
-            foreach ($records as $record) {
-                $progressinfo = unicheck_progress::get_file_progress_info($record, $data->cid, $checkstatusforids);
-
-                if ($progressinfo) {
-                    $resp[$record->id] = $progressinfo;
-                }
-            }
-
             try {
-                if (!empty($checkstatusforids)) {
-                    unicheck_progress::check_real_file_progress($data->cid, $checkstatusforids, $resp);
+                foreach ($records as $record) {
+                    switch ($record->state) {
+                        case unicheck_file_state::UPLOADING:
+                            unicheck_progress::track_upload($record);
+                            break;
+                        case unicheck_file_state::HAS_ERROR:
+                            $resp[$record->id] = [
+                                'file_id' => $record->id,
+                                'state'   => $record->state,
+                                'content' => unicheck_progress::gen_row_content_score($data->cid, $record),
+                            ];
+                            break;
+                        default:
+                            $progressinfo = unicheck_progress::get_check_progress_info($record, $data->cid, $checkstatusforids);
+                            if ($progressinfo) {
+                                $resp[$record->id] = $progressinfo;
+                            }
+
+                            if (!empty($checkstatusforids)) {
+                                unicheck_progress::get_real_check_progress($data->cid, $checkstatusforids, $resp);
+                            }
+
+                            break;
+                    }
                 }
+
             } catch (\Exception $ex) {
                 header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
                 $resp['error'] = $ex->getMessage();
@@ -255,8 +294,6 @@ class plagiarism_unicheck {
      * Callback handler
      *
      * @param string $token
-     *
-     * @throws moodle_exception
      */
     public function callback_handler($token) {
         global $DB;
@@ -268,8 +305,6 @@ class plagiarism_unicheck {
             if ($record && isset($respcheck->check)) {
                 unicheck_check_helper::check_complete($record, $respcheck->check, 100 * $respcheck->check->progress);
             }
-
-            return unicheck_core::json_response('Ok');
         } else {
             print_error('error');
         }

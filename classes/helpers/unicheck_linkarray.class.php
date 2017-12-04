@@ -18,15 +18,15 @@
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>
+ * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace plagiarism_unicheck\classes\helpers;
 
+use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\unicheck_assign;
-use plagiarism_unicheck\classes\unicheck_plagiarism_entity;
 use plagiarism_unicheck\classes\unicheck_workshop;
 
 if (!defined('MOODLE_INTERNAL')) {
@@ -37,6 +37,7 @@ if (!defined('MOODLE_INTERNAL')) {
  * Class unicheck_linkarray
  *
  * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
  * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -102,22 +103,20 @@ class unicheck_linkarray {
         $tmpl = null;
         $inciterator = false;
 
-        switch ($fileobj->statuscode) {
-            case UNICHECK_STATUSCODE_PROCESSED:
+        switch ($fileobj->state) {
+            case unicheck_file_state::CHECKED:
                 $tmpl = 'view_tmpl_processed.php';
                 break;
-            case UNICHECK_STATUSCODE_ACCEPTED:
-                if (isset($fileobj->check_id) || $fileobj->type == unicheck_plagiarism_entity::TYPE_ARCHIVE) {
-                    $tmpl = 'view_tmpl_accepted.php';
-                    $inciterator = true;
-                } else {
-                    $tmpl = 'view_tmpl_unknownwarning.php';
-                }
+            case unicheck_file_state::UPLOADING:
+            case unicheck_file_state::UPLOADED:
+            case unicheck_file_state::CHECKING:
+                $tmpl = 'view_tmpl_accepted.php';
+                $inciterator = true;
                 break;
-            case UNICHECK_STATUSCODE_INVALID_RESPONSE:
+            case unicheck_file_state::HAS_ERROR:
                 $tmpl = 'view_tmpl_invalid_response.php';
                 break;
-            case UNICHECK_STATUSCODE_PENDING:
+            case unicheck_file_state::CREATED:
                 if (self::is_pending($cm, $fileobj) && self::is_submission_submitted($linkarray)) {
                     $tmpl = 'view_tmpl_can_check.php';
                     $inciterator = true;

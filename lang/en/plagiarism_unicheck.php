@@ -132,3 +132,5 @@ $string['no_index_files_help'] = 'Use this option to mark an assignment as \'dra
 Drafts will not be saved in the institution\'s Unicheck database.';
 $string['min_30_words'] = 'At least 30 words are required';
 $string['max_100000_words'] = 'File(s) should have no more than 100 000 words and be not larger than 70MB';
+$string['max_supported_archive_files_count'] = 'Max supported archive files';
+$string['max_supported_archive_files_count_help'] = 'The maximum number of supported files that will be extracted from the archives';

@@ -42,7 +42,7 @@ interface unicheck_extractor_interface {
     /**
      * Extract each file
      *
-     * @return \Generator
+     * @return array
      * @throws unicheck_exception
      */
     public function extract();

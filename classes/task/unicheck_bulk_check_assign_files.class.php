@@ -25,7 +25,8 @@
 namespace plagiarism_unicheck\classes\task;
 
 use plagiarism_unicheck\classes\entities\unicheck_archive;
-use plagiarism_unicheck\classes\unicheck_api;
+use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
+use plagiarism_unicheck\classes\unicheck_adhoc;
 use plagiarism_unicheck\classes\unicheck_assign;
 use plagiarism_unicheck\classes\unicheck_core;
 
@@ -35,16 +36,21 @@ if (!defined('MOODLE_INTERNAL')) {
 
 /**
  * Class unicheck_bulk_check_assign_files
+ *
  * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unicheck_bulk_check_assign_files extends unicheck_abstract_task {
+    /** @var  unicheck_core */
+    private $ucore;
     /** @var  \stored_file */
     private $assignfile;
 
     /**
-     * Execute task
+     * Execute of adhoc task
      */
     public function execute() {
         $data = $this->get_custom_data();
@@ -60,7 +66,7 @@ class unicheck_bulk_check_assign_files extends unicheck_abstract_task {
                 continue;
             }
 
-            $this->ucore = new unicheck_core($data->cmid, $this->assignfile->get_userid());
+            $this->ucore = new unicheck_core($data->cmid, $this->assignfile->get_userid(), $data->modname);
 
             $pattern = '%s with uuid ' . $this->assignfile->get_pathnamehash() . ' ready to send';
             if (\plagiarism_unicheck::is_archive($this->assignfile)) {
@@ -80,12 +86,10 @@ class unicheck_bulk_check_assign_files extends unicheck_abstract_task {
      */
     private function handle_archive($contextid) {
         if (!is_null(unicheck_core::get_file_by_hash($contextid, $this->assignfile->get_pathnamehash()))) {
-            mtrace('... archive already sent to Unicheck');
-
             return;
         }
 
-        (new unicheck_archive($this->assignfile, $this->ucore))->run_checks();
+        (new unicheck_archive($this->assignfile, $this->ucore))->upload();
         mtrace('... archive send to Unicheck');
     }
 
@@ -95,12 +99,25 @@ class unicheck_bulk_check_assign_files extends unicheck_abstract_task {
     private function handle_non_archive() {
         $plagiarismentity = $this->ucore->get_plagiarism_entity($this->assignfile);
         $internalfile = $plagiarismentity->upload_file_on_server();
+        if (!$internalfile) {
+            mtrace("... Can't process stored file {$this->assignfile->get_id()}");
+
+            return;
+        }
+
         if (isset($internalfile->check_id)) {
-            mtrace('... file already sent to Unicheck');
-        } else if ($internalfile->external_file_id) {
-            $checkresp = unicheck_api::instance()->run_check($internalfile);
-            $plagiarismentity->handle_check_response($checkresp);
-            mtrace('... file send to Unicheck');
+            return;
+        }
+
+        switch ($internalfile->state) {
+            case unicheck_file_state::CREATED:
+                unicheck_adhoc::upload($this->assignfile, $this->ucore);
+                mtrace('... file start uploading in Unicheck');
+                break;
+            case unicheck_file_state::UPLOADED:
+                unicheck_adhoc::check($internalfile);
+                mtrace('... file start checking in Unicheck');
+                break;
         }
     }
 }

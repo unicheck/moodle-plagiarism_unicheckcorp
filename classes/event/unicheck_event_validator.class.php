@@ -38,6 +38,8 @@ use plagiarism_unicheck\classes\unicheck_settings;
  * Class unicheck_event_validator
  *
  * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -45,13 +47,13 @@ class unicheck_event_validator {
     /**
      * @var array
      */
-    private static $allowedcomponents = array(
+    private static $allowedcomponents = [
         'mod_assign',
         'mod_forum',
         'mod_workshop',
         'assignsubmission_file',
         'assignsubmission_onlinetext',
-    );
+    ];
 
     /**
      * validate_event
@@ -71,14 +73,14 @@ class unicheck_event_validator {
                 return false;
             }
 
-            $plagiarismvalues = $DB->get_records_menu(UNICHECK_CONFIG_TABLE, array('cm' => $cmid), '', 'name, value');
+            $plagiarismvalues = $DB->get_records_menu(UNICHECK_CONFIG_TABLE, ['cm' => $cmid], '', 'name, value');
             if (empty($plagiarismvalues[unicheck_settings::USE_UNICHECK])) {
                 // Unicheck not in use for this cm - return.
                 return false;
             }
 
             // Check if the module associated with this event still exists.
-            if (!$DB->record_exists('course_modules', array('id' => $cmid))) {
+            if (!$DB->record_exists('course_modules', ['id' => $cmid])) {
                 return false;
             }
 

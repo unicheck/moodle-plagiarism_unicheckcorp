@@ -72,23 +72,24 @@ class unicheck_zip_extractor implements unicheck_extractor_interface {
         $this->ziparch = new \zip_archive();
 
         if (!$this->ziparch->open($this->tmpzipfile, \file_archive::OPEN)) {
-            throw new unicheck_exception(ARCHIVE_CANT_BE_OPEN);
+            throw new unicheck_exception(unicheck_exception::ARCHIVE_CANT_BE_OPEN);
         }
     }
 
     /**
      * Extract each file
      *
-     * @return \Generator
+     * @return array
      * @throws unicheck_exception
      */
     public function extract() {
         global $CFG;
 
         if ($this->ziparch->count() == 0) {
-            throw new unicheck_exception(ARCHIVE_IS_EMPTY);
+            throw new unicheck_exception(unicheck_exception::ARCHIVE_IS_EMPTY);
         }
 
+        $extracted = [];
         foreach ($this->ziparch as $file) {
             if ($file->is_directory) {
                 continue;
@@ -117,13 +118,20 @@ class unicheck_zip_extractor implements unicheck_extractor_interface {
             }
 
             $name = fix_utf8($file->pathname);
+            $format = pathinfo($name, PATHINFO_EXTENSION);
+            if (!\plagiarism_unicheck::is_supported_extension($format)) {
+                unicheck_archive::unlink($tmpfile);
+                continue;
+            }
 
-            yield [
+            $extracted[] = [
                 'path'     => $tmpfile,
                 'filename' => $name,
-                'format'   => pathinfo($name, PATHINFO_EXTENSION),
+                'format'   => $format,
             ];
         }
+
+        return $extracted;
     }
 
     /**

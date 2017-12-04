@@ -33,6 +33,8 @@ if (!defined('MOODLE_INTERNAL')) {
  * Class unicheck_api
  *
  * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -56,7 +58,11 @@ class unicheck_api {
     /**
      * FILE_UPLOAD
      */
-    const FILE_UPLOAD = 'file/upload';
+    const FILE_UPLOAD = 'file/async_upload';
+    /**
+     * TRACK_UPLOAD
+     */
+    const TRACK_UPLOAD = 'file/trackfileupload';
     /**
      * CHECK_CREATE
      */
@@ -91,26 +97,29 @@ class unicheck_api {
      * @param string          $format
      * @param integer         $cmid
      * @param object|null     $owner
+     * @param \stdClass       $internalfile
      *
      * @return \stdClass
      */
-    public function upload_file(&$content, $filename, $format = 'html', $cmid, $owner = null) {
-
-        set_time_limit(UNICHECK_UPLOAD_TIME_LIMIT);
+    public function upload_file(&$content, $filename, $format = 'html', $cmid, $owner = null, $internalfile) {
+        global $CFG;
 
         if (is_resource($content)) {
             $content = stream_get_contents($content);
         }
 
-        $postdata = array(
-            'format'    => $format,
-            'file_data' => base64_encode($content),
-            'name'      => $filename,
-            'options'   => array(
+        $postdata = [
+            'format'       => strtolower($format),
+            'file_data'    => base64_encode($content),
+            'name'         => $filename,
+            'callback_url' => sprintf(
+                '%1$s%2$s?token=%3$s', $CFG->wwwroot, UNICHECK_CALLBACK_URL, $internalfile->identifier
+            ),
+            'options'      => [
                 'utoken'        => unicheck_core::get_external_token($cmid, $owner),
                 'submission_id' => $cmid,
-            ),
-        );
+            ],
+        ];
 
         $content = null;
 
@@ -118,7 +127,21 @@ class unicheck_api {
             $postdata['options']['no_index'] = $noindex;
         }
 
-        return unicheck_api_request::instance()->http_post()->request(self::FILE_UPLOAD, $postdata);
+        $response = unicheck_api_request::instance()->http_post()->request(self::FILE_UPLOAD, $postdata);
+        if (!is_object($response)) {
+            $response = (object)[
+                "result" => false,
+                "errors" => [
+                    [
+                        "message"      => \plagiarism_unicheck::trans('unknownwarning'),
+                        "error_code"   => "invalid_response",
+                        "extra_params" => null
+                    ]
+                ]
+            ];
+        }
+
+        return $response;
     }
 
     /**
@@ -137,18 +160,18 @@ class unicheck_api {
 
         $checktype = unicheck_settings::get_assign_settings($file->cm, 'check_type');
 
-        $options = array();
+        $options = [];
         $this->advanced_check_options($file->cm, $options);
 
-        $postdata = array(
+        $postdata = [
             'type'         => is_null($checktype) ? UNICHECK_CHECK_TYPE_WEB : $checktype,
             'file_id'      => $file->external_file_id,
-            'callback_url' => sprintf('%1$s%2$s&token=%3$s', $CFG->wwwroot, UNICHECK_CALLBACK_URL, $file->identifier),
+            'callback_url' => sprintf('%1$s%2$s?token=%3$s', $CFG->wwwroot, UNICHECK_CALLBACK_URL, $file->identifier),
             'options'      => $options,
-        );
+        ];
 
         if (unicheck_settings::get_assign_settings($file->cm, 'exclude_citations')) {
-            $postdata = array_merge($postdata, array('exclude_citations' => 1, 'exclude_references' => 1));
+            $postdata = array_merge($postdata, ['exclude_citations' => 1, 'exclude_references' => 1]);
         }
 
         return unicheck_api_request::instance()->http_post()->request(self::CHECK_CREATE, $postdata);
@@ -159,16 +182,29 @@ class unicheck_api {
      *
      * @param array $checkids
      *
-     * @return mixed
+     * @return \stdClass
      */
     public function get_check_progress(array $checkids) {
         if (empty($checkids)) {
             throw new \InvalidArgumentException('Invalid argument $checkids');
         }
 
-        return unicheck_api_request::instance()->http_get()->request(self::CHECK_PROGRESS, array(
+        return unicheck_api_request::instance()->http_get()->request(self::CHECK_PROGRESS, [
             'id' => implode(',', $checkids),
-        ));
+        ]);
+    }
+
+    /**
+     * Track file upload progress
+     *
+     * @param string $token
+     *
+     * @return \stdClass
+     */
+    public function get_file_upload_progress($token) {
+        return unicheck_api_request::instance()->http_get()->request(self::TRACK_UPLOAD, [
+            'uuid' => $token
+        ]);
     }
 
     /**
@@ -183,9 +219,9 @@ class unicheck_api {
             throw new \InvalidArgumentException('Invalid argument id');
         }
 
-        return unicheck_api_request::instance()->http_get()->request(self::CHECK_GET, array(
+        return unicheck_api_request::instance()->http_get()->request(self::CHECK_GET, [
             'id' => $id,
-        ));
+        ]);
     }
 
     /**
@@ -200,9 +236,9 @@ class unicheck_api {
             throw new \InvalidArgumentException('Invalid argument check_id');
         }
 
-        return unicheck_api_request::instance()->http_post()->request(self::CHECK_DELETE, array(
+        return unicheck_api_request::instance()->http_post()->request(self::CHECK_DELETE, [
             'id' => $file->check_id,
-        ));
+        ]);
     }
 
     /**
@@ -214,13 +250,13 @@ class unicheck_api {
      * @return mixed
      */
     public function user_create($user, $cancomment = false) {
-        $postdata = array(
+        $postdata = [
             'sys_id'    => $user->id,
             'email'     => $user->email,
             'firstname' => $user->firstname,
             'lastname'  => $user->lastname,
             'scope'     => $cancomment ? self::ACCESS_SCOPE_WRITE : self::ACCESS_SCOPE_READ,
-        );
+        ];
 
         return unicheck_api_request::instance()->http_post()->request(self::USER_CREATE, $postdata);
     }

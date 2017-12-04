@@ -37,6 +37,8 @@ if (!defined('MOODLE_INTERNAL')) {
  * Class unicheck_event_submission_updated
  *
  * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -68,7 +70,7 @@ class unicheck_event_submission_updated extends unicheck_abstract_event {
 
             $files = array_merge($unfiles, $assignfiles);
 
-            $ids = array();
+            $ids = [];
             foreach ($files as $file) {
                 $plagiarismentity = $core->get_plagiarism_entity($file);
                 $internalfile = $plagiarismentity->get_internal_file();

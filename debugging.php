@@ -24,7 +24,9 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\helpers\unicheck_check_helper;
+use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\unicheck_api;
 use plagiarism_unicheck\classes\unicheck_core;
 use plagiarism_unicheck\classes\unicheck_notification;
@@ -76,19 +78,19 @@ if (!$table->is_downloading($download, $exportfilename)) {
         }
     } else {
         if ($resetuser == 2 && $id && confirm_sesskey()) {
-            $plagiarismfile = $DB->get_record(UNICHECK_FILES_TABLE, array('id' => $id), '*', MUST_EXIST);
+            $plagiarismfile = $DB->get_record(UNICHECK_FILES_TABLE, ['id' => $id], '*', MUST_EXIST);
             $response = unicheck_api::instance()->get_check_data($plagiarismfile->check_id);
             if ($response->result) {
                 unicheck_check_helper::check_complete($plagiarismfile, $response->check);
             } else {
                 $plagiarismfile->errorresponse = json_encode($response->errors);
-                $DB->update_record(UNICHECK_FILES_TABLE, $plagiarismfile);
+                unicheck_file_provider::save($plagiarismfile);
             }
 
-            if ($plagiarismfile->statuscode == UNICHECK_STATUSCODE_ACCEPTED) {
+            if (in_array($plagiarismfile->state, [unicheck_file_state::UPLOADED, unicheck_file_state::CHECKING])) {
                 unicheck_notification::error('scorenotavailableyet', true);
             } else {
-                if ($plagiarismfile->statuscode == UNICHECK_STATUSCODE_PROCESSED) {
+                if ($plagiarismfile->state == unicheck_file_state::CHECKED) {
                     unicheck_notification::error('scoreavailable', true);
                 } else {
                     unicheck_notification::error('unknownwarning', true);
@@ -98,14 +100,13 @@ if (!$table->is_downloading($download, $exportfilename)) {
     }
 
     if (!empty($delete) && confirm_sesskey()) {
-        $DB->delete_records(UNICHECK_FILES_TABLE, array('id' => $id));
+        $DB->delete_records(UNICHECK_FILES_TABLE, ['id' => $id]);
         unicheck_notification::success('filedeleted', true);
     }
 }
-$heldevents = array();
+$heldevents = [];
 
 // Now do sorting if specified.
-$orderby = '';
 switch ($sort) {
     case 'name':
         $orderby = " ORDER BY u.firstname, u.lastname";
@@ -116,7 +117,7 @@ switch ($sort) {
     case 'status':
         $orderby = " ORDER BY t.errorresponse";
         break;
-    case 'id':
+    default:
         $orderby = " ORDER BY t.id";
         break;
 }
@@ -126,50 +127,50 @@ if (!empty($orderby) && ($dir == 'asc' || $dir == 'desc')) {
 }
 
 // Now show files in an error state.
-$sql = sprintf('SELECT t.*, %1$s, m.name as moduletype, cm.course as courseid, cm.instance as cminstance
-    FROM {%4$s} t, {user} u, {modules} m, {course_modules} cm
-    WHERE m.id=cm.module AND cm.id=t.cm AND t.userid=u.id AND t.parent_id iS NULL AND t.type = \'%3$s\'
-    AND t.errorresponse is not null
-    %2$s ORDER BY ID DESC',
-    get_all_user_name_fields(true, 'u'),
-    $orderby,
-    unicheck_plagiarism_entity::TYPE_DOCUMENT,
-    UNICHECK_FILES_TABLE
-);
+$sql = sprintf("SELECT t.*, %s, m.name AS moduletype, cm.course AS courseid, cm.instance AS cminstance
+    FROM {plagiarism_unicheck_files} t, {user} u, {modules} m, {course_modules} cm
+    WHERE m.id=cm.module AND cm.id=t.cm AND t.userid=u.id AND t.parent_id IS NULL AND t.type = ?
+    AND (t.errorresponse IS NOT NULL OR t.state = ?)
+   {$orderby}", get_all_user_name_fields(true, 'u'));
 
 $limit = 20;
-$unfiles = $DB->get_records_sql($sql, null, $page * $limit, $limit);
+$unfiles = $DB->get_records_sql(
+    $sql,
+    [unicheck_plagiarism_entity::TYPE_DOCUMENT, unicheck_file_state::HAS_ERROR],
+    $page * $limit,
+    $limit
+);
 
-$table->define_columns(array('id', 'name', 'module', 'identifier', 'status', 'attempts', 'action'));
-$table->define_headers(array(
+$table->define_columns(['id', 'name', 'module', 'identifier', 'status', 'attempts', 'action']);
+$table->define_headers([
     plagiarism_unicheck::trans('id'),
     get_string('user'),
     plagiarism_unicheck::trans('module'),
     plagiarism_unicheck::trans('identifier'),
     plagiarism_unicheck::trans('status'),
     plagiarism_unicheck::trans('attempts'), '',
-));
+]);
 $table->define_baseurl('debugging.php');
 $table->sortable(true);
 $table->no_sorting('file', 'action');
 $table->collapsible(true);
 $table->set_attribute('cellspacing', '0');
 $table->set_attribute('class', 'generaltable generalbox');
-$table->show_download_buttons_at(array(TABLE_P_BOTTOM));
+$table->show_download_buttons_at([TABLE_P_BOTTOM]);
 $table->setup();
 
 $fs = get_file_storage();
 foreach ($unfiles as $tf) {
     if ($table->is_downloading()) {
-        $row = array(
+        $row = [
             $tf->id,
             $tf->userid,
             $tf->cm . ' ' . $tf->moduletype,
             $tf->identifier,
-            $tf->statuscode,
+            $tf->state,
             $tf->attempt,
             $tf->errorresponse,
-        );
+        ];
     } else {
         $builddebuglink = function($tf, $action, $transtext) {
             return sprintf('<a href="debugging.php?%4$s&id=%1$s&sesskey=%2$s">%3$s</a>',
@@ -177,7 +178,7 @@ foreach ($unfiles as $tf) {
             );
         };
 
-        if ($tf->statuscode == UNICHECK_STATUSCODE_ACCEPTED) { // Sanity Check.
+        if (in_array($tf->state, [unicheck_file_state::UPLOADED, unicheck_file_state::CHECKING])) { // Sanity Check.
             $action = 'reset=2';
             $transtext = 'getscore';
         } else {
@@ -186,17 +187,17 @@ foreach ($unfiles as $tf) {
         }
 
         $user = "<a href='" . $CFG->wwwroot . "/user/profile.php?id=" . $tf->userid . "'>" . fullname($tf) . "</a>";
-        $coursemodule = get_coursemodule_from_instance($tf->moduletype, $tf->cm);
+        $coursemodule = get_coursemodule_from_id($tf->moduletype, $tf->cm);
         $cmlink = null;
         if ($coursemodule) {
-            $cmurl = new moodle_url("{$CFG->wwwroot}/mod/{$tf->moduletype}/view.php", array('id' => $coursemodule->id));
-            $cmlink = html_writer::link($cmurl, shorten_text($coursemodule->name, 40, true), array('title' => $coursemodule->name));
+            $cmurl = new moodle_url("{$CFG->wwwroot}/mod/{$tf->moduletype}/view.php", ['id' => $coursemodule->id]);
+            $cmlink = html_writer::link($cmurl, shorten_text($coursemodule->name, 40, true), ['title' => $coursemodule->name]);
         }
         $reset = $builddebuglink($tf, $action, $transtext);
         $reset .= ' | ';
         $reset .= $builddebuglink($tf, 'delete=1', 'delete');
 
-        $row = array(
+        $row = [
             $tf->id,
             $user,
             $cmlink,
@@ -204,7 +205,7 @@ foreach ($unfiles as $tf) {
             $tf->errorresponse,
             $tf->attempt,
             $reset,
-        );
+        ];
     }
 
     $table->add_data($row);
@@ -213,12 +214,18 @@ foreach ($unfiles as $tf) {
 if ($table->is_downloading()) {
     // Include some extra debugging information in the table.
     // Add some extra lines first.
-    $table->add_data(array());
-    $table->add_data(array());
-    $table->add_data(array());
-    $table->add_data(array());
-    $table->add_data(array());
-    $table->add_data(array());
+    $table->add_data([]);
+    $table->add_data([]);
+    $table->add_data([]);
+    $table->add_data([]);
+    $table->add_data([]);
+    $table->add_data([]);
+
+    $configrecords = $DB->get_records(UNICHECK_CONFIG_TABLE);
+    $table->add_data(['id', 'cm', 'name', 'value']);
+    foreach ($configrecords as $cf) {
+        $table->add_data([$cf->id, $cf->cm, $cf->name, $cf->value]);
+    }
 }
 
 if (!$table->is_downloading()) {

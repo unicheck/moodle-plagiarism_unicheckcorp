@@ -32,18 +32,23 @@ if (!defined('MOODLE_INTERNAL')) {
  * Class unicheck_exception
  *
  * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ *
+ * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unicheck_exception extends \Exception {
     /**
-     * unicheck_exception constructor.
-     *
-     * @param string $errors
+     * ARCHIVE_IS_EMPTY
      */
-    public function __construct($errors) {
-        $errors = array_shift($errors);
-
-        throw new \InvalidArgumentException($errors->message);
-    }
+    const ARCHIVE_IS_EMPTY = 'Archive is empty or contains document(s) with no text';
+    /**
+     * ARCHIVE_CANT_BE_OPEN
+     */
+    const ARCHIVE_CANT_BE_OPEN = 'Can\'t open zip archive';
+    /**
+     * UNSUPPORTED_MIMETYPE
+     */
+    const UNSUPPORTED_MIMETYPE = 'Unsupported mimetype';
 }

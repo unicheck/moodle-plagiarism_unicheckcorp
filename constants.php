@@ -28,9 +28,9 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 define('UNICHECK_PLAGIN_NAME', 'plagiarism_unicheck');
-define('UNICHECK_DOMAIN', 'https://corpapi.unicheck.com/');
-define('UNICHECK_API_URL', UNICHECK_DOMAIN . 'api/v2/');
-define('UNICHECK_CALLBACK_URL', '/plagiarism/unicheck/ajax.php?action=callback_handler');
+define('UNICHECK_DOMAIN', 'https://corp.unicheck.com/');
+define('UNICHECK_API_URL', 'https://un16.mytheverona.com/api/v2/');
+define('UNICHECK_CALLBACK_URL', '/plagiarism/unicheck/callback.php');
 
 define('UNICHECK_PROJECT_PATH', dirname(__FILE__) . '/');
 
@@ -48,14 +48,6 @@ define('UNICHECK_CHECK_TYPE_MY_LIBRARY', 'my_library');
 define('UNICHECK_CHECK_TYPE_WEB__LIBRARY', 'web_and_my_library');
 define('UNICHECK_CHECK_TYPE_EXTERNAL_DB', 'external_database');
 define('UNICHECK_CHECK_TYPE_WEB__MY_LIB__EXTERNAL_DB', 'web_and_my_lib_and_external_db');
-
-define('UNICHECK_STATUSCODE_PENDING', 'pending');
-define('UNICHECK_STATUSCODE_PROCESSED', 200);
-define('UNICHECK_STATUSCODE_ACCEPTED', 202);
-define('UNICHECK_STATUSCODE_UNSUPPORTED', 415);
-define('UNICHECK_STATUSCODE_INVALID_RESPONSE', 613); // Invalid response received from Unicheck.
-
-define('UNICHECK_UPLOAD_TIME_LIMIT', 5 * 60); // Time limit for upload file.
 
 define('UNICHECK_WORKSHOP_SETUP_PHASE', 10);
 define('UNICHECK_WORKSHOP_SUBMISSION_PHASE', 20);

@@ -44,17 +44,17 @@ if (has_capability('plagiarism/unicheck:resetfile', $modulecontext) && !empty($f
     $erroresponse = str_replace('{&quot;LocalisedMessage&quot;:&quot;', '', $erroresponse);
     $erroresponse = str_replace('&quot;,&quot;Message&quot;:null}', '', $erroresponse);
     $title .= ': ' . $erroresponse;
-    $url = new moodle_url('/plagiarism/unicheck/reset.php', array(
+    $url = new moodle_url('/plagiarism/unicheck/reset.php', [
         'cmid'    => $linkarray['cmid'],
         'pf'      => $fileobj->id,
         'sesskey' => sesskey(),
-    ));
+    ]);
     $reset = sprintf('<a href="%1$s"><img src="%2$s" title="%3$s"></a>',
         $url, $OUTPUT->pix_url('reset', UNICHECK_PLAGIN_NAME), get_string('reset')
     );
 }
 
-$htmlparts = array('<span class="un_report">');
+$htmlparts = ['<span class="un_report">'];
 $htmlparts[] = sprintf('<img class="un_tooltip" src="%1$s" alt="%2$s" title="%3$s" />%4$s',
     $OUTPUT->pix_url('error', UNICHECK_PLAGIN_NAME),
     plagiarism_unicheck::trans('unknownwarning'), $title, $reset
