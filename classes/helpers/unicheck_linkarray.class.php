@@ -110,7 +110,7 @@ class unicheck_linkarray {
             case unicheck_file_state::UPLOADING:
             case unicheck_file_state::UPLOADED:
             case unicheck_file_state::CHECKING:
-                $tmpl = 'view_tmpl_accepted.php';
+                $tmpl = 'view_tmpl_progress.php';
                 $inciterator = true;
                 break;
             case unicheck_file_state::HAS_ERROR:

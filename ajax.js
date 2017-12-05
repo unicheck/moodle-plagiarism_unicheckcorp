@@ -34,13 +34,10 @@ M.plagiarismUnicheck.init = function(Y, contextid) {
             return false;
         }
 
+        existing.insert(record.content, 'after').remove();
         if (record.progress === 100 || record.state === 'HAS_ERROR') {
             var items = M.plagiarismUnicheck.items;
             items.splice(items.indexOf(record.file_id), 1);
-
-            existing.insert(record.content, 'after').remove();
-        } else {
-            existing.one('.un_progress-val').setContent(record.progress + '%');
         }
     };
 

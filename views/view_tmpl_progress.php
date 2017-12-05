@@ -13,8 +13,9 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
- * view_tmpl_accepted.php
+ * view_tmpl_progress.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
@@ -22,6 +23,8 @@
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -46,12 +49,17 @@ if (!$iterator) {
 
 $htmlparts = [sprintf('<div class="un_report fid-%1$s"><div class="un_data">{"fid":"%1$s"}</div>', $fileobj->id)];
 $htmlparts[] = sprintf('<img  class="un_progress un_tooltip" src="%1$s" alt="%2$s" title="%2$s" />',
-    $OUTPUT->image_url('loader', UNICHECK_PLAGIN_NAME),
+    $OUTPUT->pix_url('loader', UNICHECK_PLAGIN_NAME),
     plagiarism_unicheck::trans('processing')
 );
-$htmlparts[] = sprintf('%s: <span class="un_progress-val" >%d%%</span>',
-    plagiarism_unicheck::trans('progress'), intval($fileobj->progress)
-);
+
+if ($fileobj->state === unicheck_file_state::UPLOADING) {
+    $htmlparts[] = sprintf('%s', plagiarism_unicheck::trans('uploading'));
+} else {
+    $htmlparts[] = sprintf('%s: <span class="un_progress-val" >%d%%</span>',
+        plagiarism_unicheck::trans('progress'), intval($fileobj->progress)
+    );
+}
 
 $htmlparts[] = '</div>';
 
