@@ -66,7 +66,7 @@ class unicheck_bulk_check_assign_files extends unicheck_abstract_task {
                 continue;
             }
 
-            $this->ucore = new unicheck_core($data->cmid, $this->assignfile->get_userid(), $data->modname);
+            $this->ucore = new unicheck_core($data->cmid, $this->assignfile->get_userid(), $this->get_modname($data));
 
             $pattern = '%s with uuid ' . $this->assignfile->get_pathnamehash() . ' ready to send';
             if (\plagiarism_unicheck::is_archive($this->assignfile)) {
