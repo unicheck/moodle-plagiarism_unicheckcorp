@@ -24,26 +24,26 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 use core\event\base;
 use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\entities\unicheck_archive;
 use plagiarism_unicheck\classes\entities\unicheck_event;
 use plagiarism_unicheck\classes\event\unicheck_event_validator;
-use plagiarism_unicheck\classes\helpers\unicheck_check_helper;
 use plagiarism_unicheck\classes\helpers\unicheck_progress;
 use plagiarism_unicheck\classes\helpers\unicheck_translate;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\unicheck_core;
 use plagiarism_unicheck\classes\unicheck_settings;
 
-require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
+global $CFG;
+
+require_once($CFG->dirroot . '/config.php');
+require_once($CFG->libdir . '/filelib.php');
 
 require_once(dirname(__FILE__) . '/constants.php');
 require_once(dirname(__FILE__) . '/autoloader.php');
-
-global $CFG;
-
-require_once($CFG->libdir . '/filelib.php');
 
 /**
  * Class plagiarism_unicheck
@@ -288,26 +288,6 @@ class plagiarism_unicheck {
         }
 
         return unicheck_core::json_response($resp);
-    }
-
-    /**
-     * Callback handler
-     *
-     * @param string $token
-     */
-    public function callback_handler($token) {
-        global $DB;
-
-        if (self::access_granted($token)) {
-            $record = $DB->get_record(UNICHECK_FILES_TABLE, ['identifier' => $token]);
-            $rawjson = file_get_contents('php://input');
-            $respcheck = unicheck_core::parse_json($rawjson);
-            if ($record && isset($respcheck->check)) {
-                unicheck_check_helper::check_complete($record, $respcheck->check, 100 * $respcheck->check->progress);
-            }
-        } else {
-            print_error('error');
-        }
     }
 
     /**
