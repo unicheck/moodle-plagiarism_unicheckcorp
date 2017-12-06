@@ -37,6 +37,11 @@ require_once(dirname(__FILE__) . '/../constants.php');
 function xmldb_plagiarism_unicheck_install() {
     global $DB;
 
+    $installed = $DB->get_record('config_plugins', ['plugin' => 'plagiarism_unplag', 'name' => 'version']);
+    if (!$installed || $installed->value < 2017120100) {
+        return true;
+    }
+
     $dbman = $DB->get_manager();
 
     $oldtable = 'plagiarism_unplag_files';
