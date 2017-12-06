@@ -38,7 +38,7 @@ function xmldb_plagiarism_unicheck_install() {
     global $DB;
 
     $installed = $DB->get_record('config_plugins', ['plugin' => 'plagiarism_unplag', 'name' => 'version']);
-    if (!$installed || $installed->version < 2017120100) {
+    if (!$installed || $installed->value < 2017120100) {
         return true;
     }
 
