@@ -49,7 +49,7 @@ if (!$iterator) {
 
 $htmlparts = [sprintf('<div class="un_report fid-%1$s"><div class="un_data">{"fid":"%1$s"}</div>', $fileobj->id)];
 $htmlparts[] = sprintf('<img  class="un_progress un_tooltip" src="%1$s" alt="%2$s" title="%2$s" />',
-    $OUTPUT->pix_url('loader', UNICHECK_PLAGIN_NAME),
+    $OUTPUT->image_url('loader', UNICHECK_PLAGIN_NAME),
     plagiarism_unicheck::trans('processing')
 );
 
