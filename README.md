@@ -14,8 +14,7 @@ Copyright: UKU Group, LTD, https://www.unicheck.com
 
  > Unicheck is a commercial Plagiarism Prevention product owned by UKU Group, LTD - you must have a paid subscription to be able to use this plugin.  
 
-QUICK INSTALL  
-==============  
+#### QUICK INSTALL
 
 1. Get latest release (zip file) on [GitHub](https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases) or 
 [Moodle plugins directory](https://moodle.org/plugins/plagiarism_unicheckcorp)
@@ -23,16 +22,17 @@ QUICK INSTALL
 3. Enable the Plagiarism API under admin > Advanced Features  
 4. Configure the Unicheck plugin under admin > plugins > Plagiarism > Unicheck  
 
-## Dependencies  
+#### Dependencies  
 
 1. For supporting RAR archives you have to install php-ext using command bellow 
 ```sh
 pecl install rar
 ```
 
-## Changelog
+#### Upgrading from *Unplag Plagiarism plugin for Moodle*
 
-| Version | Date | Changelog |
-| ------- | ---- | --------- |
-| 1.2.0 | Dec 1, 2017 | <ul><li>Async upload</li><li>Max supported archive files setting</li><li>Change base urls</li></ul>|
-| 1.1.0 | Sept 21, 2017 | Added support RAR files |
+1. Update [Unplag Plagiarism plugin for Moodle](https://moodle.org/plugins/plagiarism_unicheckcorp) to version 3.0.0 or higher 
+2. Finish all adhoc tasks
+3. Install *Unicheck Plagiarism plugin for Moodle* [Read our installation guide](#quick-install).
+After installation all checked files info moved to new plugin tables
+4. Uninstall *Unplag Plagiarism plugin for Moodle* (lose data from old plugin) or disable it (without lose data)
