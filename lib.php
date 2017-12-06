@@ -26,10 +26,10 @@
 
 use plagiarism_unicheck\classes\entities\unicheck_archive;
 use plagiarism_unicheck\classes\helpers\unicheck_linkarray;
-use plagiarism_unicheck\classes\task\unicheck_bulk_check_assign_files;
 use plagiarism_unicheck\classes\unicheck_assign;
 use plagiarism_unicheck\classes\unicheck_core;
 use plagiarism_unicheck\classes\unicheck_settings;
+use plagiarism_unicheck\classes\task\unicheck_bulk_check_assign_files;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -112,48 +112,50 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
     public function save_form_elements($data) {
         global $DB;
 
+        if (!plagiarism_unicheck::is_support_mod($data->modulename) || !isset($data->use_unicheck)) {
+            return;
+        }
+
         if (isset($data->submissiondrafts) && !$data->submissiondrafts) {
             $data->use_unicheck = 0;
         }
 
-        if (isset($data->use_unicheck)) {
-            // First get existing values.
-            $existingelements = $DB->get_records_menu(UNICHECK_CONFIG_TABLE, ['cm' => $data->coursemodule], '', 'name, id');
-            // Array of possible plagiarism config options.
-            foreach (self::config_options() as $element) {
-                if ($element == unicheck_settings::SENSITIVITY_SETTING_NAME
-                    && (!is_numeric($data->$element)
-                        || $data->$element < 0
-                        || $data->$element > 100)
-                ) {
-                    if (isset($existingelements[$element])) {
-                        continue;
-                    }
-
-                    $data->$element = 0;
-                }
-
-                if ($element == unicheck_settings::MAX_SUPPORTED_ARCHIVE_FILES_COUNT
-                    && (!is_numeric($data->$element) || $data->$element < 0 || $data->$element > 100)
-                ) {
-                    if (isset($existingelements[$element])) {
-                        continue;
-                    }
-
-                    $data->$element = unicheck_archive::DEFAULT_SUPPORTED_FILES_COUNT;
-                }
-
-                $newelement = new stdClass();
-                $newelement->cm = $data->coursemodule;
-                $newelement->name = $element;
-                $newelement->value = (isset($data->$element) ? $data->$element : 0);
-
+        // First get existing values.
+        $existingelements = $DB->get_records_menu(UNICHECK_CONFIG_TABLE, ['cm' => $data->coursemodule], '', 'name, id');
+        // Array of possible plagiarism config options.
+        foreach (self::config_options() as $element) {
+            if ($element == unicheck_settings::SENSITIVITY_SETTING_NAME
+                && (!is_numeric($data->$element)
+                    || $data->$element < 0
+                    || $data->$element > 100)
+            ) {
                 if (isset($existingelements[$element])) {
-                    $newelement->id = $existingelements[$element];
-                    $DB->update_record(UNICHECK_CONFIG_TABLE, $newelement);
-                } else {
-                    $DB->insert_record(UNICHECK_CONFIG_TABLE, $newelement);
+                    continue;
                 }
+
+                $data->$element = 0;
+            }
+
+            if ($element == unicheck_settings::MAX_SUPPORTED_ARCHIVE_FILES_COUNT
+                && (!is_numeric($data->$element) || $data->$element < 0 || $data->$element > 100)
+            ) {
+                if (isset($existingelements[$element])) {
+                    continue;
+                }
+
+                $data->$element = unicheck_archive::DEFAULT_SUPPORTED_FILES_COUNT;
+            }
+
+            $newelement = new stdClass();
+            $newelement->cm = $data->coursemodule;
+            $newelement->name = $element;
+            $newelement->value = (isset($data->$element) ? $data->$element : 0);
+
+            if (isset($existingelements[$element])) {
+                $newelement->id = $existingelements[$element];
+                $DB->update_record(UNICHECK_CONFIG_TABLE, $newelement);
+            } else {
+                $DB->insert_record(UNICHECK_CONFIG_TABLE, $newelement);
             }
         }
 
