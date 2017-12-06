@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [1.0.0] - 2017-09-07
 ### Changed
-- Renaming, based on [Unplag Plagiarism plugin for Moodle](https://moodle.org/plugins/plagiarism_unicheckcorp)
+- Renaming, based on [Unplag Plagiarism plugin for Moodle](https://moodle.org/plugins/plagiarism_unplag)
 - change validation mode
 
 [1.2.0]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v1.2.0
