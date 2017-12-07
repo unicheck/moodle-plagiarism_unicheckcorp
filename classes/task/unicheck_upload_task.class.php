@@ -115,7 +115,7 @@ class unicheck_upload_task extends unicheck_abstract_task {
             }
 
             foreach ($extracted as $item) {
-                if ($supportedcount > $maxsupportedcount) {
+                if ($supportedcount >= $maxsupportedcount) {
                     unicheck_archive::unlink($item['path']);
                     continue;
                 }
