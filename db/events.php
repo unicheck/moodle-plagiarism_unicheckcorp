@@ -25,13 +25,13 @@ if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
-$observers = array(
+$observers = [
     /*
      * Event Handlers
     */
-    array(
+    [
         'eventname'   => '*',
         'includefile' => '/plagiarism/unicheck/locallib.php',
         'callback'    => 'plagiarism_unicheck::event_handler',
-    ),
-);
+    ],
+];
