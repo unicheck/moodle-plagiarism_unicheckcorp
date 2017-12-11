@@ -58,11 +58,11 @@ script:
   - moodle-plugin-ci phpmd
   - moodle-plugin-ci codechecker
   - moodle-plugin-ci validate
-  - if [ "$V2" = true ]; - moodle-plugin-ci savepoints; fi
+  - if [ "$V2" = true ]; then moodle-plugin-ci savepoints; fi
   - if [ "$V2" = true ]; then moodle-plugin-ci mustache; fi
   - if [ "$V2" = true ]; then moodle-plugin-ci grunt; fi
   - if [ "$V2" = false ]; then moodle-plugin-ci csslint; fi
   - if [ "$V2" = false ]; then moodle-plugin-ci jshint; fi
-  - if [ "$V2" = false ]; moodle-plugin-ci shifter; fi
+  - if [ "$V2" = false ]; then moodle-plugin-ci shifter; fi
   - moodle-plugin-ci phpunit
   - moodle-plugin-ci behat
