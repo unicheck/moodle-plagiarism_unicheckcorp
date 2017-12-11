@@ -63,6 +63,6 @@ script:
   - if [ "$V2" = true ]; then moodle-plugin-ci grunt; fi
   - if [ "$V2" = false ]; then moodle-plugin-ci csslint; fi
   - if [ "$V2" = false ]; then moodle-plugin-ci jshint; fi
-  - moodle-plugin-ci shifter
+  - if [ "$V2" = false ]; moodle-plugin-ci shifter; fi
   - moodle-plugin-ci phpunit
   - moodle-plugin-ci behat
