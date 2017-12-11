@@ -150,10 +150,12 @@ class unicheck_upload_task extends unicheck_abstract_task {
             $this->internalfile->id
         );
         $internalfile = $plagiarismentity->get_internal_file();
-        $internalfile->state = unicheck_file_state::UPLOADING;
-        unicheck_file_provider::save($internalfile);
+        if ($internalfile->state == unicheck_file_state::CREATED) {
+            $internalfile->state = unicheck_file_state::UPLOADING;
+            unicheck_file_provider::save($internalfile);
 
-        $plagiarismentity->upload_file_on_server();
+            $plagiarismentity->upload_file_on_server();
+        }
 
         unset($plagiarismentity, $content);
 
@@ -166,6 +168,12 @@ class unicheck_upload_task extends unicheck_abstract_task {
      * @param \stored_file $file
      */
     protected function process_single_file(\stored_file $file) {
+        if ($this->internalfile->external_file_uuid) {
+            mtrace("File already uploaded. Skipped. Plugin file id: {$this->internalfile->id}");
+
+            return;
+        }
+
         $plagiarismentity = $this->ucore->get_plagiarism_entity($file);
         $plagiarismentity->upload_file_on_server();
     }
