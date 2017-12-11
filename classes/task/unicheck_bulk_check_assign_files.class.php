@@ -70,7 +70,7 @@ class unicheck_bulk_check_assign_files extends unicheck_abstract_task {
                 continue;
             }
 
-            if (\plagiarism_unplag::is_archive($storedfile)) {
+            if (\plagiarism_unicheck::is_archive($storedfile)) {
                 (new unicheck_archive($storedfile, $this->ucore))->upload();
             } else {
                 unicheck_adhoc::upload($storedfile, $this->ucore);
