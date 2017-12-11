@@ -91,7 +91,7 @@ script:
   - moodle-plugin-ci phpmd
   - moodle-plugin-ci codechecker
   - moodle-plugin-ci validate
-  - moodle-plugin-ci savepoints
+  - if [ "$V2" = true ]; - moodle-plugin-ci savepoints; fi
   - if [ "$V2" = true ]; then moodle-plugin-ci mustache; fi
   - if [ "$V2" = true ]; then moodle-plugin-ci grunt; fi
   - if [ "$V2" = false ]; then moodle-plugin-ci csslint; fi
