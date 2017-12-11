@@ -5,6 +5,7 @@ sudo: false
 cache:
   directories:
     - $HOME/.composer/cache
+    - $HOME/.npm
 
 php:
  - 5.4
@@ -15,18 +16,18 @@ php:
 
 env:
   matrix:
-      - DB=pgsql MOODLE_BRANCH=MOODLE_27_STABLE
-      - DB=pgsql MOODLE_BRANCH=MOODLE_28_STABLE
-      - DB=pgsql MOODLE_BRANCH=MOODLE_29_STABLE
-      - DB=pgsql MOODLE_BRANCH=MOODLE_30_STABLE
-      - DB=pgsql MOODLE_BRANCH=MOODLE_31_STABLE
-      - DB=pgsql MOODLE_BRANCH=MOODLE_32_STABLE
-      - DB=mysqli MOODLE_BRANCH=MOODLE_27_STABLE
-      - DB=mysqli MOODLE_BRANCH=MOODLE_28_STABLE
-      - DB=mysqli MOODLE_BRANCH=MOODLE_29_STABLE
-      - DB=mysqli MOODLE_BRANCH=MOODLE_30_STABLE
-      - DB=mysqli MOODLE_BRANCH=MOODLE_31_STABLE
-      - DB=mysqli MOODLE_BRANCH=MOODLE_32_STABLE
+      - DB=pgsql MOODLE_BRANCH=MOODLE_27_STABLE V2=false
+      - DB=pgsql MOODLE_BRANCH=MOODLE_28_STABLE V2=false
+      - DB=pgsql MOODLE_BRANCH=MOODLE_29_STABLE V2=false
+      - DB=pgsql MOODLE_BRANCH=MOODLE_30_STABLE V2=false
+      - DB=pgsql MOODLE_BRANCH=MOODLE_31_STABLE V2=false
+      - DB=pgsql MOODLE_BRANCH=MOODLE_32_STABLE V2=true
+      - DB=mysqli MOODLE_BRANCH=MOODLE_27_STABLE V2=false
+      - DB=mysqli MOODLE_BRANCH=MOODLE_28_STABLE V2=false
+      - DB=mysqli MOODLE_BRANCH=MOODLE_29_STABLE V2=false
+      - DB=mysqli MOODLE_BRANCH=MOODLE_30_STABLE V2=false
+      - DB=mysqli MOODLE_BRANCH=MOODLE_31_STABLE V2=false
+      - DB=mysqli MOODLE_BRANCH=MOODLE_32_STABLE V2=true
 
 matrix:
   exclude:
@@ -73,9 +74,12 @@ matrix:
 
 before_install:
   - phpenv config-rm xdebug.ini
+  - nvm install 8.9
+  - nvm use 8.9
   - cd ../..
   - composer selfupdate
-  - composer create-project -n --no-dev --prefer-dist moodlerooms/moodle-plugin-ci ci ^1
+  - if [ "$V2" = false ]; then composer create-project -n --no-dev --prefer-dist moodlerooms/moodle-plugin-ci ci ^1; fi
+  - if [ "$V2" = true ]; then composer create-project -n --no-dev --prefer-dist moodlerooms/moodle-plugin-ci ci ^2; fi
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
 
 install:
@@ -86,9 +90,12 @@ script:
   - moodle-plugin-ci phpcpd
   - moodle-plugin-ci phpmd
   - moodle-plugin-ci codechecker
-  - moodle-plugin-ci csslint
-  - moodle-plugin-ci shifter
-  - moodle-plugin-ci jshint
   - moodle-plugin-ci validate
+  - moodle-plugin-ci savepoints
+  - if [ "$V2" = true ]; then moodle-plugin-ci mustache; fi
+  - if [ "$V2" = true ]; then moodle-plugin-ci grunt; fi
+  - if [ "$V2" = false ]; then moodle-plugin-ci csslint; fi
+  - if [ "$V2" = false ]; then moodle-plugin-ci jshint; fi
+  - moodle-plugin-ci shifter
   - moodle-plugin-ci phpunit
   - moodle-plugin-ci behat

@@ -39,7 +39,6 @@ use plagiarism_unicheck\classes\unicheck_settings;
 
 global $CFG;
 
-require_once($CFG->dirroot . '/config.php');
 require_once($CFG->libdir . '/filelib.php');
 
 require_once(dirname(__FILE__) . '/constants.php');
@@ -288,16 +287,5 @@ class plagiarism_unicheck {
         }
 
         return unicheck_core::json_response($resp);
-    }
-
-    /**
-     * Check access grunt
-     *
-     * @param string $token
-     *
-     * @return bool
-     */
-    private static function access_granted($token) {
-        return ($token && strlen($token) === 40 && $_SERVER['REQUEST_METHOD'] == 'POST');
     }
 }
