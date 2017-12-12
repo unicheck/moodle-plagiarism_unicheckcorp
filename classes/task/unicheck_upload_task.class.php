@@ -153,7 +153,6 @@ class unicheck_upload_task extends unicheck_abstract_task {
         if ($internalfile->state == unicheck_file_state::CREATED) {
             $internalfile->state = unicheck_file_state::UPLOADING;
             unicheck_file_provider::save($internalfile);
-
             $plagiarismentity->upload_file_on_server();
         }
 

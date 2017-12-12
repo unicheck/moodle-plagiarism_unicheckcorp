@@ -88,7 +88,6 @@ class unicheck_assign {
         $cm = get_coursemodule_from_id('', $plagiarismfile->cm);
 
         if (plagiarism_unicheck::is_support_mod($cm->modname)) {
-
             $file = get_file_storage()->get_file_by_hash($plagiarismfile->identifier);
             if ($file->is_directory()) {
                 return;

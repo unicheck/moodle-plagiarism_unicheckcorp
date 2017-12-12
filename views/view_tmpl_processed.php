@@ -53,7 +53,7 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
     );
 
     // This is a teacher viewing the responses.
-    $canviewsimilarity = unicheck_core::can('plagiarism/unicheck:viewsimilarity', $cid);
+    $canviewsimilarity = unicheck_core::can('plagiarism/unicheck:viewsimilarity', $cid, $USER->id);
     $assigncfg = unicheck_settings::get_assign_settings($cid, null, true);
 
     if (isset($fileobj->similarityscore)) {
@@ -67,10 +67,10 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
     }
 
     if (!empty($fileobj->reporturl)) {
-        $canviewreport = unicheck_core::can('plagiarism/unicheck:viewreport', $cid);
+        $canviewreport = unicheck_core::can('plagiarism/unicheck:viewreport', $cid, $USER->id);
         if ($canviewreport || $assigncfg[unicheck_settings::SHOW_STUDENT_REPORT]) {
             $reporturl = new unicheck_url($fileobj);
-            $canvieweditreport = unicheck_core::can('plagiarism/unicheck:vieweditreport', $cid);
+            $canvieweditreport = unicheck_core::can('plagiarism/unicheck:vieweditreport', $cid, $USER->id);
             // Display opt-out link.
             $htmlparts[] = '&nbsp;<span class"plagiarismoptout">';
             $htmlparts[] = sprintf('<a title="%s" href="%s" target="_blank">',

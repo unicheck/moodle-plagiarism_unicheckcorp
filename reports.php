@@ -62,7 +62,7 @@ echo $OUTPUT->header();
 
 $tabs = [];
 $fileinfos = [];
-$canvieweditreport = unicheck_core::can('plagiarism/unicheck:vieweditreport', $cmid);
+$canvieweditreport = unicheck_core::can('plagiarism/unicheck:vieweditreport', $cmid, $USER->id);
 foreach ($childs as $child) {
 
     switch ($child->state) {

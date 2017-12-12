@@ -43,7 +43,6 @@ function xmldb_plagiarism_unicheck_install() {
     }
 
     $dbman = $DB->get_manager();
-
     $oldtable = 'plagiarism_unplag_files';
     if ($dbman->table_exists($oldtable)) {
         $DB->insert_records(UNICHECK_FILES_TABLE, $DB->get_records($oldtable));
