@@ -31,7 +31,7 @@ M.plagiarismUnicheck.init = function(Y, contextid) {
     var handleRecord = function(record) {
         var existing = Y.one('.un_report.fid-' + record.file_id);
         if (!existing) {
-            return false;
+            return;
         }
 
         existing.insert(record.content, 'after').remove();
