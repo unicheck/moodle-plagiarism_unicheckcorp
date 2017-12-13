@@ -112,13 +112,13 @@ class unicheck_notification {
             return null;
         }
 
-        $user = $DB->get_record('user', array('id' => $plagiarismfile->userid));
+        $user = $DB->get_record('user', ['id' => $plagiarismfile->userid]);
         $site = get_site();
         $a = new \stdClass();
         $cm = get_coursemodule_from_id('', $plagiarismfile->cm);
         $a->modulename = format_string($cm->name);
         $a->modulelink = $CFG->wwwroot . '/mod/' . $cm->modname . '/view.php?id=' . $cm->id;
-        $a->coursename = format_string($DB->get_field('course', 'fullname', array('id' => $cm->course)));
+        $a->coursename = format_string($DB->get_field('course', 'fullname', ['id' => $cm->course]));
         $a->optoutlink = $plagiarismfile->optout;
         $emailsubject = plagiarism_unicheck::trans('studentemailsubject');
         $emailcontent = plagiarism_unicheck::trans('studentemailcontent', $a);

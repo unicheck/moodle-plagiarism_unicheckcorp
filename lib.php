@@ -24,11 +24,12 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use plagiarism_unicheck\classes\entities\unicheck_archive;
 use plagiarism_unicheck\classes\helpers\unicheck_linkarray;
-use plagiarism_unicheck\classes\task\unicheck_bulk_check_assign_files;
 use plagiarism_unicheck\classes\unicheck_assign;
 use plagiarism_unicheck\classes\unicheck_core;
 use plagiarism_unicheck\classes\unicheck_settings;
+use plagiarism_unicheck\classes\task\unicheck_bulk_check_assign_files;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -48,6 +49,7 @@ require_once(dirname(__FILE__) . '/locallib.php');
 
 /**
  * Class plagiarism_plugin_unicheck
+ *
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -58,15 +60,15 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
      * @return string[]
      */
     public static function default_plugin_options() {
-        return array(
+        return [
             'unicheck_use', 'unicheck_enable_mod_assign', 'unicheck_enable_mod_forum', 'unicheck_enable_mod_workshop',
-        );
+        ];
     }
 
     /**
      * Hook to allow plagiarism specific information to be displayed beside a submission.
      *
-     * @param array $linkarray
+     * @param array $linkarray all relevant information for the plugin to generate a link.
      *
      * @return string
      */
@@ -86,9 +88,9 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
         if (self::is_enabled_module('mod_' . $cm->modname)) {
             $file = unicheck_linkarray::get_file_from_linkarray($cm, $linkarray);
             if ($file && plagiarism_unicheck::is_support_filearea($file->get_filearea())) {
-                $ucore = new unicheck_core($linkarray['cmid'], $file->get_userid());
+                $ucore = new unicheck_core($linkarray['cmid'], $file->get_userid(), $cm->modname);
 
-                if ($cm->modname == UNICHECK_MODNAME_ASSIGN && (bool) unicheck_assign::get($cm->instance)->teamsubmission) {
+                if ($cm->modname == UNICHECK_MODNAME_ASSIGN && (bool)unicheck_assign::get($cm->instance)->teamsubmission) {
                     $ucore->enable_teamsubmission();
                 }
 
@@ -103,55 +105,69 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
     }
 
     /**
-     *  hook to save plagiarism specific settings on a module settings page
+     *  Hook to save plagiarism specific settings on a module settings page
      *
      * @param object $data - data from an mform submission.
      */
     public function save_form_elements($data) {
         global $DB;
 
+        if (!plagiarism_unicheck::is_support_mod($data->modulename) || !isset($data->use_unicheck)) {
+            return;
+        }
+
         if (isset($data->submissiondrafts) && !$data->submissiondrafts) {
             $data->use_unicheck = 0;
         }
 
-        if (isset($data->use_unicheck)) {
-            // First get existing values.
-            $existingelements = $DB->get_records_menu(UNICHECK_CONFIG_TABLE, array('cm' => $data->coursemodule), '', 'name, id');
-            // Array of possible plagiarism config options.
-            foreach (self::config_options() as $element) {
-                if ($element == unicheck_settings::SENSITIVITY_SETTING_NAME
-                    && (!is_numeric($data->$element)
-                        || $data->$element < 0
-                        || $data->$element > 100)
-                ) {
-                    if (isset($existingelements[$element])) {
-                        continue;
-                    }
-
-                    $data->$element = 0;
-                }
-
-                $newelement = new stdClass();
-                $newelement->cm = $data->coursemodule;
-                $newelement->name = $element;
-                $newelement->value = (isset($data->$element) ? $data->$element : 0);
-
+        // First get existing values.
+        $existingelements = $DB->get_records_menu(UNICHECK_CONFIG_TABLE, ['cm' => $data->coursemodule], '', 'name, id');
+        // Array of possible plagiarism config options.
+        foreach (self::config_options() as $element) {
+            if ($element == unicheck_settings::SENSITIVITY_SETTING_NAME
+                && (!is_numeric($data->$element)
+                    || $data->$element < 0
+                    || $data->$element > 100)
+            ) {
                 if (isset($existingelements[$element])) {
-                    $newelement->id = $existingelements[$element];
-                    $DB->update_record(UNICHECK_CONFIG_TABLE, $newelement);
-                } else {
-                    $DB->insert_record(UNICHECK_CONFIG_TABLE, $newelement);
+                    continue;
                 }
+
+                $data->$element = 0;
+            }
+
+            if ($element == unicheck_settings::MAX_SUPPORTED_ARCHIVE_FILES_COUNT
+                && (!is_numeric($data->$element) || $data->$element < 0 || $data->$element > 100)
+            ) {
+                if (isset($existingelements[$element])) {
+                    continue;
+                }
+
+                $data->$element = unicheck_archive::DEFAULT_SUPPORTED_FILES_COUNT;
+            }
+
+            $newelement = new stdClass();
+            $newelement->cm = $data->coursemodule;
+            $newelement->name = $element;
+            $newelement->value = (isset($data->$element) ? $data->$element : 0);
+
+            if (isset($existingelements[$element])) {
+                $newelement->id = $existingelements[$element];
+                $DB->update_record(UNICHECK_CONFIG_TABLE, $newelement);
+            } else {
+                $DB->insert_record(UNICHECK_CONFIG_TABLE, $newelement);
             }
         }
 
         // Plugin is enabled.
         if ($data->use_unicheck == 1) {
             if ($data->modulename == UNICHECK_MODNAME_ASSIGN && $data->check_all_submitted_assignments == 1) {
-                unicheck_bulk_check_assign_files::add_task(array(
+                $cm = get_coursemodule_from_id('', $data->coursemodule);
+                unicheck_bulk_check_assign_files::add_task([
                     'contextid' => $data->gradingman->get_context()->id,
                     'cmid'      => $data->coursemodule,
-                ));
+                    'modname'   => $cm->modname
+                ]);
             }
         }
     }
@@ -189,15 +205,13 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
     /**
      * hook to add plagiarism specific settings to a module settings page
      *
-     * @param object $mform   - Moodle form
-     * @param object $context - current context
-     * @param string $modulename
-     *
-     * @return null
+     * @param object  $mform   - Moodle form
+     * @param context $context - current context
+     * @param string  $modulename
      */
     public function get_form_elements_module($mform, $context, $modulename = "") {
         if ($modulename && !self::is_enabled_module($modulename)) {
-            return null;
+            return;
         }
 
         $cmid = optional_param('update', 0, PARAM_INT); // Get cm as $this->_cm is not available here.
@@ -222,6 +236,8 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
         } else { // Add plagiarism settings as hidden vars.
             $this->add_plagiarism_hidden_vars($plagiarismelements, $mform);
         }
+
+        return;
     }
 
     /**

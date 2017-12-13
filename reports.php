@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * unicheck_plagiarism_entity.class.php
  *
@@ -23,9 +24,11 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\helpers\unicheck_stored_file;
+use plagiarism_unicheck\classes\services\report\unicheck_url;
+use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\unicheck_core;
-use plagiarism_unicheck\classes\unicheck_language;
 
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once(dirname(__FILE__) . '/lib.php');
@@ -37,14 +40,14 @@ $cm = get_coursemodule_from_id('', $cmid, 0, false, MUST_EXIST);
 require_login($cm->course, true, $cm);
 
 $pf = required_param('pf', PARAM_INT); // Plagiarism file id.
-$childs = unicheck_stored_file::get_childs($pf);
+$childs = unicheck_stored_file::get_plagiarism_file_childs_by_id($pf);
 
 $modulecontext = context_module::instance($cmid);
 
-$pageparams = array('cmid' => $cmid, 'pf' => $pf);
+$pageparams = ['cmid' => $cmid, 'pf' => $pf];
 $cpf = optional_param('cpf', null, PARAM_INT); // Plagiarism child file id.
 if ($cpf !== null) {
-    $current = unicheck_stored_file::get_internal_file($cpf);
+    $current = unicheck_file_provider::get_by_id($cpf);
     $currenttab = 'unicheck_file_id_' . $current->id;
     $pageparams['cpf'] = $cpf;
 } else {
@@ -57,71 +60,70 @@ $PAGE->set_url($pageurl);
 
 echo $OUTPUT->header();
 
-$tabs = array();
-$fileinfos = array();
-$canvieweditreport = unicheck_core::can('plagiarism/unicheck:vieweditreport', $cmid);
+$tabs = [];
+$fileinfos = [];
+$canvieweditreport = unicheck_core::can('plagiarism/unicheck:vieweditreport', $cmid, $USER->id);
 foreach ($childs as $child) {
 
-    switch ($child->statuscode) {
-        case UNICHECK_STATUSCODE_PROCESSED :
+    switch ($child->state) {
+        case unicheck_file_state::CHECKED:
 
-            $url = new \moodle_url('/plagiarism/unicheck/reports.php', array(
+            $url = new \moodle_url('/plagiarism/unicheck/reports.php', [
                 'cmid' => $cmid,
                 'pf'   => $pf,
                 'cpf'  => $child->id,
-            ));
+            ]);
 
             if ($child->check_id !== null && $child->progress == 100) {
 
                 $tabs[] = new tabobject('unicheck_file_id_' . $child->id, $url->out(), $child->filename, '', false);
 
                 $link = html_writer::link($url, $child->filename);
-                $fileinfos[] = array(
-                    'filename' => html_writer::tag('div', $link, array('class' => 'edit-link')),
+                $fileinfos[] = [
+                    'filename' => html_writer::tag('div', $link, ['class' => 'edit-link']),
                     'status'   => $OUTPUT->pix_icon('i/valid', plagiarism_unicheck::trans('reportready')) .
                         plagiarism_unicheck::trans('reportready'),
-                );
+                ];
             }
             break;
-        case UNICHECK_STATUSCODE_INVALID_RESPONSE :
+        case unicheck_file_state::HAS_ERROR :
 
             $erroresponse = plagiarism_unicheck::error_resp_handler($child->errorresponse);
-            $fileinfos[] = array(
+            $fileinfos[] = [
                 'filename' => $child->filename,
                 'status'   => $OUTPUT->pix_icon('i/invalid', $erroresponse) . $erroresponse,
-            );
+            ];
             break;
     }
 };
 
-$generalinfourl = new \moodle_url('/plagiarism/unicheck/reports.php', array(
+$generalinfourl = new \moodle_url('/plagiarism/unicheck/reports.php', [
     'cmid' => $cmid,
     'pf'   => $pf,
-));
+]);
 
 array_unshift($tabs,
     new tabobject('un_files_info', $generalinfourl->out(), plagiarism_unicheck::trans('generalinfo'), '', false));
 
-print_tabs(array($tabs), $currenttab);
+print_tabs([$tabs], $currenttab);
 
 echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
 
 if ($cpf !== null) {
-    $reporturl = $current->reporturl;
+    $reporturl = (new unicheck_url($current));
+    $link = $reporturl->get_view_url($cmid);
     if ($canvieweditreport) {
-        $reporturl = $current->reportediturl;
+        $link = $reporturl->get_edit_url($cmid);
     }
-    unicheck_core::inject_comment_token($reporturl, $cmid);
-    unicheck_language::inject_language_to_url($reporturl);
 
-    echo '<iframe src="' . $reporturl . '" frameborder="0" id="_un_report_frame" style="width: 100%; height: 750px;"></iframe>';
+    echo '<iframe src="' . $link . '" frameborder="0" id="_un_report_frame" style="width: 100%; height: 750px;"></iframe>';
 } else {
     $table = new html_table();
-    $table->head = array('Filename', 'Status');
-    $table->align = array('left', 'left');
+    $table->head = ['Filename', 'Status'];
+    $table->align = ['left', 'left'];
 
     foreach ($fileinfos as $fileinfo) {
-        $linedata = array($fileinfo['filename'], $fileinfo['status']);
+        $linedata = [$fileinfo['filename'], $fileinfo['status']];
         $table->data[] = $linedata;
     }
 

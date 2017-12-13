@@ -18,7 +18,7 @@
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>
+ * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -72,14 +72,14 @@ class unicheck_rar_extractor implements unicheck_extractor_interface {
         $this->rararch = \RarArchive::open($this->tmprarfile);
 
         if ($this->rararch === false) {
-            throw new unicheck_exception(ARCHIVE_CANT_BE_OPEN);
+            throw new unicheck_exception(unicheck_exception::ARCHIVE_CANT_BE_OPEN);
         }
     }
 
     /**
      * Extract each file
      *
-     * @return \Generator
+     * @return array
      * @throws unicheck_exception
      */
     public function extract() {
@@ -87,9 +87,10 @@ class unicheck_rar_extractor implements unicheck_extractor_interface {
 
         $entries = $this->rararch->getEntries();
         if ($entries === false) {
-            throw new unicheck_exception(ARCHIVE_IS_EMPTY);
+            throw new unicheck_exception(unicheck_exception::ARCHIVE_IS_EMPTY);
         }
 
+        $extracted = [];
         foreach ($entries as $entry) {
             $tmpfile = tempnam($CFG->tempdir, 'unicheck_unrar');
 
@@ -98,12 +99,21 @@ class unicheck_rar_extractor implements unicheck_extractor_interface {
                 continue;
             }
 
-            yield [
+            $name = $entry->getName();
+            $format = pathinfo($entry->getName(), PATHINFO_EXTENSION);
+            if (!\plagiarism_unicheck::is_supported_extension($format)) {
+                unicheck_archive::unlink($tmpfile);
+                continue;
+            }
+
+            $extracted[] = [
                 'path'     => $tmpfile,
-                'filename' => $entry->getName(),
-                'format'   => pathinfo($entry->getName(), PATHINFO_EXTENSION),
+                'filename' => $name,
+                'format'   => $format,
             ];
         }
+
+        return $extracted;
     }
 
     /**

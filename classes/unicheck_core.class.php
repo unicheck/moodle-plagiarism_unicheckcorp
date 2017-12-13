@@ -27,8 +27,8 @@ namespace plagiarism_unicheck\classes;
 use context_module;
 use core\event\base;
 use plagiarism_unicheck;
+use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\entities\unicheck_archive;
-use plagiarism_unicheck\classes\helpers\unicheck_check_helper;
 use plagiarism_unicheck\classes\plagiarism\unicheck_file;
 
 if (!defined('MOODLE_INTERNAL')) {
@@ -39,6 +39,8 @@ if (!defined('MOODLE_INTERNAL')) {
  * Class unicheck_core
  *
  * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -59,14 +61,21 @@ class unicheck_core {
     public $cmid = null;
 
     /**
+     * @var string
+     */
+    public $modname = null;
+
+    /**
      * unicheck_core constructor.
      *
-     * @param int $cmid
-     * @param int $userid
+     * @param int    $cmid
+     * @param int    $userid
+     * @param string $modname
      */
-    public function __construct($cmid, $userid) {
+    public function __construct($cmid, $userid, $modname) {
         $this->cmid = $cmid;
         $this->userid = $userid;
+        $this->modname = $modname;
     }
 
     /**
@@ -84,37 +93,38 @@ class unicheck_core {
      * resubmit_file
      *
      * @param int $id
-     *
-     * @return null
-     * @throws \coding_exception
+     * @return bool
      */
     public static function resubmit_file($id) {
-        global $DB;
-
-        $plagiarismfile = $DB->get_record(UNICHECK_FILES_TABLE, array('id' => $id), '*', MUST_EXIST);
-        if (in_array($plagiarismfile->statuscode, array(UNICHECK_STATUSCODE_PROCESSED, UNICHECK_STATUSCODE_ACCEPTED))) {
-            // Sanity Check.
-            return null;
+        $plagiarismfile = unicheck_file_provider::get_by_id($id);
+        if (!unicheck_file_provider::can_start_check($plagiarismfile)) {
+            return false;
         }
 
         $cm = get_coursemodule_from_id('', $plagiarismfile->cm);
 
-        if (plagiarism_unicheck::is_support_mod($cm->modname)) {
-            $file = get_file_storage()->get_file_by_hash($plagiarismfile->identifier);
-            $ucore = new unicheck_core($plagiarismfile->cm, $plagiarismfile->userid);
-
-            if (plagiarism_unicheck::is_archive($file)) {
-                $archive = new unicheck_archive($file, $ucore);
-                $archive->restart_check();
-
-                return;
-            }
-
-            $plagiarismentity = $ucore->get_plagiarism_entity($file);
-            $internalfile = $plagiarismentity->get_internal_file();
-
-            unicheck_check_helper::run_plagiarism_detection($plagiarismentity, $internalfile);
+        if (!plagiarism_unicheck::is_support_mod($cm->modname)) {
+            return false;
         }
+
+        $file = get_file_storage()->get_file_by_hash($plagiarismfile->identifier);
+        $ucore = new unicheck_core($plagiarismfile->cm, $plagiarismfile->userid, $cm->modname);
+
+        if (plagiarism_unicheck::is_archive($file)) {
+            $archive = new unicheck_archive($file, $ucore);
+            $archive->restart_check();
+
+            return true;
+        }
+
+        if ($plagiarismfile->check_id) {
+            unicheck_api::instance()->delete_check($plagiarismfile);
+        }
+        unicheck_adhoc::upload($file, $ucore);
+
+        unicheck_notification::success('plagiarism_run_success', true);
+
+        return true;
     }
 
     /**
@@ -156,11 +166,11 @@ class unicheck_core {
     public static function get_file_by_hash($contextid, $contenthash) {
         global $DB;
 
-        $filerecord = $DB->get_records('files', array(
+        $filerecord = $DB->get_records('files', [
             'contextid'   => $contextid,
             'component'   => UNICHECK_PLAGIN_NAME,
             'contenthash' => $contenthash,
-        ), 'id desc', '*', 0, 1);
+        ], 'id desc', '*', 0, 1);
 
         if (!$filerecord) {
             return null;
@@ -173,20 +183,16 @@ class unicheck_core {
      * create_file_from_content
      *
      * @param base $event
-     *
-     * @return bool|\stored_file
-     *
-     * @throws \file_exception
-     * @throws \stored_file_creation_exception
+     * @return null|\stored_file
      */
     public function create_file_from_content(base $event) {
         global $USER;
 
         if (empty($event->other['content'])) {
-            return false;
+            return null;
         }
 
-        $filerecord = array(
+        $filerecord = [
             'component' => UNICHECK_PLAGIN_NAME,
             'filearea'  => $event->objecttable,
             'contextid' => $event->contextid,
@@ -198,7 +204,7 @@ class unicheck_core {
             'userid'    => $USER->id,
             'license'   => 'allrightsreserved',
             'author'    => $USER->firstname . ' ' . $USER->lastname,
-        );
+        ];
 
         /** @var \stored_file $storedfile */
         $storedfile = get_file_storage()->get_file(
@@ -247,12 +253,12 @@ class unicheck_core {
 
         $user = $user ? $user : self::get_user();
 
-        $storeduser = $DB->get_record(UNICHECK_USER_DATA_TABLE, array('user_id' => $user->id));
+        $storeduser = $DB->get_record(UNICHECK_USER_DATA_TABLE, ['user_id' => $user->id]);
 
         if ($storeduser) {
             return $storeduser->external_token;
         } else {
-            $resp = unicheck_api::instance()->user_create($user, self::is_teacher($cmid));
+            $resp = unicheck_api::instance()->user_create($user, self::is_teacher($cmid, $user->id));
 
             if ($resp && $resp->result) {
                 $externaluserdata = new \stdClass;
@@ -265,17 +271,20 @@ class unicheck_core {
                 return $externaluserdata->external_token;
             }
         }
+
+        return null;
     }
 
     /**
      * is_teacher
      *
      * @param int $cmid
+     * @param int $userid
      *
      * @return bool
      */
-    public static function is_teacher($cmid) {
-        return self::can('moodle/grade:edit', $cmid);
+    public static function is_teacher($cmid, $userid) {
+        return self::can('moodle/grade:edit', $cmid, $userid);
     }
 
     /**
@@ -283,13 +292,12 @@ class unicheck_core {
      *
      * @param string $permission
      * @param int    $cmid
+     * @param int    $userid
      *
      * @return bool
      */
-    public static function can($permission, $cmid) {
-        global $USER;
-
-        return has_capability($permission, context_module::instance($cmid), $USER->id);
+    public static function can($permission, $cmid, $userid) {
+        return has_capability($permission, context_module::instance($cmid), $userid);
     }
 
     /**
@@ -300,11 +308,11 @@ class unicheck_core {
     private function delete_old_file_from_content(\stored_file $storedfile) {
         global $DB;
 
-        $DB->delete_records(UNICHECK_FILES_TABLE, array(
+        $DB->delete_records(UNICHECK_FILES_TABLE, [
             'cm'         => $this->cmid,
             'userid'     => $storedfile->get_userid(),
             'identifier' => $storedfile->get_pathnamehash(),
-        ));
+        ]);
 
         $storedfile->delete();
     }
@@ -340,7 +348,7 @@ class unicheck_core {
         global $USER, $DB;
 
         if ($uid !== null) {
-            return $DB->get_record('user', array('id' => $uid));
+            return $DB->get_record('user', ['id' => $uid]);
         }
 
         return $USER;

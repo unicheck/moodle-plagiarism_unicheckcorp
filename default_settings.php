@@ -43,7 +43,7 @@ $context = context_system::instance();
 
 $mform = new unicheck_defaults_form(null);
 // The cmid(0) is the default list.
-$defaults = $DB->get_records_menu(UNICHECK_CONFIG_TABLE, array('cm' => 0), '', 'name, value');
+$defaults = $DB->get_records_menu(UNICHECK_CONFIG_TABLE, ['cm' => 0], '', 'name, value');
 if (!empty($defaults)) {
     $mform->set_data($defaults);
 }
@@ -72,7 +72,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
             $newelement->value = $data->$element;
 
             if (isset($defaults[$element])) {
-                $newelement->id = $DB->get_field(UNICHECK_CONFIG_TABLE, 'id', (array('cm' => 0, 'name' => $element)));
+                $newelement->id = $DB->get_field(UNICHECK_CONFIG_TABLE, 'id', (['cm' => 0, 'name' => $element]));
                 $DB->update_record(UNICHECK_CONFIG_TABLE, $newelement);
             } else {
                 $DB->insert_record(UNICHECK_CONFIG_TABLE, $newelement);

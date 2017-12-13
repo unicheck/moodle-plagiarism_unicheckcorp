@@ -17,6 +17,7 @@
  * Class unicheck_workshop
  *
  * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
  * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -51,8 +52,8 @@ class unicheck_workshop {
         global $USER, $DB;
 
         try {
-            $workshoprecord = $DB->get_record('workshop', array('id' => $cm->instance), '*', MUST_EXIST);
-            $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+            $workshoprecord = $DB->get_record('workshop', ['id' => $cm->instance], '*', MUST_EXIST);
+            $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
             $workshop = new workshop($workshoprecord, $cm, $course);
         } catch (\Exception $ex) {
             return false;

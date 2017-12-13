@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * view_tmpl_processed.php
  *
@@ -23,9 +24,8 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use plagiarism_unicheck\classes\services\report\unicheck_url;
 use plagiarism_unicheck\classes\unicheck_core;
-use plagiarism_unicheck\classes\unicheck_language;
-use plagiarism_unicheck\classes\unicheck_plagiarism_entity;
 use plagiarism_unicheck\classes\unicheck_settings;
 
 if (!defined('MOODLE_INTERNAL')) {
@@ -39,7 +39,7 @@ if (AJAX_SCRIPT) {
 }
 
 // Normal situation - Unicheck has successfully analyzed the file.
-$htmlparts = array('<span class="un_report">');
+$htmlparts = ['<span class="un_report">'];
 
 if (empty($cid) && !empty($linkarray['cmid'])) {
     $cid = $linkarray['cmid'];
@@ -53,7 +53,7 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
     );
 
     // This is a teacher viewing the responses.
-    $canviewsimilarity = unicheck_core::can('plagiarism/unicheck:viewsimilarity', $cid);
+    $canviewsimilarity = unicheck_core::can('plagiarism/unicheck:viewsimilarity', $cid, $USER->id);
     $assigncfg = unicheck_settings::get_assign_settings($cid, null, true);
 
     if (isset($fileobj->similarityscore)) {
@@ -67,28 +67,15 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
     }
 
     if (!empty($fileobj->reporturl)) {
-
-        if ($fileobj->type == unicheck_plagiarism_entity::TYPE_ARCHIVE) {
-            $reporturl = new \moodle_url($fileobj->reporturl);
-            $editreporturl = new \moodle_url($fileobj->reportediturl);
-        } else {
-            $reporturl = $fileobj->reporturl;
-            $editreporturl = $fileobj->reportediturl;
-
-            unicheck_language::inject_language_to_url($reporturl);
-            unicheck_core::inject_comment_token($reporturl, $cid);
-
-            unicheck_language::inject_language_to_url($editreporturl);
-            unicheck_core::inject_comment_token($editreporturl, $cid);
-        }
-
-        $canviewreport = unicheck_core::can('plagiarism/unicheck:viewreport', $cid);
+        $canviewreport = unicheck_core::can('plagiarism/unicheck:viewreport', $cid, $USER->id);
         if ($canviewreport || $assigncfg[unicheck_settings::SHOW_STUDENT_REPORT]) {
-            $canvieweditreport = unicheck_core::can('plagiarism/unicheck:vieweditreport', $cid);
+            $reporturl = new unicheck_url($fileobj);
+            $canvieweditreport = unicheck_core::can('plagiarism/unicheck:vieweditreport', $cid, $USER->id);
             // Display opt-out link.
             $htmlparts[] = '&nbsp;<span class"plagiarismoptout">';
             $htmlparts[] = sprintf('<a title="%s" href="%s" target="_blank">',
-                plagiarism_unicheck::trans('report'), $canvieweditreport ? $editreporturl : $reporturl
+                plagiarism_unicheck::trans('report'),
+                $canvieweditreport ? $reporturl->get_edit_url($cid) : $reporturl->get_view_url($cid)
             );
             $htmlparts[] = '<img class="un_tooltip" src="' . $OUTPUT->pix_url('link', UNICHECK_PLAGIN_NAME) . '">';
             $htmlparts[] = '</a></span>';

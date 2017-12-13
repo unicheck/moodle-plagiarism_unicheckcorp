@@ -23,6 +23,7 @@
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 use plagiarism_unicheck\classes\unicheck_notification;
 
 require_once(dirname(dirname(__FILE__)) . '/../config.php');

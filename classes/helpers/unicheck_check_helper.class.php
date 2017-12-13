@@ -17,6 +17,7 @@
  * Class unicheck_check_helper
  *
  * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
  * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -24,10 +25,11 @@
 
 namespace plagiarism_unicheck\classes\helpers;
 
+use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
+use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\unicheck_api;
 use plagiarism_unicheck\classes\unicheck_core;
 use plagiarism_unicheck\classes\unicheck_notification;
-use plagiarism_unicheck\classes\unicheck_plagiarism_entity;
 use plagiarism_unicheck\classes\unicheck_settings;
 
 if (!defined('MOODLE_INTERNAL')) {
@@ -37,6 +39,9 @@ if (!defined('MOODLE_INTERNAL')) {
 /**
  * Class unicheck_check_helper
  *
+ * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -47,20 +52,21 @@ class unicheck_check_helper {
      * @param \stdClass $record
      * @param \stdClass $check
      * @param int       $progress
+     * @return bool
      */
     public static function check_complete(\stdClass &$record, \stdClass $check, $progress = 100) {
         global $DB;
 
         if ($progress == 100) {
-            $record->statuscode = UNICHECK_STATUSCODE_PROCESSED;
+            $record->state = unicheck_file_state::CHECKED;
         }
 
-        $record->similarityscore = (float) $check->report->similarity;
+        $record->similarityscore = (float)$check->report->similarity;
         $record->reporturl = $check->report->view_url;
         $record->reportediturl = $check->report->view_edit_url;
         $record->progress = round($progress, 0, PHP_ROUND_HALF_DOWN);
 
-        $updated = $DB->update_record(UNICHECK_FILES_TABLE, $record);
+        $updated = unicheck_file_provider::save($record);
 
         $emailstudents = unicheck_settings::get_assign_settings($record->cm, 'unicheck_studentemail');
         if ($updated && !empty($emailstudents)) {
@@ -68,13 +74,9 @@ class unicheck_check_helper {
         }
 
         if ($updated && $record->parent_id !== null) {
-            $parentrecord = $DB->get_record(UNICHECK_FILES_TABLE, array('id' => $record->parent_id));
-            $childs = $DB->get_records_select(UNICHECK_FILES_TABLE, "parent_id = ? AND statuscode in (?,?,?)",
-                array(
-                    $record->parent_id, UNICHECK_STATUSCODE_PROCESSED, UNICHECK_STATUSCODE_ACCEPTED,
-                    UNICHECK_STATUSCODE_PENDING,
-                )
-            );
+            $parentrecord = $DB->get_record(UNICHECK_FILES_TABLE, ['id' => $record->parent_id]);
+            $childs = $DB->get_records_select(UNICHECK_FILES_TABLE, "parent_id = ? AND state not in (?)",
+                [$record->parent_id, unicheck_file_state::HAS_ERROR]);
 
             $similarity = 0;
             $parentprogress = 0;
@@ -84,75 +86,45 @@ class unicheck_check_helper {
             }
 
             $parentprogress = round($parentprogress / count($childs), 2, PHP_ROUND_HALF_DOWN);
-            $reporturl = new \moodle_url('/plagiarism/unicheck/reports.php', array(
+            $reporturl = new \moodle_url('/plagiarism/unicheck/reports.php', [
                 'cmid' => $parentrecord->cm,
                 'pf'   => $parentrecord->id,
-            ));
+            ]);
 
-            $parentcheck = array(
-                'report' => array(
+            $parentcheck = [
+                'report' => [
                     'similarity'    => round($similarity / count($childs), 2, PHP_ROUND_HALF_DOWN),
-                    'view_url'      => (string) $reporturl->out_as_local_url(),
-                    'view_edit_url' => (string) $reporturl->out_as_local_url(),
-                ),
-            );
+                    'view_url'      => (string)$reporturl->out_as_local_url(),
+                    'view_edit_url' => (string)$reporturl->out_as_local_url(),
+                ],
+            ];
 
             $parentcheck = json_decode(json_encode($parentcheck));
             self::check_complete($parentrecord, $parentcheck, $parentprogress);
         }
-    }
 
-    /**
-     * upload_and_run_detection
-     *
-     * @param unicheck_plagiarism_entity $plagiarismentity
-     *
-     * @return bool
-     */
-    public static function upload_and_run_detection($plagiarismentity) {
-        if (!$plagiarismentity) {
-            return false;
-        }
-
-        $internalfile = $plagiarismentity->upload_file_on_server();
-        if ($internalfile->statuscode == UNICHECK_STATUSCODE_INVALID_RESPONSE) {
-            return false;
-        }
-
-        if (isset($internalfile->check_id)) {
-            print_error('File with uuid' . $internalfile->identifier . ' already sent to Unicheck');
-        } else {
-            $checkresp = unicheck_api::instance()->run_check($internalfile);
-            $plagiarismentity->handle_check_response($checkresp);
-            mtrace('file ' . $internalfile->identifier . ' send to Unicheck');
-        }
-
-        return true;
+        return $updated;
     }
 
     /**
      * run_plagiarism_detection
      *
-     * @param unicheck_plagiarism_entity $plagiarismentity
-     * @param object                     $internalfile
+     * @param \stdClass $plagiarismfile
      */
-    public static function run_plagiarism_detection($plagiarismentity, $internalfile) {
-        if (!$plagiarismentity) {
-            return;
-        }
-
-        if (isset($internalfile->external_file_id)) {
-            if ($internalfile->check_id) {
-                unicheck_api::instance()->delete_check($internalfile);
+    public static function run_plagiarism_detection(\stdClass $plagiarismfile) {
+        if (isset($plagiarismfile->external_file_id)) {
+            if ($plagiarismfile->check_id) {
+                unicheck_api::instance()->delete_check($plagiarismfile);
             }
 
             unicheck_notification::success('plagiarism_run_success', true);
 
-            $checkresp = unicheck_api::instance()->run_check($internalfile);
-            $plagiarismentity->handle_check_response($checkresp);
+            unicheck_response::handle_check_response(unicheck_api::instance()->run_check($plagiarismfile), $plagiarismfile);
         } else {
-            $error = unicheck_core::parse_json($internalfile->errorresponse);
-            unicheck_notification::error('Can\'t run check: ' . $error[0]->message, false);
+            $error = unicheck_core::parse_json($plagiarismfile->errorresponse);
+            if (isset($error[0]) && is_object($error[0])) {
+                unicheck_notification::error('Can\'t run check: ' . $error[0]->message, false);
+            }
         }
     }
 }

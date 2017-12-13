@@ -33,7 +33,7 @@ if (AJAX_SCRIPT) {
     $PAGE->set_context(null);
 }
 
-$htmlparts = array('<span class="un_report">');
+$htmlparts = ['<span class="un_report">'];
 $htmlparts[] = sprintf('<img  width="32" height="32" src="%s" title="%s"> ',
     $OUTPUT->pix_url('logo', UNICHECK_PLAGIN_NAME), plagiarism_unicheck::trans('pluginname')
 );
