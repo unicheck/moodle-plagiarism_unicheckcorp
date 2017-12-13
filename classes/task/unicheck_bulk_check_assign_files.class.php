@@ -25,7 +25,8 @@
 namespace plagiarism_unicheck\classes\task;
 
 use plagiarism_unicheck\classes\entities\unicheck_archive;
-use plagiarism_unicheck\classes\unicheck_api;
+use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
+use plagiarism_unicheck\classes\unicheck_adhoc;
 use plagiarism_unicheck\classes\unicheck_assign;
 use plagiarism_unicheck\classes\unicheck_core;
 
@@ -35,72 +36,63 @@ if (!defined('MOODLE_INTERNAL')) {
 
 /**
  * Class unicheck_bulk_check_assign_files
+ *
  * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unicheck_bulk_check_assign_files extends unicheck_abstract_task {
-    /** @var  \stored_file */
-    private $assignfile;
+    /** @var  unicheck_core */
+    private $ucore;
 
     /**
-     * Execute task
+     * Execute of adhoc task
      */
     public function execute() {
         $data = $this->get_custom_data();
 
-        $assignfiles = unicheck_assign::get_area_files($data->contextid);
+        $storedfiles = unicheck_assign::get_area_files($data->contextid);
 
-        if (empty($assignfiles)) {
+        if (empty($storedfiles)) {
             return;
         }
 
-        foreach ($assignfiles as $this->assignfile) {
-            if (unicheck_assign::is_draft($this->assignfile->get_itemid())) {
+        foreach ($storedfiles as $storedfile) {
+            if (unicheck_assign::is_draft($storedfile->get_itemid())) {
                 continue;
             }
 
-            $this->ucore = new unicheck_core($data->cmid, $this->assignfile->get_userid());
+            $this->ucore = new unicheck_core($data->cmid, $storedfile->get_userid(), $this->get_modname($data));
+            $plagiarismfile = $this->get_plagiarism_file($storedfile);
+            if (!$plagiarismfile || $plagiarismfile->state !== unicheck_file_state::CREATED) {
+                continue;
+            }
 
-            $pattern = '%s with uuid ' . $this->assignfile->get_pathnamehash() . ' ready to send';
-            if (\plagiarism_unicheck::is_archive($this->assignfile)) {
-                mtrace(sprintf($pattern, 'Archive'));
-                $this->handle_archive($data->cmid);
+            if (\plagiarism_unicheck::is_archive($storedfile)) {
+                (new unicheck_archive($storedfile, $this->ucore))->upload();
             } else {
-                mtrace(sprintf($pattern, 'File'));
-                $this->handle_non_archive();
+                unicheck_adhoc::upload($storedfile, $this->ucore);
             }
         }
     }
 
     /**
-     * Process archives
+     * Get plagiarism file
      *
-     * @param int $contextid
+     * @param \stored_file $storedfile
+     * @return null|object
      */
-    private function handle_archive($contextid) {
-        if (!is_null(unicheck_core::get_file_by_hash($contextid, $this->assignfile->get_pathnamehash()))) {
-            mtrace('... archive already sent to Unicheck');
+    private function get_plagiarism_file(\stored_file $storedfile) {
+        $plagiarismentity = $this->ucore->get_plagiarism_entity($storedfile);
+        $plagiarismfile = $plagiarismentity->get_internal_file();
+        if (!$plagiarismfile) {
+            mtrace("... Can't process stored file {$storedfile->get_id()}");
 
-            return;
+            return null;
         }
 
-        (new unicheck_archive($this->assignfile, $this->ucore))->run_checks();
-        mtrace('... archive send to Unicheck');
-    }
-
-    /**
-     * Process files besides archives
-     */
-    private function handle_non_archive() {
-        $plagiarismentity = $this->ucore->get_plagiarism_entity($this->assignfile);
-        $internalfile = $plagiarismentity->upload_file_on_server();
-        if (isset($internalfile->check_id)) {
-            mtrace('... file already sent to Unicheck');
-        } else if ($internalfile->external_file_id) {
-            $checkresp = unicheck_api::instance()->run_check($internalfile);
-            $plagiarismentity->handle_check_response($checkresp);
-            mtrace('... file send to Unicheck');
-        }
+        return $plagiarismfile;
     }
 }

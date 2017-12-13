@@ -15,25 +15,40 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * view_tabs.php - tabs used in admin interface.
+ * ajax.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>
+ * @author      Aleksandr Kostylev <v.titov@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-if (!defined('MOODLE_INTERNAL')) {
-    die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
+
+define('AJAX_SCRIPT', true);
+
+require_once(dirname(__FILE__) . '/../../config.php');
+require_once(dirname(__FILE__) . '/locallib.php');
+
+$token = optional_param('token', '', PARAM_RAW);
+if (!$token) {
+    require_login();
+    require_sesskey();
 }
 
-$strplagiarism = plagiarism_unicheck::trans('unicheck');
-$strplagiarismdefaults = plagiarism_unicheck::trans('unicheckdefaults');
-$strplagiarismdebug = plagiarism_unicheck::trans('unicheckdebug');
+$body = \plagiarism_unicheck\classes\unicheck_core::parse_json(file_get_contents('php://input'));
+if (!is_object($body)) {
+    http_response_code(400);
+    echo 'Invalid callback body';
 
-$tabs = [
-    new tabobject('unichecksettings', 'settings.php', $strplagiarism, $strplagiarism, false),
-    new tabobject('unicheckdefaults', 'default_settings.php', $strplagiarismdefaults, $strplagiarismdefaults, false),
-    new tabobject('unicheckdebug', 'debugging.php', $strplagiarismdebug, $strplagiarismdebug, false),
-];
-print_tabs([$tabs], $currenttab);
+    die;
+}
+
+$callback = new \plagiarism_unicheck\classes\unicheck_callback();
+try {
+    $callback->handle($body, $token);
+} catch (\Exception $exception) {
+    http_response_code(400);
+    throw $exception;
+}
+
+die;

@@ -37,8 +37,11 @@ if (!defined('MOODLE_INTERNAL')) {
  * Class unicheck_event_submission_updated
  *
  * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
  */
 class unicheck_event_submission_updated extends unicheck_abstract_event {
     /**
@@ -61,14 +64,19 @@ class unicheck_event_submission_updated extends unicheck_abstract_event {
             return false;
         }
         $newstatus = $event->other['newstatus'];
-        $core->userid = $event->relateduserid;
+        if (!$event->relateduserid) {
+            $core->enable_teamsubmission();
+        } else {
+            $core->userid = $event->relateduserid;
+        }
+
         if ($newstatus == self::DRAFT_STATUS) {
             $unfiles = \plagiarism_unicheck::get_area_files($event->contextid, UNICHECK_DEFAULT_FILES_AREA, $event->objectid);
             $assignfiles = unicheck_assign::get_area_files($event->contextid, $event->objectid);
 
             $files = array_merge($unfiles, $assignfiles);
 
-            $ids = array();
+            $ids = [];
             foreach ($files as $file) {
                 $plagiarismentity = $core->get_plagiarism_entity($file);
                 $internalfile = $plagiarismentity->get_internal_file();

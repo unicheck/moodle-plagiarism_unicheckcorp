@@ -33,6 +33,8 @@ if (!defined('MOODLE_INTERNAL')) {
  * Class unicheck_autoloader
  *
  * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -55,4 +57,4 @@ class unicheck_autoloader {
     }
 }
 
-spl_autoload_register(array('plagiarism_unicheck\library\unicheck_autoloader', 'init'));
+spl_autoload_register(['plagiarism_unicheck\library\unicheck_autoloader', 'init']);

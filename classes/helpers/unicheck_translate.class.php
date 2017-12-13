@@ -17,7 +17,8 @@
  * Class unicheck_translate
  *
  * @package     plagiarism_unicheck
- * @author      Vadim Titov <v.titov@p1k.co.uk>
+ * @subpackage  plagiarism
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -32,6 +33,8 @@ if (!defined('MOODLE_INTERNAL')) {
  * Class unicheck_translate
  *
  * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ * @author      Vadim Titov <v.titov@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -66,8 +69,11 @@ trait unicheck_translate {
             }
         }
 
-        $error = isset($error['extra_params']) ? self::trans($error['extra_params']) : $error['message'];
+        $message = $error['message'];
+        if (isset($error['extra_params']) && !is_array($error['extra_params'])) {
+            $message = self::trans($error['extra_params']);
+        }
 
-        return isset($translates->{$error}) ? $translates->{$error} : $error;
+        return isset($translates->{$message}) ? $translates->{$message} : $error['message'];
     }
 }
