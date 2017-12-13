@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * unicheck_plagiarism_entity.class.php
+ * unicheck_upload_helper.class.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
@@ -25,12 +25,15 @@
 
 namespace plagiarism_unicheck\classes\helpers;
 
+use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
+use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
+
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
 /**
- * Class unicheck_stored_file
+ * Class unicheck_upload_helper
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
@@ -38,40 +41,38 @@ if (!defined('MOODLE_INTERNAL')) {
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class unicheck_stored_file extends \stored_file {
+class unicheck_upload_helper {
     /**
-     * Get file pathname
+     * upload_complete
      *
-     * @param \stored_file $file
-     *
-     * @return string
+     * @param \stdClass $plagiarismfile
+     * @param \stdClass $responsefile
+     * @return bool
      */
-    public static function get_protected_pathname(\stored_file $file) {
-        return $file->get_pathname_by_contenthash();
-    }
-
-    /**
-     * Get file childs
-     *
-     * @param int $id
-     *
-     * @return array
-     */
-    public static function get_plagiarism_file_childs_by_id($id) {
+    public static function upload_complete(\stdClass & $plagiarismfile, \stdClass $responsefile) {
         global $DB;
 
-        return $DB->get_records_list(UNICHECK_FILES_TABLE, 'parent_id', [$id]);
-    }
+        $plagiarismfile->external_file_id = $responsefile->id;
+        $plagiarismfile->state = unicheck_file_state::UPLOADED;
+        $plagiarismfile->errorresponse = null;
 
-    /**
-     * get_plagiarism_file_by_identifier
-     *
-     * @param string $identifier
-     * @return mixed
-     */
-    public static function get_plagiarism_file_by_identifier($identifier) {
-        global $DB;
+        $updated = unicheck_file_provider::save($plagiarismfile);
+        if (!$updated) {
+            return false;
+        }
 
-        return $DB->get_record(UNICHECK_FILES_TABLE, ['identifier' => $identifier], '*', MUST_EXIST);
+        if ($plagiarismfile->parent_id !== null) {
+            $parentrecord = unicheck_file_provider::get_by_id($plagiarismfile->parent_id);
+            $childs = $DB->get_records_select(UNICHECK_FILES_TABLE, "parent_id = ? AND state in (?)",
+                [$plagiarismfile->parent_id, unicheck_file_state::UPLOADING]);
+
+            if (!count($childs)) {
+                $parentrecord->state = unicheck_file_state::UPLOADED;
+                $plagiarismfile->errorresponse = null;
+                unicheck_file_provider::save($parentrecord);
+            }
+        }
+
+        return $updated;
     }
 }

@@ -24,6 +24,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use plagiarism_unicheck\classes\entities\unicheck_archive;
 use plagiarism_unicheck\classes\unicheck_settings;
 
 if (!defined('MOODLE_INTERNAL')) {
@@ -53,7 +54,7 @@ class unicheck_setup_form extends moodleform {
         $settingstext = '<div id="fitem_id_settings_link" class="fitem fitem_ftext ">
                             <div class="felement ftext">
                                 <a href="' . UNICHECK_DOMAIN . 'profile/apisettings" target="_blank"> '
-                                    . plagiarism_unicheck::trans('unicheck_settings_url_text') . '
+            . plagiarism_unicheck::trans('unicheck_settings_url_text') . '
                                 </a>
                             </div>
                         </div>';
@@ -130,14 +131,14 @@ class unicheck_defaults_form extends moodleform {
         /** @var MoodleQuickForm $mform */
         $mform = &$this->_form;
 
-        $defaultsforfield = function (MoodleQuickForm &$mform, $setting, $defaultvalue) {
+        $defaultsforfield = function(MoodleQuickForm &$mform, $setting, $defaultvalue) {
             if (!isset($mform->exportValues()[$setting]) || is_null($mform->exportValues()[$setting])) {
                 $mform->setDefault($setting, $defaultvalue);
             }
         };
 
-        $addyesnoelem = function ($setting, $showhelpballoon = false, $defaultvalue = null) use (&$mform, $defaultsforfield) {
-            $ynoptions = array(get_string('no'), get_string('yes'));
+        $addyesnoelem = function($setting, $showhelpballoon = false, $defaultvalue = null) use (&$mform, $defaultsforfield) {
+            $ynoptions = [get_string('no'), get_string('yes')];
             $mform->addElement('select', $setting, plagiarism_unicheck::trans($setting), $ynoptions);
             if ($showhelpballoon) {
                 $mform->addHelpButton($setting, $setting, UNICHECK_PLAGIN_NAME);
@@ -148,7 +149,7 @@ class unicheck_defaults_form extends moodleform {
             }
         };
 
-        $addtextelem = function ($setting, $defaultvalue = null) use ($defaultsforfield, &$mform) {
+        $addtextelem = function($setting, $defaultvalue = null) use ($defaultsforfield, &$mform) {
             $mform->addElement('text', $setting, plagiarism_unicheck::trans($setting));
             $mform->addHelpButton($setting, $setting, UNICHECK_PLAGIN_NAME);
             $mform->setType($setting, PARAM_TEXT);
@@ -166,12 +167,12 @@ class unicheck_defaults_form extends moodleform {
 
         $addyesnoelem(unicheck_settings::USE_UNICHECK, true);
 
-        if (!in_array($this->modname, array(UNICHECK_MODNAME_FORUM, UNICHECK_MODNAME_WORKSHOP))) {
+        if (!in_array($this->modname, [UNICHECK_MODNAME_FORUM, UNICHECK_MODNAME_WORKSHOP])) {
             $addyesnoelem(unicheck_settings::CHECK_ALL_SUBMITTED_ASSIGNMENTS, true);
             $addyesnoelem(unicheck_settings::NO_INDEX_FILES, true);
         }
 
-        $checktypedata = array();
+        $checktypedata = [];
         foreach (unicheck_settings::$supportedchecktypes as $checktype) {
             $checktypedata[$checktype] = plagiarism_unicheck::trans($checktype);
         }
@@ -185,11 +186,23 @@ class unicheck_defaults_form extends moodleform {
         $addyesnoelem(unicheck_settings::EXCLUDE_CITATIONS, true, 1);
         $addyesnoelem(unicheck_settings::SHOW_STUDENT_SCORE, true);
         $addyesnoelem(unicheck_settings::SHOW_STUDENT_REPORT, true);
+        $addtextelem(unicheck_settings::MAX_SUPPORTED_ARCHIVE_FILES_COUNT, 10);
 
         $mform::registerRule('range', null, new unicheck_form_rule_range);
 
         $mform->addRule(unicheck_settings::WORDS_SENSITIVITY, 'Invalid value range. Allowed 8-999',
-            'range', array('min' => 8, 'max' => 999), 'server'
+            'range', ['min' => 8, 'max' => 999], 'server'
+        );
+
+        $min = unicheck_archive::MIN_SUPPORTED_FILES_COUNT;
+        $max = unicheck_archive::MAX_SUPPORTED_FILES_COUNT;
+        $mform->addRule(
+            unicheck_settings::MAX_SUPPORTED_ARCHIVE_FILES_COUNT,
+            "Invalid value range. Allowed $min-$max",
+            'range',
+            ['min' => $min, 'max' => $max],
+            'server',
+            true
         );
 
         if (!$this->internalusage) {

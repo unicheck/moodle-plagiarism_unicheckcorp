@@ -26,32 +26,21 @@ namespace plagiarism_unicheck\classes\task;
 
 use core\task\adhoc_task;
 use core\task\manager;
-use plagiarism_unicheck\classes\entities\unicheck_archive;
-use plagiarism_unicheck\classes\helpers\unicheck_check_helper;
-use plagiarism_unicheck\classes\plagiarism\unicheck_content;
-use plagiarism_unicheck\classes\unicheck_core;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
 /**
- * Interface unicheck_abstract_task
+ * Abstract unicheck_abstract_task
  *
  * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class unicheck_abstract_task extends adhoc_task {
-    /**
-     * @var unicheck_core
-     */
-    protected $ucore;
-    /**
-     * @var object
-     */
-    protected $archiveinternalfile;
-
     /**
      * Add new task for execution
      *
@@ -68,25 +57,27 @@ abstract class unicheck_abstract_task extends adhoc_task {
     }
 
     /**
-     * process_archive_item
+     * Get modname of executed task
      *
-     * @param array $item
+     * @param \object $data
+     *
+     * @return null|string
      */
-    protected function process_archive_item(array $item) {
-        $content = file_get_contents($item['path']);
-        $plagiarismentity = new unicheck_content(
-            $this->ucore,
-            $content,
-            $item['filename'],
-            $item['format'],
-            $this->archiveinternalfile->id
-        );
-        $plagiarismentity->get_internal_file();
+    protected function get_modname($data) {
 
-        unicheck_check_helper::upload_and_run_detection($plagiarismentity);
+        if (isset($data->modname)) {
+            return $data->modname;
+        }
 
-        unset($plagiarismentity, $content);
+        if (!isset($data->cmid)) {
+            return null;
+        }
 
-        unicheck_archive::unlink($item['path']);
+        $cm = get_coursemodule_from_id('', $data->cmid);
+        if (!$cm) {
+            return null;
+        }
+
+        return $cm->modname;
     }
 }

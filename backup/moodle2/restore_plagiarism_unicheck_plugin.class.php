@@ -27,6 +27,9 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Class restore_plagiarism_unicheck_plugin
  *
+ * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -37,7 +40,7 @@ class restore_plagiarism_unicheck_plugin extends restore_plagiarism_plugin {
      * @param mixed $data
      */
     public function process_unicheckconfig($data) {
-        $data = (object) $data;
+        $data = (object)$data;
 
         set_config($this->task->get_courseid(), $data->value, $data->plugin);
     }
@@ -50,7 +53,7 @@ class restore_plagiarism_unicheck_plugin extends restore_plagiarism_plugin {
     public function process_unicheckconfigmod($data) {
         global $DB;
 
-        $data = (object) $data;
+        $data = (object)$data;
         $data->cm = $this->task->get_moduleid();
 
         $DB->insert_record(UNICHECK_CONFIG_TABLE, $data);
@@ -64,7 +67,7 @@ class restore_plagiarism_unicheck_plugin extends restore_plagiarism_plugin {
     public function process_unicheckfiles($data) {
         global $DB;
 
-        $data = (object) $data;
+        $data = (object)$data;
         $data->cm = $this->task->get_moduleid();
         $data->userid = $this->get_mappingid('user', $data->userid);
 
@@ -75,7 +78,7 @@ class restore_plagiarism_unicheck_plugin extends restore_plagiarism_plugin {
      * Returns the paths to be handled by the plugin at question level.
      */
     protected function define_course_plugin_structure() {
-        $paths = array();
+        $paths = [];
 
         // Add own format stuff.
         $elename = 'unicheckconfig';
@@ -89,7 +92,7 @@ class restore_plagiarism_unicheck_plugin extends restore_plagiarism_plugin {
      * Returns the paths to be handled by the plugin at module level.
      */
     protected function define_module_plugin_structure() {
-        $paths = array();
+        $paths = [];
 
         // Add own format stuff.
         $elename = 'unicheckconfigmod';
