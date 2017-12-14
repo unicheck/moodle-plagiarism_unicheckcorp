@@ -33,11 +33,11 @@ before_install:
   - nvm use 8.9
   - cd ../..
   - composer selfupdate
+  - if [ -n "$GITHUB_APITOKEN" ]; then composer global config github-oauth.github.com $GITHUB_APITOKEN; fi
   - composer create-project -n --no-dev --prefer-dist moodlerooms/moodle-plugin-ci ci ^2
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
 
 install:
-  - if [ -n "$GITHUB_APITOKEN" ]; then composer config github-oauth.github.com $GITHUB_APITOKEN; fi
   - moodle-plugin-ci install
 
 script:
