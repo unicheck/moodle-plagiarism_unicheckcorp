@@ -80,24 +80,23 @@ class unicheck_upload_task extends unicheck_abstract_task {
             return;
         }
 
-        $modname = $this->get_modname($data->ucore);
-        $this->ucore = new unicheck_core($data->ucore->cmid, $data->ucore->userid, $modname);
-        if ($modname == UNICHECK_MODNAME_ASSIGN
-            && (bool)unicheck_assign::get_by_cmid($this->ucore->cmid)->teamsubmission) {
-            $this->ucore->enable_teamsubmission();
-        }
-
-        $file = get_file_storage()->get_file_by_hash($data->pathnamehash);
-        $this->internalfile = $this->ucore->get_plagiarism_entity($file)->get_internal_file();
-
-        if (!\plagiarism_unicheck::is_archive($file)) {
-            $this->process_single_file($file);
-            unset($this->ucore, $file);
-
-            return;
-        }
-
         try {
+            $modname = $this->get_modname($data->ucore);
+            $this->ucore = new unicheck_core($data->ucore->cmid, $data->ucore->userid, $modname);
+            if ($modname == UNICHECK_MODNAME_ASSIGN
+                && (bool)unicheck_assign::get_by_cmid($this->ucore->cmid)->teamsubmission) {
+                $this->ucore->enable_teamsubmission();
+            }
+
+            $file = get_file_storage()->get_file_by_hash($data->pathnamehash);
+            $this->internalfile = $this->ucore->get_plagiarism_entity($file)->get_internal_file();
+
+            if (!\plagiarism_unicheck::is_archive($file)) {
+                $this->process_single_file($file);
+
+                return;
+            }
+
             $maxsupportedcount = unicheck_settings::get_assign_settings(
                 $this->ucore->cmid,
                 unicheck_settings::MAX_SUPPORTED_ARCHIVE_FILES_COUNT
@@ -128,11 +127,14 @@ class unicheck_upload_task extends unicheck_abstract_task {
                 throw new unicheck_exception(unicheck_exception::ARCHIVE_IS_EMPTY);
             }
         } catch (\Exception $e) {
-            unicheck_file_provider::to_error_state($this->internalfile, $e->getMessage());
-            mtrace('Archive error ' . $e->getMessage());
-        }
+            if ($this->internalfile) {
+                unicheck_file_provider::to_error_state($this->internalfile, $e->getMessage());
+            } else {
+                unicheck_file_provider::to_error_state_by_pathnamehash($data->pathnamehash, $e->getMessage());
+            }
 
-        unset($this->ucore, $file);
+            mtrace("File {$data->pathnamehash}(pathnamehash) processing error: " . $e->getMessage());
+        }
     }
 
     /**
