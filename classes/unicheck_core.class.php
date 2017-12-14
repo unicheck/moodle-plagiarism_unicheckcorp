@@ -17,6 +17,7 @@
  * Class unicheck_core
  *
  * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
  * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -29,6 +30,7 @@ use core\event\base;
 use plagiarism_unicheck;
 use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\entities\unicheck_archive;
+use plagiarism_unicheck\classes\exception\unicheck_exception;
 use plagiarism_unicheck\classes\plagiarism\unicheck_file;
 
 if (!defined('MOODLE_INTERNAL')) {
@@ -131,12 +133,12 @@ class unicheck_core {
      * get_plagiarism_entity
      *
      * @param \stored_file $file
-     *
-     * @return null|unicheck_file|unicheck_plagiarism_entity
+     * @return unicheck_file|unicheck_plagiarism_entity
+     * @throws unicheck_exception
      */
     public function get_plagiarism_entity($file) {
         if (empty($file)) {
-            return null;
+            throw new unicheck_exception(unicheck_exception::FILE_NOT_FOUND);
         }
 
         $this->plagiarismentity = new unicheck_file($this, $file);
