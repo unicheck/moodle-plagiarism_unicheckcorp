@@ -37,11 +37,7 @@ before_install:
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
 
 install:
-  - >
-        if [ -n "$GITHUB_APITOKEN" ]; then
-            composer config github-oauth.github.com $GITHUB_APITOKEN;
-            echo 'auth.json' >> .git/info/exclude
-        fi
+  - if [ -n "$GITHUB_APITOKEN" ]; then composer config github-oauth.github.com $GITHUB_APITOKEN; fi
   - moodle-plugin-ci install
 
 script:
