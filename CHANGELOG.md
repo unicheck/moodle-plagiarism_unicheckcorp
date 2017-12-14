@@ -6,15 +6,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [1.2.1] - 2017-12-14
 ### Added
-- tests
+- Add unit tests
 
 ### Fixed
-- Process upload task for deleted file after assign resubmit
+- Catch and skip deleted files after assignment resubmit, while cron hasn't run
 
 ## [1.2.0] - 2017-12-01
 ### Added
 - Async upload
-- Upload/ Check adhoc tasks
+- Upload/Check adhoc tasks
 - Max supported archive files setting
 - File states
 - File upload callback handle
@@ -31,12 +31,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [1.0.1] - 2017-09-12
 ### Removed
-- remove old db migration 1.x (#2)
+- Remove old db migration 1.x (#2)
 
 ## [1.0.0] - 2017-09-07
 ### Changed
 - Renaming, based on [Unplag Plagiarism plugin for Moodle](https://moodle.org/plugins/plagiarism_unplag)
-- change validation mode
+- Change validation mode
+- Massive refactoring comparing to Unplag plugin
 
 [1.2.1]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v1.2.1
 [1.2.0]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v1.2.0
