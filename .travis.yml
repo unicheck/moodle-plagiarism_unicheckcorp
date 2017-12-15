@@ -7,10 +7,17 @@ cache:
     - $HOME/.composer/cache
     - $HOME/.npm
 
+addons:
+  postgresql: "9.6"
+  packages:
+    - mysql-server-5.6
+    - mysql-client-core-5.6
+    - mysql-client-5.6
+
 php:
  # We only run the highest and lowest supported versions to reduce the load on travis-ci.org.
  - 7.0
- - 7.2
+ - 7.1
 
 env:
   matrix:
@@ -21,10 +28,12 @@ env:
 
 before_install:
   - phpenv config-rm xdebug.ini
+  - pecl install rar
   - nvm install 8.9
   - nvm use 8.9
   - cd ../..
   - composer selfupdate
+  - if [ -n "$GITHUB_APITOKEN" ]; then composer global config github-oauth.github.com $GITHUB_APITOKEN; fi
   - composer create-project -n --no-dev --prefer-dist moodlerooms/moodle-plugin-ci ci ^2
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
 
