@@ -36,6 +36,10 @@ Copyright: UKU Group, LTD, https://www.unicheck.com
  - For supporting RAR archives you have to install php-ext using command 
 `pecl install rar`. Find more info on [php.net](http://php.net/manual/en/rar.installation.php).
 
+ - We use URL `https://<moodle_server_domain>/plagiarism/unicheck/callback.php?token={token}>` as listener for HTTP callbacks 
+that receive notification messages for events (FILE_UPLOAD_ERROR, etc). If this address is available only in private network, 
+you must open it for the network _5.39.49.208/28_
+
 #### Upgrading from *Unplag Plagiarism plugin for Moodle*
 
 1. Update [Unplag Plagiarism plugin for Moodle](https://moodle.org/plugins/plagiarism_unplag) to version 3.0.0 or higher 
