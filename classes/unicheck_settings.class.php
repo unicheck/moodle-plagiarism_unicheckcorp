@@ -41,53 +41,55 @@ if (!defined('MOODLE_INTERNAL')) {
  */
 class unicheck_settings {
     /**
-     * SENSITIVITY_SETTING_NAME
+     * Enable Unicheck Plagiarism Service
+     */
+    const ENABLE_UNICHECK = 'use_unicheck';
+    /**
+     * Check already delivered assignment submissions
+     */
+    const CHECK_ALREADY_DELIVERED_ASSIGNMENT_SUBMISSIONS = 'check_all_submitted_assignments';
+    /**
+     * Add submissions to Institutional Library
+     */
+    const NO_INDEX_FILES = 'no_index_files';
+    /**
+     * Sources for comparison
+     */
+    const SOURCES_FOR_COMPARISON = 'check_type';
+    /**
+     * Exclude sources with a match less than (%)
      */
     const SENSITIVITY_SETTING_NAME = 'similarity_sensitivity';
     /**
-     * WORDS_SENSITIVITY
+     * Exclude sources with a match less than (words)
      */
     const WORDS_SENSITIVITY = 'similarity_words_sensitivity';
     /**
-     * USE_UNICHECK
+     * Exclude references and citations
      */
-    const USE_UNICHECK = 'use_unicheck';
+    const EXCLUDE_CITATIONS = 'exclude_citations';
     /**
-     * SHOW_STUDENT_SCORE
+     * Show similarity scores to student
      */
     const SHOW_STUDENT_SCORE = 'show_student_score';
     /**
-     * SHOW_STUDENT_REPORT
+     * Show similarity reports to student
      */
     const SHOW_STUDENT_REPORT = 'show_student_report';
+    /**
+     * Maximum number of files to be checked in archive
+     */
+    const MAX_SUPPORTED_ARCHIVE_FILES_COUNT = 'max_supported_archive_files_count';
+
     /**
      * DRAFT_SUBMIT
      */
     const DRAFT_SUBMIT = 'draft_submit';
     /**
-     * CHECK_TYPE
-     */
-    const CHECK_TYPE = 'check_type';
-    /**
-     * EXCLUDE_CITATIONS
-     */
-    const EXCLUDE_CITATIONS = 'exclude_citations';
-    /**
      * EXCLUDE_SELF_PLAGIARISM
      */
     const EXCLUDE_SELF_PLAGIARISM = 'exclude_self_plagiarism';
-    /**
-     * CHECK_ALL_SUBMITTED_ASSIGNMENTS
-     */
-    const CHECK_ALL_SUBMITTED_ASSIGNMENTS = 'check_all_submitted_assignments';
-    /**
-     * NO_INDEX_FILES
-     */
-    const NO_INDEX_FILES = 'no_index_files';
-    /**
-     * MAX_SUPPORTED_ARCHIVE_FILES_COUNT
-     */
-    const MAX_SUPPORTED_ARCHIVE_FILES_COUNT = 'max_supported_archive_files_count';
+
     /** @var array */
     public static $supportedchecktypes = [
         UNICHECK_CHECK_TYPE_WEB__LIBRARY,

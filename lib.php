@@ -26,10 +26,11 @@
 
 use plagiarism_unicheck\classes\entities\unicheck_archive;
 use plagiarism_unicheck\classes\helpers\unicheck_linkarray;
+use plagiarism_unicheck\classes\task\unicheck_bulk_check_assign_files;
 use plagiarism_unicheck\classes\unicheck_assign;
 use plagiarism_unicheck\classes\unicheck_core;
 use plagiarism_unicheck\classes\unicheck_settings;
-use plagiarism_unicheck\classes\task\unicheck_bulk_check_assign_files;
+use plagiarism_unicheck\classes\forms\module_form;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -75,7 +76,7 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
     public function get_links($linkarray) {
 
         if (!plagiarism_unicheck::is_plugin_enabled() || !unicheck_settings::get_assign_settings(
-                $linkarray['cmid'], unicheck_settings::USE_UNICHECK
+                $linkarray['cmid'], unicheck_settings::ENABLE_UNICHECK
             )
         ) {
             // Not allowed access to this content.
@@ -179,7 +180,7 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
      *
      */
     public static function config_options() {
-        $constants = (new ReflectionClass('plagiarism_unicheck\\classes\\unicheck_settings'))->getConstants();
+        $constants = (new ReflectionClass(unicheck_settings::class))->getConstants();
 
         return array_values($constants);
     }
@@ -215,12 +216,18 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
         }
 
         $cmid = optional_param('update', 0, PARAM_INT); // Get cm as $this->_cm is not available here.
+
+        file_put_contents('/tmp/moodle.log', print_r(
+            ['$cmid'    => $cmid,
+                                                      '$context' => $context,
+               // 'capabilities' => get_all_capabilities()
+            ], true), FILE_APPEND);
+
         $plagiarismelements = self::config_options();
         if (has_capability('plagiarism/unicheck:enable', $context)) {
-            require_once(dirname(__FILE__) . '/uform.php');
-            $uform = new unicheck_defaults_form($mform, $modulename);
-            $uform->set_data(unicheck_settings::get_assign_settings($cmid, null, true));
-            $uform->definition();
+            $settings_form = new module_form($mform, $modulename, $context);
+            $settings_form->set_data(unicheck_settings::get_assign_settings($cmid, null, true));
+            $settings_form->definition();
 
             if ($mform->elementExists('submissiondrafts')) {
                 // Disable all plagiarism elements if submissiondrafts eg 0.
@@ -249,8 +256,8 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
     private function disable_elements_if_not_use($plagiarismelements, $mform) {
         // Disable all plagiarism elements if use_plagiarism eg 0.
         foreach ($plagiarismelements as $element) {
-            if ($element <> unicheck_settings::USE_UNICHECK) { // Ignore this var.
-                $mform->disabledIf($element, unicheck_settings::USE_UNICHECK, 'eq', 0);
+            if ($element <> unicheck_settings::ENABLE_UNICHECK) { // Ignore this var.
+                $mform->disabledIf($element, unicheck_settings::ENABLE_UNICHECK, 'eq', 0);
             }
         }
     }
@@ -264,7 +271,7 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
     private function add_plagiarism_hidden_vars($plagiarismelements, $mform) {
         foreach ($plagiarismelements as $element) {
             $mform->addElement('hidden', $element);
-            $mform->setType(unicheck_settings::USE_UNICHECK, PARAM_INT);
+            $mform->setType(unicheck_settings::ENABLE_UNICHECK, PARAM_INT);
             $mform->setType(unicheck_settings::SHOW_STUDENT_SCORE, PARAM_INT);
             $mform->setType(unicheck_settings::SHOW_STUDENT_REPORT, PARAM_INT);
             $mform->setType(unicheck_settings::DRAFT_SUBMIT, PARAM_INT);
@@ -283,7 +290,7 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
 
         $outputhtml = '';
 
-        $useplugin = unicheck_settings::get_assign_settings($cmid, unicheck_settings::USE_UNICHECK);
+        $useplugin = unicheck_settings::get_assign_settings($cmid, unicheck_settings::ENABLE_UNICHECK);
         $disclosure = unicheck_settings::get_settings('student_disclosure');
 
         if (!empty($disclosure) && $useplugin) {
