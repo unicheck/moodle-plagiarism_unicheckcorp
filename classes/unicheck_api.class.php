@@ -123,7 +123,7 @@ class unicheck_api {
 
         $content = null;
 
-        if ($noindex = unicheck_settings::get_assign_settings($cmid, unicheck_settings::NO_INDEX_FILES)) {
+        if ($noindex = unicheck_settings::get_activity_settings($cmid, unicheck_settings::NO_INDEX_FILES)) {
             $postdata['options']['no_index'] = $noindex;
         }
 
@@ -158,7 +158,7 @@ class unicheck_api {
             throw new \InvalidArgumentException('Invalid argument $file');
         }
 
-        $checktype = unicheck_settings::get_assign_settings($file->cm, 'check_type');
+        $checktype = unicheck_settings::get_activity_settings($file->cm, unicheck_settings::SOURCES_FOR_COMPARISON);
 
         $options = [];
         $this->advanced_check_options($file->cm, $options);
@@ -170,7 +170,7 @@ class unicheck_api {
             'options'      => $options,
         ];
 
-        if (unicheck_settings::get_assign_settings($file->cm, 'exclude_citations')) {
+        if (unicheck_settings::get_activity_settings($file->cm, unicheck_settings::EXCLUDE_CITATIONS)) {
             $postdata = array_merge($postdata, ['exclude_citations' => 1, 'exclude_references' => 1]);
         }
 
@@ -270,12 +270,12 @@ class unicheck_api {
     private function advanced_check_options($cmid, &$options) {
         $options['exclude_self_plagiarism'] = 1;
 
-        $similaritysensitivity = unicheck_settings::get_assign_settings($cmid, unicheck_settings::SENSITIVITY_SETTING_NAME);
+        $similaritysensitivity = unicheck_settings::get_activity_settings($cmid, unicheck_settings::SENSITIVITY_SETTING_NAME);
         if (!empty($similaritysensitivity)) {
             $options['sensitivity'] = $similaritysensitivity / 100;
         }
 
-        $wordssensitivity = unicheck_settings::get_assign_settings($cmid, unicheck_settings::WORDS_SENSITIVITY);
+        $wordssensitivity = unicheck_settings::get_activity_settings($cmid, unicheck_settings::WORDS_SENSITIVITY);
         if (!empty($wordssensitivity)) {
             $options['words_sensitivity'] = $wordssensitivity;
         }

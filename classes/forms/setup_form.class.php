@@ -67,7 +67,7 @@ class setup_form extends moodleform {
             }
         };
 
-        $addyesnoelem('unicheck_use', unicheck_settings::ENABLE_UNICHECK);
+        $addyesnoelem('unicheck_use', 'enable_plugin');
 
         $settingstext = '<div id="fitem_id_settings_link" class="fitem fitem_ftext ">
                             <div class="felement ftext">

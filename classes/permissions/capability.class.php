@@ -26,6 +26,8 @@
 
 namespace plagiarism_unicheck\classes\permissions;
 
+use context_module;
+
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
 }
@@ -37,6 +39,34 @@ if (!defined('MOODLE_INTERNAL')) {
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class capability {
+
+    /**
+     * ENABLE
+     */
+    const ENABLE = 'plagiarism/unicheck:enable';
+    /**
+     * VIEW_SIMILARITY
+     */
+    const VIEW_SIMILARITY = 'plagiarism/unicheck:viewsimilarity';
+    /**
+     * VIEW_REPORT
+     */
+    const VIEW_REPORT = 'plagiarism/unicheck:viewreport';
+    /**
+     * VIEW_EDIT_REPORT
+     */
+    const VIEW_EDIT_REPORT = 'plagiarism/unicheck:vieweditreport';
+    /**
+     * RESET_FILE
+     */
+    const RESET_FILE = 'plagiarism/unicheck:resetfile';
+    /**
+     * CHECK_FILE
+     */
+    const CHECK_FILE = 'plagiarism/unicheck:checkfile';
+
+    // Settings change capabilities.
+
     /**
      * CHANGE_ENABLE_UNICHECK_SETTING
      */
@@ -77,4 +107,17 @@ class capability {
      * CHANGE_MAX_SUPPORTED_ARCHIVE_FILES_COUNT_SETTING
      */
     const CHANGE_MAX_SUPPORTED_ARCHIVE_FILES_COUNT_SETTING = 'plagiarism/unicheck:changemaxsupportedarchivefilescountsetting';
+
+    /**
+     * Check user capability
+     *
+     * @param string $capability
+     * @param int    $cmid
+     * @param int    $userid
+     *
+     * @return bool
+     */
+    public static function user_can($capability, $cmid, $userid) {
+        return has_capability($capability, context_module::instance($cmid), $userid);
+    }
 }

@@ -27,6 +27,8 @@ if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
+use plagiarism_unicheck\classes\permissions\capability;
+
 global $PAGE, $OUTPUT;
 
 if (AJAX_SCRIPT) {
@@ -37,7 +39,7 @@ $check = '';
 $modulecontext = context_module::instance($linkarray['cmid']);
 // This is a teacher viewing the responses.
 
-if (has_capability('plagiarism/unicheck:checkfile', $modulecontext) && empty($fileobj->check_id) && !empty($fileobj->id)) {
+if (has_capability(capability::CHECK_FILE, $modulecontext) && empty($fileobj->check_id) && !empty($fileobj->id)) {
 
     $url = new moodle_url('/plagiarism/unicheck/check.php', [
         'cmid'    => $linkarray['cmid'],

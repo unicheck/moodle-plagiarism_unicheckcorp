@@ -29,7 +29,7 @@ if (!defined('MOODLE_INTERNAL')) {
 
 define('UNICHECK_PLAGIN_NAME', 'plagiarism_unicheck');
 define('UNICHECK_DOMAIN', 'https://corp.unicheck.com/');
-define('UNICHECK_API_URL', 'https://un16.mytheverona.com/api/v2/');
+define('UNICHECK_API_URL', 'https://corpapi.unicheck.com/api/v2/');
 define('UNICHECK_CALLBACK_URL', '/plagiarism/unicheck/callback.php');
 
 define('UNICHECK_PROJECT_PATH', dirname(__FILE__) . '/');

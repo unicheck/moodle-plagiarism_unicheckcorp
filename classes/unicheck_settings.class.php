@@ -26,6 +26,8 @@
 
 namespace plagiarism_unicheck\classes;
 
+use plagiarism_unicheck\classes\permissions\capability;
+
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
@@ -90,7 +92,9 @@ class unicheck_settings {
      */
     const EXCLUDE_SELF_PLAGIARISM = 'exclude_self_plagiarism';
 
-    /** @var array */
+    /**
+     * @var array
+     */
     public static $supportedchecktypes = [
         UNICHECK_CHECK_TYPE_WEB__LIBRARY,
         UNICHECK_CHECK_TYPE_WEB,
@@ -100,7 +104,24 @@ class unicheck_settings {
     ];
 
     /**
-     * Get assign settings
+     * @var array
+     */
+    private static $settingcapabilities = [
+        self::ENABLE_UNICHECK                                => capability::CHANGE_ENABLE_UNICHECK_SETTING,
+        self::CHECK_ALREADY_DELIVERED_ASSIGNMENT_SUBMISSIONS => capability::CHANGE_CHECK_ALREADY_SUBMITTED_ASSIGNMENT_SETTING,
+        self::NO_INDEX_FILES                                 => capability::CHANGE_ADD_SUBMISSION_TO_LIBRARY_SETTING,
+        self::SOURCES_FOR_COMPARISON                         => capability::CHANGE_SOURCES_FOR_COMPARISON_SETTING,
+        self::SENSITIVITY_SETTING_NAME                       => capability::CHANGE_SENSITIVITY_PERCENTAGE_SETTING,
+        self::WORDS_SENSITIVITY                              => capability::CHANGE_WORD_SENSITIVITY_SETTING,
+        self::EXCLUDE_CITATIONS                              => capability::CHANGE_EXCLUDE_CITATIONS_SETTING,
+        self::SHOW_STUDENT_SCORE                             => capability::CHANGE_SHOW_STUDENT_SCORE_SETTING,
+        self::SHOW_STUDENT_REPORT                            => capability::CHANGE_SHOW_STUDENT_REPORT_SETTING,
+        self::MAX_SUPPORTED_ARCHIVE_FILES_COUNT              => capability::CHANGE_MAX_SUPPORTED_ARCHIVE_FILES_COUNT_SETTING
+    ];
+
+    /**
+     * Get activity settings
+     * Activity - assign,forum,workshop
      *
      * @param int  $cmid
      * @param null $name
@@ -109,7 +130,7 @@ class unicheck_settings {
      *
      * @return \stdClass|array
      */
-    public static function get_assign_settings($cmid, $name = null, $assoc = null) {
+    public static function get_activity_settings($cmid, $name = null, $assoc = null) {
         global $DB;
 
         $condition = [
@@ -139,11 +160,9 @@ class unicheck_settings {
     /**
      * This function should be used to initialise settings and check if plagiarism is enabled.
      *
-     * @param null|string $key
-     *
-     * @return array|bool
-     * @throws \dml_exception
-     * @throws \moodle_exception
+     * @param null $key
+     * @return bool|null
+     * @throws \coding_exception
      */
     public static function get_settings($key = null) {
         static $settings;
@@ -183,5 +202,30 @@ class unicheck_settings {
         $key = 'unicheck_' . $key;
 
         return isset($settings[$key]) ? $settings[$key] : null;
+    }
+
+    /**
+     * Get setting capability
+     *
+     * @param string $setting
+     * @return mixed|null
+     */
+    public static function get_capability($setting) {
+        if (!array_key_exists($setting, self::$settingcapabilities)) {
+            return null;
+        }
+
+        return self::$settingcapabilities[$setting];
+    }
+
+    /**
+     * Get class constants
+     *
+     * @return array
+     */
+    public static function get_constants() {
+        $class = new \ReflectionClass(__CLASS__);
+
+        return $class->getConstants();
     }
 }

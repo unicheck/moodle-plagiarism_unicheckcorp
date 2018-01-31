@@ -26,16 +26,13 @@
 
 namespace plagiarism_unicheck\classes\forms;
 
-use coding_exception;
 use context;
-use HTML_QuickForm_element;
 use moodleform;
 use MoodleQuickForm;
 use plagiarism_plugin_unicheck;
 use plagiarism_unicheck;
 use plagiarism_unicheck\classes\entities\unicheck_archive;
 use plagiarism_unicheck\classes\forms\rules\range_rule;
-use plagiarism_unicheck\classes\permissions\capability;
 use plagiarism_unicheck\classes\unicheck_settings;
 
 if (!defined('MOODLE_INTERNAL')) {
@@ -89,8 +86,6 @@ class module_form extends moodleform {
 
     /**
      * Define the form
-     *
-     * @throws coding_exception
      */
     public function definition() {
         /** @var MoodleQuickForm $mform */
@@ -102,38 +97,34 @@ class module_form extends moodleform {
             }
         };
 
-        /**
-         * @param      $setting
-         * @param bool $showhelpballoon
-         * @param null $defaultvalue
-         * @return HTML_QuickForm_element|object
-         */
-        $addyesnoelem =
-            function($setting, $showhelpballoon = false, $defaultvalue = null, $capability = null) use (&$mform, $defaultsforfield
-            ) {
-                $ynoptions = [get_string('no'), get_string('yes')];
-                $elem = $mform->addElement('select', $setting, plagiarism_unicheck::trans($setting), $ynoptions);
-                if ($showhelpballoon) {
-                    $mform->addHelpButton($setting, $setting, UNICHECK_PLAGIN_NAME);
-                }
+        $addyesnoelem = function($setting, $showhelpballoon = false, $defaultvalue = null) use (&$mform, $defaultsforfield) {
+            $ynoptions = [get_string('no'), get_string('yes')];
+            $elem = $mform->addElement('select', $setting, plagiarism_unicheck::trans($setting), $ynoptions);
+            if ($showhelpballoon) {
+                $mform->addHelpButton($setting, $setting, UNICHECK_PLAGIN_NAME);
+            }
 
-                if ($defaultvalue !== null) {
-                    $defaultsforfield($mform, $setting, $defaultvalue);
-                }
+            if ($defaultvalue !== null) {
+                $defaultsforfield($mform, $setting, $defaultvalue);
+            }
 
-                if (null !== $capability && !$this->has_capability($capability)) {
-                    $elem->freeze();
-                }
+            if (!$this->has_change_capability($setting)) {
+                $elem->freeze();
+            }
 
-                return $elem;
-            };
+            return $elem;
+        };
 
         $addtextelem = function($setting, $defaultvalue = null) use ($defaultsforfield, &$mform) {
-            $mform->addElement('text', $setting, plagiarism_unicheck::trans($setting));
+            $elem = $mform->addElement('text', $setting, plagiarism_unicheck::trans($setting));
             $mform->addHelpButton($setting, $setting, UNICHECK_PLAGIN_NAME);
             $mform->setType($setting, PARAM_TEXT);
             if ($defaultvalue !== null) {
                 $defaultsforfield($mform, $setting, $defaultvalue);
+            }
+
+            if (!$this->has_change_capability($setting)) {
+                $elem->freeze();
             }
         };
 
@@ -144,12 +135,11 @@ class module_form extends moodleform {
                 plagiarism_unicheck::trans('use_assign_desc_value'));
         }
 
-        $addyesnoelem(unicheck_settings::ENABLE_UNICHECK, true, null, capability::CHANGE_ENABLE_UNICHECK_SETTING);
+        $addyesnoelem(unicheck_settings::ENABLE_UNICHECK, true);
 
         if (!in_array($this->modname, [UNICHECK_MODNAME_FORUM, UNICHECK_MODNAME_WORKSHOP])) {
-            $addyesnoelem(unicheck_settings::CHECK_ALREADY_DELIVERED_ASSIGNMENT_SUBMISSIONS, true, null,
-                capability::CHANGE_CHECK_ALREADY_SUBMITTED_ASSIGNMENT_SETTING);
-            $addyesnoelem(unicheck_settings::NO_INDEX_FILES, true, null, capability::CHANGE_ADD_SUBMISSION_TO_LIBRARY_SETTING);
+            $addyesnoelem(unicheck_settings::CHECK_ALREADY_DELIVERED_ASSIGNMENT_SUBMISSIONS, true);
+            $addyesnoelem(unicheck_settings::NO_INDEX_FILES, true);
         }
 
         $checktypedata = [];
@@ -158,8 +148,11 @@ class module_form extends moodleform {
         }
 
         $setting = unicheck_settings::SOURCES_FOR_COMPARISON;
-        $mform->addElement('select', $setting, plagiarism_unicheck::trans($setting), $checktypedata);
+        $elem = $mform->addElement('select', $setting, plagiarism_unicheck::trans($setting), $checktypedata);
         $mform->addHelpButton($setting, $setting, UNICHECK_PLAGIN_NAME);
+        if (!$this->has_change_capability($setting)) {
+            $elem->freeze();
+        }
 
         $availablefromgroup = [];
         $availablefromgroup[] =& $mform->createElement('date_selector', 'availablefrom', '');
@@ -197,16 +190,23 @@ class module_form extends moodleform {
     }
 
     /**
-     * @param $capability
+     * Check is current context can change setting
+     *
+     * @param string $setting
      * @return bool
      */
-    private function has_capability($capability) {
+    private function has_change_capability($setting) {
         if (!$this->internalusage) {
             return true;
         }
 
         if (!$this->context) {
             return false;
+        }
+
+        $capability = unicheck_settings::get_capability($setting);
+        if (null === $capability) {
+            return true;
         }
 
         return has_capability($capability, $this->context);

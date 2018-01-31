@@ -25,12 +25,13 @@
  */
 
 use plagiarism_unicheck\classes\entities\unicheck_archive;
+use plagiarism_unicheck\classes\forms\module_form;
 use plagiarism_unicheck\classes\helpers\unicheck_linkarray;
+use plagiarism_unicheck\classes\permissions\capability;
 use plagiarism_unicheck\classes\task\unicheck_bulk_check_assign_files;
 use plagiarism_unicheck\classes\unicheck_assign;
 use plagiarism_unicheck\classes\unicheck_core;
 use plagiarism_unicheck\classes\unicheck_settings;
-use plagiarism_unicheck\classes\forms\module_form;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -75,7 +76,7 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
      */
     public function get_links($linkarray) {
 
-        if (!plagiarism_unicheck::is_plugin_enabled() || !unicheck_settings::get_assign_settings(
+        if (!plagiarism_unicheck::is_plugin_enabled() || !unicheck_settings::get_activity_settings(
                 $linkarray['cmid'], unicheck_settings::ENABLE_UNICHECK
             )
         ) {
@@ -177,10 +178,9 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
      * Function which returns an array of all the module instance settings.
      *
      * @return array
-     *
      */
     public static function config_options() {
-        $constants = (new ReflectionClass(unicheck_settings::class))->getConstants();
+        $constants = unicheck_settings::get_constants();
 
         return array_values($constants);
     }
@@ -214,20 +214,25 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
         if ($modulename && !self::is_enabled_module($modulename)) {
             return;
         }
-
-        $cmid = optional_param('update', 0, PARAM_INT); // Get cm as $this->_cm is not available here.
-
-        file_put_contents('/tmp/moodle.log', print_r(
-            ['$cmid'    => $cmid,
-                                                      '$context' => $context,
-               // 'capabilities' => get_all_capabilities()
-            ], true), FILE_APPEND);
+        $defaultcmid = 0;
+        $cmid = optional_param('update', $defaultcmid, PARAM_INT); // Get cm as $this->_cm is not available here.
 
         $plagiarismelements = self::config_options();
-        if (has_capability('plagiarism/unicheck:enable', $context)) {
-            $settings_form = new module_form($mform, $modulename, $context);
-            $settings_form->set_data(unicheck_settings::get_assign_settings($cmid, null, true));
-            $settings_form->definition();
+        if (has_capability(capability::ENABLE, $context)) {
+            $settingsform = new module_form($mform, $modulename, $context);
+            $defaultsettings = $activitysettings = unicheck_settings::get_activity_settings($defaultcmid, null, true);
+            if ($defaultcmid !== $cmid) {
+                $activitysettings = unicheck_settings::get_activity_settings($cmid, null, true);
+                foreach ($activitysettings as $setting => $value) {
+                    $capability = unicheck_settings::get_capability($setting);
+                    if ($capability && !has_capability(unicheck_settings::get_capability($setting), $context)) {
+                        $activitysettings[$setting] = $defaultsettings[$setting] ?? null;
+                    }
+                }
+            }
+
+            $settingsform->set_data($activitysettings);
+            $settingsform->definition();
 
             if ($mform->elementExists('submissiondrafts')) {
                 // Disable all plagiarism elements if submissiondrafts eg 0.
@@ -290,7 +295,7 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
 
         $outputhtml = '';
 
-        $useplugin = unicheck_settings::get_assign_settings($cmid, unicheck_settings::ENABLE_UNICHECK);
+        $useplugin = unicheck_settings::get_activity_settings($cmid, unicheck_settings::ENABLE_UNICHECK);
         $disclosure = unicheck_settings::get_settings('student_disclosure');
 
         if (!empty($disclosure) && $useplugin) {
