@@ -139,11 +139,11 @@ class module_form extends moodleform {
 
         if (!in_array($this->modname, [UNICHECK_MODNAME_FORUM, UNICHECK_MODNAME_WORKSHOP])) {
             $addyesnoelem(unicheck_settings::CHECK_ALREADY_DELIVERED_ASSIGNMENT_SUBMISSIONS, true);
-            $addyesnoelem(unicheck_settings::NO_INDEX_FILES, true);
+            $addyesnoelem(unicheck_settings::ADD_TO_INSTITUTIONAL_LIBRARY, false);
         }
 
         $checktypedata = [];
-        foreach (unicheck_settings::$supportedchecktypes as $checktype) {
+        foreach (unicheck_settings::get_supported_check_source_types() as $checktype) {
             $checktypedata[$checktype] = plagiarism_unicheck::trans($checktype);
         }
 

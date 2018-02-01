@@ -76,6 +76,11 @@ class unicheck_api {
      */
     const USER_CREATE = 'user/create';
     /**
+     * Get supported similarity check source types API url
+     */
+    const GET_SUPPORTED_SEARCH_TYPES = 'check/get_supported_search_types';
+
+    /**
      * @var null|unicheck_api
      */
     private static $instance = null;
@@ -123,8 +128,8 @@ class unicheck_api {
 
         $content = null;
 
-        if ($noindex = unicheck_settings::get_activity_settings($cmid, unicheck_settings::NO_INDEX_FILES)) {
-            $postdata['options']['no_index'] = $noindex;
+        if ($mustindex = unicheck_settings::get_activity_settings($cmid, unicheck_settings::ADD_TO_INSTITUTIONAL_LIBRARY)) {
+            $postdata['options']['no_index'] = !$mustindex;
         }
 
         $response = unicheck_api_request::instance()->http_post()->request(self::FILE_UPLOAD, $postdata);
@@ -279,5 +284,14 @@ class unicheck_api {
         if (!empty($wordssensitivity)) {
             $options['words_sensitivity'] = $wordssensitivity;
         }
+    }
+
+    /**
+     * Get supported similarity check source types
+     *
+     * @return \stdClass
+     */
+    public function get_supported_search_types() {
+        return unicheck_api_request::instance()->http_get()->request(self::GET_SUPPORTED_SEARCH_TYPES, []);
     }
 }

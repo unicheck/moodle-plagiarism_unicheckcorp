@@ -53,7 +53,7 @@ class unicheck_settings {
     /**
      * Add submissions to Institutional Library
      */
-    const NO_INDEX_FILES = 'no_index_files';
+    const ADD_TO_INSTITUTIONAL_LIBRARY = 'no_index_files';
     /**
      * Sources for comparison
      */
@@ -95,7 +95,7 @@ class unicheck_settings {
     /**
      * @var array
      */
-    public static $supportedchecktypes = [
+    private static $supportedchecktypes = [
         UNICHECK_CHECK_TYPE_WEB__LIBRARY,
         UNICHECK_CHECK_TYPE_WEB,
         UNICHECK_CHECK_TYPE_MY_LIBRARY,
@@ -109,7 +109,7 @@ class unicheck_settings {
     private static $settingcapabilities = [
         self::ENABLE_UNICHECK                                => capability::CHANGE_ENABLE_UNICHECK_SETTING,
         self::CHECK_ALREADY_DELIVERED_ASSIGNMENT_SUBMISSIONS => capability::CHANGE_CHECK_ALREADY_SUBMITTED_ASSIGNMENT_SETTING,
-        self::NO_INDEX_FILES                                 => capability::CHANGE_ADD_SUBMISSION_TO_LIBRARY_SETTING,
+        self::ADD_TO_INSTITUTIONAL_LIBRARY                   => capability::CHANGE_ADD_SUBMISSION_TO_LIBRARY_SETTING,
         self::SOURCES_FOR_COMPARISON                         => capability::CHANGE_SOURCES_FOR_COMPARISON_SETTING,
         self::SENSITIVITY_SETTING_NAME                       => capability::CHANGE_SENSITIVITY_PERCENTAGE_SETTING,
         self::WORDS_SENSITIVITY                              => capability::CHANGE_WORD_SENSITIVITY_SETTING,
@@ -227,5 +227,26 @@ class unicheck_settings {
         $class = new \ReflectionClass(__CLASS__);
 
         return $class->getConstants();
+    }
+
+    /**
+     * Get supported check source types
+     *
+     * @return array
+     */
+    public static function get_supported_check_source_types() {
+        $supportedchecktypes = [];
+        $checktypes = unicheck_api::instance()->get_supported_search_types();
+        if (!$checktypes->result) {
+            return [UNICHECK_CHECK_TYPE_WEB];
+        }
+
+        foreach ($checktypes->search_types as $searchtype) {
+            if (in_array($searchtype->key, self::$supportedchecktypes)) {
+                $supportedchecktypes[] = $searchtype->key;
+            }
+        }
+
+        return $supportedchecktypes;
     }
 }
