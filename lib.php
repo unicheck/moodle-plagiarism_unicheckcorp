@@ -226,7 +226,7 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
                 foreach ($activitysettings as $setting => $value) {
                     $capability = unicheck_settings::get_capability($setting);
                     if ($capability && !has_capability(unicheck_settings::get_capability($setting), $context)) {
-                        $activitysettings[$setting] = $defaultsettings[$setting] ?? null;
+                        $activitysettings[$setting] = isset($defaultsettings[$setting]) ? $defaultsettings[$setting] : null;
                     }
                 }
             }

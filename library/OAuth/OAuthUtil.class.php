@@ -41,11 +41,11 @@ class OAuthUtil {
      * split_header
      *
      * @param string $header
-     * @param bool   $onlyallowoauthparameters
+     * @param bool   $onlyallowoauthparams
      *
      * @return array
      */
-    public static function split_header($header, $onlyallowoauthparameters = true) {
+    public static function split_header($header, $onlyallowoauthparams = true) {
         $pattern = '/(([-_a-z]*)=("([^"]*)"|([^,]*)),?)/';
         $offset = 0;
         $params = array();
@@ -53,7 +53,7 @@ class OAuthUtil {
             $match = $matches[0];
             $headername = $matches[2][0];
             $headercontent = (isset($matches[5])) ? $matches[5][0] : $matches[4][0];
-            if (preg_match('/^oauth_/', $headername) || !$onlyallowoauthparameters) {
+            if (preg_match('/^oauth_/', $headername) || !$onlyallowoauthparams) {
                 $params[$headername] = self::urldecode_rfc3986($headercontent);
             }
             $offset = $match[1] + strlen($match[0]);

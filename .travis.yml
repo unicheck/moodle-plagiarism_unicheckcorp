@@ -15,7 +15,7 @@ addons:
     - mysql-client-5.6
 
 php:
- # We only run the highest and lowest supported versions to reduce the load on travis-ci.org.
+ - 5.6
  - 7.0
  - 7.1
 
