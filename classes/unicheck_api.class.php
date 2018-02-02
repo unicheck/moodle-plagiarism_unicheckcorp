@@ -128,9 +128,8 @@ class unicheck_api {
 
         $content = null;
 
-        if ($mustindex = unicheck_settings::get_activity_settings($cmid, unicheck_settings::ADD_TO_INSTITUTIONAL_LIBRARY)) {
-            $postdata['options']['no_index'] = !$mustindex;
-        }
+        $mustindex = (bool)unicheck_settings::get_activity_settings($cmid, unicheck_settings::ADD_TO_INSTITUTIONAL_LIBRARY);
+        $postdata['options']['no_index'] = !$mustindex;
 
         $response = unicheck_api_request::instance()->http_post()->request(self::FILE_UPLOAD, $postdata);
         if (!is_object($response)) {
