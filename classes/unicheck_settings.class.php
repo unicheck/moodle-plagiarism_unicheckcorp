@@ -120,6 +120,22 @@ class unicheck_settings {
     ];
 
     /**
+     * @var array
+     */
+    private static $settingstypemap = [
+        self::ENABLE_UNICHECK                                => PARAM_BOOL,
+        self::CHECK_ALREADY_DELIVERED_ASSIGNMENT_SUBMISSIONS => PARAM_BOOL,
+        self::ADD_TO_INSTITUTIONAL_LIBRARY                   => PARAM_BOOL,
+        self::SOURCES_FOR_COMPARISON                         => PARAM_TEXT,
+        self::SENSITIVITY_SETTING_NAME                       => PARAM_INT,
+        self::WORDS_SENSITIVITY                              => PARAM_INT,
+        self::EXCLUDE_CITATIONS                              => PARAM_BOOL,
+        self::SHOW_STUDENT_SCORE                             => PARAM_BOOL,
+        self::SHOW_STUDENT_REPORT                            => PARAM_BOOL,
+        self::MAX_SUPPORTED_ARCHIVE_FILES_COUNT              => PARAM_INT
+    ];
+
+    /**
      * Get activity settings
      * Activity - assign,forum,workshop
      *
@@ -248,5 +264,15 @@ class unicheck_settings {
         }
 
         return $supportedchecktypes;
+    }
+
+    /**
+     * Get setting type
+     *
+     * @param string $setting
+     * @return string
+     */
+    public static function get_setting_type($setting) {
+        return isset(self::$settingstypemap[$setting]) ? self::$settingstypemap[$setting] : PARAM_RAW;
     }
 }

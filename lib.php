@@ -270,16 +270,13 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
     /**
      * Add plagiarism hidden vars
      *
-     * @param array  $plagiarismelements
-     * @param object $mform - Moodle form
+     * @param array                  $plagiarismelements
+     * @param MoodleQuickForm|object $mform - Moodle form
      */
     private function add_plagiarism_hidden_vars($plagiarismelements, $mform) {
         foreach ($plagiarismelements as $element) {
             $mform->addElement('hidden', $element);
-            $mform->setType(unicheck_settings::ENABLE_UNICHECK, PARAM_INT);
-            $mform->setType(unicheck_settings::SHOW_STUDENT_SCORE, PARAM_INT);
-            $mform->setType(unicheck_settings::SHOW_STUDENT_REPORT, PARAM_INT);
-            $mform->setType(unicheck_settings::DRAFT_SUBMIT, PARAM_INT);
+            $mform->setType($element, unicheck_settings::get_setting_type($element));
         }
     }
 

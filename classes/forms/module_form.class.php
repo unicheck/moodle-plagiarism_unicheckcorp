@@ -118,7 +118,7 @@ class module_form extends moodleform {
         $addtextelem = function($setting, $defaultvalue = null) use ($defaultsforfield, &$mform) {
             $elem = $mform->addElement('text', $setting, plagiarism_unicheck::trans($setting));
             $mform->addHelpButton($setting, $setting, UNICHECK_PLAGIN_NAME);
-            $mform->setType($setting, PARAM_TEXT);
+            $mform->setType($setting, unicheck_settings::get_setting_type($setting));
             if ($defaultvalue !== null) {
                 $defaultsforfield($mform, $setting, $defaultvalue);
             }
