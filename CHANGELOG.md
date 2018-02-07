@@ -4,9 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.2.5] - 2018-02-02
+## [2.2.7] - 2018-02-07
 ### Added
 - Permissions to change plugin settings
+- Show a notification if there is a limitation in the archive
+- Add comments table
+- Add file metadata column
 
 ### Changed
 - Settings descriptions
