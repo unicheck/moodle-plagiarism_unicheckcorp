@@ -136,12 +136,15 @@ if ($cpf !== null) {
         $metadata = $fileobj->metadata;
         if ($metadata) {
             $metadata = json_decode($metadata, true);
-            $archivefilescount = isset($metadata[unicheck_file_metadata::ARCHIVE_FILES_COUNT])
-                ? $metadata[unicheck_file_metadata::ARCHIVE_FILES_COUNT]
-                : 0;
-            $extractedfilescount = isset($metadata[unicheck_file_metadata::EXTRACTED_FILES_FROM_ARCHIVE_COUNT])
-                ? $metadata[unicheck_file_metadata::EXTRACTED_FILES_FROM_ARCHIVE_COUNT]
-                : 0;
+            $archivefilescount = 0;
+            if (isset($metadata[unicheck_file_metadata::ARCHIVE_FILES_COUNT])) {
+                $archivefilescount = $metadata[unicheck_file_metadata::ARCHIVE_FILES_COUNT];
+            }
+
+            $extractedfilescount = 0;
+            if (isset($metadata[unicheck_file_metadata::EXTRACTED_FILES_FROM_ARCHIVE_COUNT])) {
+                $extractedfilescount = $metadata[unicheck_file_metadata::EXTRACTED_FILES_FROM_ARCHIVE_COUNT];
+            }
 
             if ($archivefilescount > $extractedfilescount) {
                 $params = new stdClass();

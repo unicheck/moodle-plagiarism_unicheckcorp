@@ -128,12 +128,10 @@ class unicheck_upload_task extends unicheck_abstract_task {
             }
 
             if ($archivefilescount > $maxsupportedcount) {
-                $this->internalfile->metadata = json_encode([
+                unicheck_file_provider::add_metadata($this->internalfile->id, [
                     unicheck_file_metadata::ARCHIVE_FILES_COUNT                => $archivefilescount,
                     unicheck_file_metadata::EXTRACTED_FILES_FROM_ARCHIVE_COUNT => $extractedcount
                 ]);
-
-                unicheck_file_provider::save($this->internalfile);
             }
 
             if ($extractedcount < 1) {
