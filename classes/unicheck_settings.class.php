@@ -26,6 +26,8 @@
 
 namespace plagiarism_unicheck\classes;
 
+use plagiarism_unicheck\classes\permissions\capability;
+
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
@@ -41,55 +43,59 @@ if (!defined('MOODLE_INTERNAL')) {
  */
 class unicheck_settings {
     /**
-     * SENSITIVITY_SETTING_NAME
+     * Enable Unicheck Plagiarism Service
+     */
+    const ENABLE_UNICHECK = 'use_unicheck';
+    /**
+     * Check already delivered assignment submissions
+     */
+    const CHECK_ALREADY_DELIVERED_ASSIGNMENT_SUBMISSIONS = 'check_all_submitted_assignments';
+    /**
+     * Add submissions to Institutional Library
+     */
+    const ADD_TO_INSTITUTIONAL_LIBRARY = 'no_index_files';
+    /**
+     * Sources for comparison
+     */
+    const SOURCES_FOR_COMPARISON = 'check_type';
+    /**
+     * Exclude sources with a match less than (%)
      */
     const SENSITIVITY_SETTING_NAME = 'similarity_sensitivity';
     /**
-     * WORDS_SENSITIVITY
+     * Exclude sources with a match less than (words)
      */
     const WORDS_SENSITIVITY = 'similarity_words_sensitivity';
     /**
-     * USE_UNICHECK
+     * Exclude references and citations
      */
-    const USE_UNICHECK = 'use_unicheck';
+    const EXCLUDE_CITATIONS = 'exclude_citations';
     /**
-     * SHOW_STUDENT_SCORE
+     * Show similarity scores to student
      */
     const SHOW_STUDENT_SCORE = 'show_student_score';
     /**
-     * SHOW_STUDENT_REPORT
+     * Show similarity reports to student
      */
     const SHOW_STUDENT_REPORT = 'show_student_report';
+    /**
+     * Maximum number of files to be checked in archive
+     */
+    const MAX_SUPPORTED_ARCHIVE_FILES_COUNT = 'max_supported_archive_files_count';
+
     /**
      * DRAFT_SUBMIT
      */
     const DRAFT_SUBMIT = 'draft_submit';
     /**
-     * CHECK_TYPE
-     */
-    const CHECK_TYPE = 'check_type';
-    /**
-     * EXCLUDE_CITATIONS
-     */
-    const EXCLUDE_CITATIONS = 'exclude_citations';
-    /**
      * EXCLUDE_SELF_PLAGIARISM
      */
     const EXCLUDE_SELF_PLAGIARISM = 'exclude_self_plagiarism';
+
     /**
-     * CHECK_ALL_SUBMITTED_ASSIGNMENTS
+     * @var array
      */
-    const CHECK_ALL_SUBMITTED_ASSIGNMENTS = 'check_all_submitted_assignments';
-    /**
-     * NO_INDEX_FILES
-     */
-    const NO_INDEX_FILES = 'no_index_files';
-    /**
-     * MAX_SUPPORTED_ARCHIVE_FILES_COUNT
-     */
-    const MAX_SUPPORTED_ARCHIVE_FILES_COUNT = 'max_supported_archive_files_count';
-    /** @var array */
-    public static $supportedchecktypes = [
+    private static $supportedchecktypes = [
         UNICHECK_CHECK_TYPE_WEB__LIBRARY,
         UNICHECK_CHECK_TYPE_WEB,
         UNICHECK_CHECK_TYPE_MY_LIBRARY,
@@ -98,7 +104,40 @@ class unicheck_settings {
     ];
 
     /**
-     * Get assign settings
+     * @var array
+     */
+    private static $settingcapabilities = [
+        self::ENABLE_UNICHECK                                => capability::CHANGE_ENABLE_UNICHECK_SETTING,
+        self::CHECK_ALREADY_DELIVERED_ASSIGNMENT_SUBMISSIONS => capability::CHANGE_CHECK_ALREADY_SUBMITTED_ASSIGNMENT_SETTING,
+        self::ADD_TO_INSTITUTIONAL_LIBRARY                   => capability::CHANGE_ADD_SUBMISSION_TO_LIBRARY_SETTING,
+        self::SOURCES_FOR_COMPARISON                         => capability::CHANGE_SOURCES_FOR_COMPARISON_SETTING,
+        self::SENSITIVITY_SETTING_NAME                       => capability::CHANGE_SENSITIVITY_PERCENTAGE_SETTING,
+        self::WORDS_SENSITIVITY                              => capability::CHANGE_WORD_SENSITIVITY_SETTING,
+        self::EXCLUDE_CITATIONS                              => capability::CHANGE_EXCLUDE_CITATIONS_SETTING,
+        self::SHOW_STUDENT_SCORE                             => capability::CHANGE_SHOW_STUDENT_SCORE_SETTING,
+        self::SHOW_STUDENT_REPORT                            => capability::CHANGE_SHOW_STUDENT_REPORT_SETTING,
+        self::MAX_SUPPORTED_ARCHIVE_FILES_COUNT              => capability::CHANGE_MAX_SUPPORTED_ARCHIVE_FILES_COUNT_SETTING
+    ];
+
+    /**
+     * @var array
+     */
+    private static $settingstypemap = [
+        self::ENABLE_UNICHECK                                => PARAM_BOOL,
+        self::CHECK_ALREADY_DELIVERED_ASSIGNMENT_SUBMISSIONS => PARAM_BOOL,
+        self::ADD_TO_INSTITUTIONAL_LIBRARY                   => PARAM_BOOL,
+        self::SOURCES_FOR_COMPARISON                         => PARAM_TEXT,
+        self::SENSITIVITY_SETTING_NAME                       => PARAM_INT,
+        self::WORDS_SENSITIVITY                              => PARAM_INT,
+        self::EXCLUDE_CITATIONS                              => PARAM_BOOL,
+        self::SHOW_STUDENT_SCORE                             => PARAM_BOOL,
+        self::SHOW_STUDENT_REPORT                            => PARAM_BOOL,
+        self::MAX_SUPPORTED_ARCHIVE_FILES_COUNT              => PARAM_INT
+    ];
+
+    /**
+     * Get activity settings
+     * Activity - assign,forum,workshop
      *
      * @param int  $cmid
      * @param null $name
@@ -107,7 +146,7 @@ class unicheck_settings {
      *
      * @return \stdClass|array
      */
-    public static function get_assign_settings($cmid, $name = null, $assoc = null) {
+    public static function get_activity_settings($cmid, $name = null, $assoc = null) {
         global $DB;
 
         $condition = [
@@ -137,11 +176,9 @@ class unicheck_settings {
     /**
      * This function should be used to initialise settings and check if plagiarism is enabled.
      *
-     * @param null|string $key
-     *
-     * @return array|bool
-     * @throws \dml_exception
-     * @throws \moodle_exception
+     * @param null $key
+     * @return bool|null
+     * @throws \coding_exception
      */
     public static function get_settings($key = null) {
         static $settings;
@@ -181,5 +218,61 @@ class unicheck_settings {
         $key = 'unicheck_' . $key;
 
         return isset($settings[$key]) ? $settings[$key] : null;
+    }
+
+    /**
+     * Get setting capability
+     *
+     * @param string $setting
+     * @return mixed|null
+     */
+    public static function get_capability($setting) {
+        if (!array_key_exists($setting, self::$settingcapabilities)) {
+            return null;
+        }
+
+        return self::$settingcapabilities[$setting];
+    }
+
+    /**
+     * Get class constants
+     *
+     * @return array
+     */
+    public static function get_constants() {
+        $class = new \ReflectionClass(__CLASS__);
+
+        return $class->getConstants();
+    }
+
+    /**
+     * Get supported check source types
+     *
+     * @return array
+     */
+    public static function get_supported_check_source_types() {
+        $supportedchecktypes = [];
+        $checktypes = unicheck_api::instance()->get_supported_search_types();
+        if (!$checktypes->result) {
+            return [UNICHECK_CHECK_TYPE_WEB];
+        }
+
+        foreach ($checktypes->search_types as $searchtype) {
+            if (in_array($searchtype->key, self::$supportedchecktypes)) {
+                $supportedchecktypes[] = $searchtype->key;
+            }
+        }
+
+        return $supportedchecktypes;
+    }
+
+    /**
+     * Get setting type
+     *
+     * @param string $setting
+     * @return string
+     */
+    public static function get_setting_type($setting) {
+        return isset(self::$settingstypemap[$setting]) ? self::$settingstypemap[$setting] : PARAM_RAW;
     }
 }

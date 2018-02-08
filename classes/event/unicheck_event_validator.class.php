@@ -74,7 +74,7 @@ class unicheck_event_validator {
             }
 
             $plagiarismvalues = $DB->get_records_menu(UNICHECK_CONFIG_TABLE, ['cm' => $cmid], '', 'name, value');
-            if (empty($plagiarismvalues[unicheck_settings::USE_UNICHECK])) {
+            if (empty($plagiarismvalues[unicheck_settings::ENABLE_UNICHECK])) {
                 // Unicheck not in use for this cm - return.
                 return false;
             }

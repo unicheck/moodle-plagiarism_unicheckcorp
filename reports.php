@@ -26,9 +26,9 @@
 
 use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\helpers\unicheck_stored_file;
+use plagiarism_unicheck\classes\permissions\capability;
 use plagiarism_unicheck\classes\services\report\unicheck_url;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
-use plagiarism_unicheck\classes\unicheck_core;
 
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once(dirname(__FILE__) . '/lib.php');
@@ -62,7 +62,7 @@ echo $OUTPUT->header();
 
 $tabs = [];
 $fileinfos = [];
-$canvieweditreport = unicheck_core::can('plagiarism/unicheck:vieweditreport', $cmid, $USER->id);
+$canvieweditreport = capability::user_can(capability::VIEW_EDIT_REPORT, $cmid, $USER->id);
 foreach ($childs as $child) {
 
     switch ($child->state) {

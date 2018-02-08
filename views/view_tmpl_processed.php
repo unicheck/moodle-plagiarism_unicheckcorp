@@ -24,6 +24,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use plagiarism_unicheck\classes\permissions\capability;
 use plagiarism_unicheck\classes\services\report\unicheck_url;
 use plagiarism_unicheck\classes\unicheck_core;
 use plagiarism_unicheck\classes\unicheck_settings;
@@ -53,11 +54,11 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
     );
 
     // This is a teacher viewing the responses.
-    $canviewsimilarity = unicheck_core::can('plagiarism/unicheck:viewsimilarity', $cid, $USER->id);
-    $assigncfg = unicheck_settings::get_assign_settings($cid, null, true);
+    $canviewsimilarity = capability::user_can(capability::VIEW_SIMILARITY, $cid, $USER->id);
+    $activitycfg = unicheck_settings::get_activity_settings($cid, null, true);
 
     if (isset($fileobj->similarityscore)) {
-        if ($canviewsimilarity || $assigncfg[unicheck_settings::SHOW_STUDENT_SCORE]) {
+        if ($canviewsimilarity || $activitycfg[unicheck_settings::SHOW_STUDENT_SCORE]) {
             // User is allowed to view only the score.
             $htmlparts[] = sprintf('%s: <span class="rank1">%s%%</span>',
                 plagiarism_unicheck::trans('similarity'),
@@ -67,10 +68,10 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
     }
 
     if (!empty($fileobj->reporturl)) {
-        $canviewreport = unicheck_core::can('plagiarism/unicheck:viewreport', $cid, $USER->id);
-        if ($canviewreport || $assigncfg[unicheck_settings::SHOW_STUDENT_REPORT]) {
+        $canviewreport = capability::user_can(capability::VIEW_REPORT, $cid, $USER->id);
+        if ($canviewreport || $activitycfg[unicheck_settings::SHOW_STUDENT_REPORT]) {
             $reporturl = new unicheck_url($fileobj);
-            $canvieweditreport = unicheck_core::can('plagiarism/unicheck:vieweditreport', $cid, $USER->id);
+            $canvieweditreport = capability::user_can(capability::VIEW_EDIT_REPORT, $cid, $USER->id);
             // Display opt-out link.
             $htmlparts[] = '&nbsp;<span class"plagiarismoptout">';
             $htmlparts[] = sprintf('<a title="%s" href="%s" target="_blank">',

@@ -97,7 +97,7 @@ class unicheck_upload_task extends unicheck_abstract_task {
                 return;
             }
 
-            $maxsupportedcount = unicheck_settings::get_assign_settings(
+            $maxsupportedcount = unicheck_settings::get_activity_settings(
                 $this->ucore->cmid,
                 unicheck_settings::MAX_SUPPORTED_ARCHIVE_FILES_COUNT
             );
