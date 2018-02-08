@@ -88,13 +88,13 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
     if ($metadata && $fileobj->type === unicheck_plagiarism_entity::TYPE_ARCHIVE) {
         $metadata = json_decode($metadata, true);
         $archivefilescount = 0;
-        if (isset($metadata[unicheck_file_metadata::ARCHIVE_FILES_COUNT])) {
-            $archivefilescount = $metadata[unicheck_file_metadata::ARCHIVE_FILES_COUNT];
+        if (isset($metadata[unicheck_file_metadata::ARCHIVE_SUPPORTED_FILES_COUNT])) {
+            $archivefilescount = $metadata[unicheck_file_metadata::ARCHIVE_SUPPORTED_FILES_COUNT];
         }
 
         $extractedfilescount = 0;
-        if (isset($metadata[unicheck_file_metadata::EXTRACTED_FILES_FROM_ARCHIVE_COUNT])) {
-            $extractedfilescount = $metadata[unicheck_file_metadata::EXTRACTED_FILES_FROM_ARCHIVE_COUNT];
+        if (isset($metadata[unicheck_file_metadata::EXTRACTED_SUPPORTED_FILES_FROM_ARCHIVE_COUNT])) {
+            $extractedfilescount = $metadata[unicheck_file_metadata::EXTRACTED_SUPPORTED_FILES_FROM_ARCHIVE_COUNT];
         };
 
         if ($archivefilescount > $extractedfilescount) {

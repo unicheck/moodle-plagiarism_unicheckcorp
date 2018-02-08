@@ -40,11 +40,11 @@ if (!defined('MOODLE_INTERNAL')) {
  */
 class unicheck_file_metadata {
     /**
-     * ARCHIVE_FILES_COUNT
+     * ARCHIVE_SUPPORTED_FILES_COUNT
      */
-    const ARCHIVE_FILES_COUNT = 'archive_files_count';
+    const ARCHIVE_SUPPORTED_FILES_COUNT = 'archive_supported_files_count';
     /**
-     * EXTRACTED_FILES_FROM_ARCHIVE_COUNT
+     * EXTRACTED_SUPPORTED_FILES_FROM_ARCHIVE_COUNT
      */
-    const EXTRACTED_FILES_FROM_ARCHIVE_COUNT = 'extracted_files_from_archive_count';
+    const EXTRACTED_SUPPORTED_FILES_FROM_ARCHIVE_COUNT = 'extracted_supported_files_from_archive_count';
 }

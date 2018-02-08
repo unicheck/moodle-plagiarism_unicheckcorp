@@ -109,13 +109,14 @@ class unicheck_upload_task extends unicheck_abstract_task {
                 $maxsupportedcount = unicheck_archive::DEFAULT_SUPPORTED_FILES_COUNT;
             }
 
-            $extractedcount = 0;
             $archivefiles = (new unicheck_archive($file, $this->ucore))->extract();
             if (!$archivefiles) {
                 throw new unicheck_exception(unicheck_exception::ARCHIVE_IS_EMPTY);
             }
 
+            $extractedcount = 0;
             $archivefilescount = 0;
+            $fileforprocessing = [];
             foreach ($archivefiles as $archivefile) {
                 $archivefilescount++;
                 if ($extractedcount >= $maxsupportedcount) {
@@ -123,19 +124,23 @@ class unicheck_upload_task extends unicheck_abstract_task {
                     continue;
                 }
 
-                $this->process_archive_item($archivefile);
+                $fileforprocessing[] = $archivefile;
                 $extractedcount++;
-            }
-
-            if ($archivefilescount > $maxsupportedcount) {
-                unicheck_file_provider::add_metadata($this->internalfile->id, [
-                    unicheck_file_metadata::ARCHIVE_FILES_COUNT                => $archivefilescount,
-                    unicheck_file_metadata::EXTRACTED_FILES_FROM_ARCHIVE_COUNT => $extractedcount
-                ]);
             }
 
             if ($extractedcount < 1) {
                 throw new unicheck_exception(unicheck_exception::ARCHIVE_IS_EMPTY);
+            }
+
+            if ($archivefilescount > $maxsupportedcount) {
+                unicheck_file_provider::add_metadata($this->internalfile->id, [
+                    unicheck_file_metadata::ARCHIVE_SUPPORTED_FILES_COUNT                => $archivefilescount,
+                    unicheck_file_metadata::EXTRACTED_SUPPORTED_FILES_FROM_ARCHIVE_COUNT => $extractedcount
+                ]);
+            }
+
+            foreach ($fileforprocessing as $item) {
+                $this->process_archive_item($item);
             }
         } catch (\Exception $e) {
             if ($this->internalfile) {
