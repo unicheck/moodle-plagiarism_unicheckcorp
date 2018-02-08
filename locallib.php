@@ -26,11 +26,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-use core\event\base;
 use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\entities\unicheck_archive;
-use plagiarism_unicheck\classes\entities\unicheck_event;
-use plagiarism_unicheck\classes\event\unicheck_event_validator;
 use plagiarism_unicheck\classes\helpers\unicheck_progress;
 use plagiarism_unicheck\classes\helpers\unicheck_translate;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
@@ -94,18 +91,6 @@ class plagiarism_unicheck {
         'xlsx',
         'ods'
     ];
-
-    /**
-     * Handle all system events
-     *
-     * @param base $event
-     */
-    public static function event_handler(base $event) {
-        if (unicheck_event_validator::validate_event($event)) {
-            $eventinstance = new unicheck_event();
-            $eventinstance->process($event);
-        }
-    }
 
     /**
      * Verify supporting for modules like: assign, workshop, forum

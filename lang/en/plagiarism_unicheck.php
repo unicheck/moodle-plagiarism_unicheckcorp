@@ -155,3 +155,8 @@ $string['unicheck:changemaxsupportedarchivefilescountsetting'] = 'Allow change m
 // Archive.
 $string['archive:limitreachedshortdescripton'] = 'Not all documents were analyzed';
 $string['archive:limitreachedfulldescription'] = 'There are more documents in the file "{$a->filename}" but they have not been analyzed because the limit of documents to be analyzed within a zip file is {$a->max_supported_count}. You can check it with the administrator of this Moodle installation to modify this value';
+// Plugin events.
+$string['event:file_uploaded'] = 'File uploaded event';
+$string['event:file_upload_failed'] = 'File upload failed event';
+$string['event:archive_unpacked'] = 'Archive unpacked event';
+$string['event:similarity_check_started'] = 'Similarity check started event';

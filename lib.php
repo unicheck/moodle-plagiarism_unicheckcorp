@@ -43,7 +43,6 @@ global $CFG;
 require_once($CFG->dirroot . '/plagiarism/lib.php');
 require_once($CFG->libdir . '/filelib.php');
 require_once($CFG->libdir . '/accesslib.php');
-require_once(dirname(__FILE__) . '/autoloader.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 
 // There is a new Unicheck API - The Integration Service - we only currently use this to verify the receiver address.
@@ -75,7 +74,6 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
      * @return string
      */
     public function get_links($linkarray) {
-
         if (!plagiarism_unicheck::is_plugin_enabled() || !unicheck_settings::get_activity_settings(
                 $linkarray['cmid'], unicheck_settings::ENABLE_UNICHECK
             )
