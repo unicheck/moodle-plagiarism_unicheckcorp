@@ -40,6 +40,7 @@ define('UNICHECK_FORUM_FILES_AREA', 'forum_posts');
 
 /** TABLES **/
 define('UNICHECK_FILES_TABLE', 'plagiarism_unicheck_files');
+define('UNICHECK_COMMENTS_TABLE', 'plagiarism_unicheck_comments');
 define('UNICHECK_USER_DATA_TABLE', 'plagiarism_unicheck_users');
 define('UNICHECK_CONFIG_TABLE', 'plagiarism_unicheck_config');
 

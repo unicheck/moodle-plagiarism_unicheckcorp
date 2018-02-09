@@ -28,6 +28,7 @@ use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\entities\unicheck_archive;
 use plagiarism_unicheck\classes\exception\unicheck_exception;
 use plagiarism_unicheck\classes\plagiarism\unicheck_content;
+use plagiarism_unicheck\classes\services\storage\unicheck_file_metadata;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\unicheck_assign;
 use plagiarism_unicheck\classes\unicheck_core;
@@ -89,7 +90,8 @@ class unicheck_upload_task extends unicheck_abstract_task {
             }
 
             $file = get_file_storage()->get_file_by_hash($data->pathnamehash);
-            $this->internalfile = $this->ucore->get_plagiarism_entity($file)->get_internal_file();
+            $plagiarismentity = $this->ucore->get_plagiarism_entity($file);
+            $this->internalfile = $plagiarismentity->get_internal_file();
 
             if (!\plagiarism_unicheck::is_archive($file)) {
                 $this->process_single_file($file);
@@ -107,24 +109,38 @@ class unicheck_upload_task extends unicheck_abstract_task {
                 $maxsupportedcount = unicheck_archive::DEFAULT_SUPPORTED_FILES_COUNT;
             }
 
-            $supportedcount = 0;
-            $extracted = (new unicheck_archive($file, $this->ucore))->extract();
-            if (!count($extracted)) {
+            $archivefiles = (new unicheck_archive($file, $this->ucore))->extract();
+            if (!$archivefiles) {
                 throw new unicheck_exception(unicheck_exception::ARCHIVE_IS_EMPTY);
             }
 
-            foreach ($extracted as $item) {
-                if ($supportedcount >= $maxsupportedcount) {
-                    unicheck_archive::unlink($item['path']);
+            $extractedcount = 0;
+            $archivefilescount = 0;
+            $fileforprocessing = [];
+            foreach ($archivefiles as $archivefile) {
+                $archivefilescount++;
+                if ($extractedcount >= $maxsupportedcount) {
+                    unicheck_archive::unlink($archivefile['path']);
                     continue;
                 }
 
-                $this->process_archive_item($item);
-                $supportedcount++;
+                $fileforprocessing[] = $archivefile;
+                $extractedcount++;
             }
 
-            if ($supportedcount < 1) {
+            if ($extractedcount < 1) {
                 throw new unicheck_exception(unicheck_exception::ARCHIVE_IS_EMPTY);
+            }
+
+            if ($archivefilescount > $maxsupportedcount) {
+                unicheck_file_provider::add_metadata($this->internalfile->id, [
+                    unicheck_file_metadata::ARCHIVE_SUPPORTED_FILES_COUNT                => $archivefilescount,
+                    unicheck_file_metadata::EXTRACTED_SUPPORTED_FILES_FROM_ARCHIVE_COUNT => $extractedcount
+                ]);
+            }
+
+            foreach ($fileforprocessing as $item) {
+                $this->process_archive_item($item);
             }
         } catch (\Exception $e) {
             if ($this->internalfile) {

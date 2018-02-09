@@ -152,3 +152,6 @@ $string['unicheck:changeexcludecitationssetting'] = 'Allow enable/disable exclud
 $string['unicheck:changeshowstudentscoresetting'] = 'Allow enable/disable show similarity scores to student';
 $string['unicheck:changeshowstudentreportsetting'] = 'Allow enable/disable show similarity reports to student';
 $string['unicheck:changemaxsupportedarchivefilescountsetting'] = 'Allow change maximum number of files to be checked in archive';
+// Archive.
+$string['archive:limitreachedshortdescripton'] = 'Not all documents were analyzed';
+$string['archive:limitreachedfulldescription'] = 'There are more documents in the file "{$a->filename}" but they have not been analyzed because the limit of documents to be analyzed within a zip file is {$a->max_supported_count}. You can check it with the administrator of this Moodle installation to modify this value';

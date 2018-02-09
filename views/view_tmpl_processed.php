@@ -26,7 +26,8 @@
 
 use plagiarism_unicheck\classes\permissions\capability;
 use plagiarism_unicheck\classes\services\report\unicheck_url;
-use plagiarism_unicheck\classes\unicheck_core;
+use plagiarism_unicheck\classes\services\storage\unicheck_file_metadata;
+use plagiarism_unicheck\classes\unicheck_plagiarism_entity;
 use plagiarism_unicheck\classes\unicheck_settings;
 
 if (!defined('MOODLE_INTERNAL')) {
@@ -79,6 +80,26 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
                 $canvieweditreport ? $reporturl->get_edit_url($cid) : $reporturl->get_view_url($cid)
             );
             $htmlparts[] = '<img class="un_tooltip" src="' . $OUTPUT->image_url('link', UNICHECK_PLAGIN_NAME) . '">';
+            $htmlparts[] = '</a></span>';
+        }
+    }
+
+    $metadata = $fileobj->metadata;
+    if ($metadata && $fileobj->type === unicheck_plagiarism_entity::TYPE_ARCHIVE) {
+        $metadata = json_decode($metadata, true);
+        $archivefilescount = 0;
+        if (isset($metadata[unicheck_file_metadata::ARCHIVE_SUPPORTED_FILES_COUNT])) {
+            $archivefilescount = $metadata[unicheck_file_metadata::ARCHIVE_SUPPORTED_FILES_COUNT];
+        }
+
+        $extractedfilescount = 0;
+        if (isset($metadata[unicheck_file_metadata::EXTRACTED_SUPPORTED_FILES_FROM_ARCHIVE_COUNT])) {
+            $extractedfilescount = $metadata[unicheck_file_metadata::EXTRACTED_SUPPORTED_FILES_FROM_ARCHIVE_COUNT];
+        };
+
+        if ($archivefilescount > $extractedfilescount) {
+            $htmlparts[] = '<br><span class="text-danger">';
+            $htmlparts[] = plagiarism_unicheck::trans('archive:limitreachedshortdescripton');
             $htmlparts[] = '</a></span>';
         }
     }

@@ -151,6 +151,7 @@ class unicheck_file_provider {
         }
         $files->close(); // Don't forget to close the recordset!
     }
+
     /**
      * Get file list by parent id
      *
@@ -161,5 +162,20 @@ class unicheck_file_provider {
         global $DB;
 
         return $DB->get_records_list(UNICHECK_FILES_TABLE, 'parent_id', [$parentid]);
+    }
+
+    /**
+     * Add file metadata
+     *
+     * @param   int $fileid
+     * @param array $metadata
+     * @return bool
+     */
+    public static function add_metadata($fileid, array $metadata) {
+        $fileobj = self::get_by_id($fileid);
+        $metadata = array_merge($fileobj->metadata ? json_decode($fileobj->metadata, true) : [], $metadata);
+        $fileobj->metadata = json_encode($metadata);
+
+        return self::save($fileobj);
     }
 }
