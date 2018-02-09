@@ -68,7 +68,7 @@ class unicheck_check_helper {
 
         $updated = unicheck_file_provider::save($record);
 
-        $emailstudents = unicheck_settings::get_assign_settings($record->cm, 'unicheck_studentemail');
+        $emailstudents = unicheck_settings::get_activity_settings($record->cm, 'unicheck_studentemail');
         if ($updated && !empty($emailstudents)) {
             unicheck_notification::send_student_email_notification($record);
         }

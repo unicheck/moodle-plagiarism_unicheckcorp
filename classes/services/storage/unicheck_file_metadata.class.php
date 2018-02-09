@@ -14,23 +14,37 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * version.php
+ * unicheck_file_state.class.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
-if (!isset($plugin)) {
-    $plugin = new stdClass();
+namespace plagiarism_unicheck\classes\services\storage;
+
+if (!defined('MOODLE_INTERNAL')) {
+    die('Direct access to this script is forbidden.');
 }
 
-$plugin->version = 2018020700; // YYYYMMDDVV.
-$plugin->requires = 2017051501; // Requires Moodle 3.3 .
-$plugin->maturity = MATURITY_STABLE;
-
-$plugin->component = 'plagiarism_unicheck';
-$plugin->release = '2.2.7';
+/**
+ * Class unicheck_file_metadata
+ *
+ * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class unicheck_file_metadata {
+    /**
+     * ARCHIVE_SUPPORTED_FILES_COUNT
+     */
+    const ARCHIVE_SUPPORTED_FILES_COUNT = 'archive_supported_files_count';
+    /**
+     * EXTRACTED_SUPPORTED_FILES_FROM_ARCHIVE_COUNT
+     */
+    const EXTRACTED_SUPPORTED_FILES_FROM_ARCHIVE_COUNT = 'extracted_supported_files_from_archive_count';
+}

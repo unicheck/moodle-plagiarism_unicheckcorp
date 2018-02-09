@@ -25,12 +25,12 @@
 
 namespace plagiarism_unicheck\classes;
 
-use context_module;
 use core\event\base;
 use plagiarism_unicheck;
 use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\entities\unicheck_archive;
 use plagiarism_unicheck\classes\exception\unicheck_exception;
+use plagiarism_unicheck\classes\permissions\capability;
 use plagiarism_unicheck\classes\plagiarism\unicheck_file;
 
 if (!defined('MOODLE_INTERNAL')) {
@@ -286,20 +286,7 @@ class unicheck_core {
      * @return bool
      */
     public static function is_teacher($cmid, $userid) {
-        return self::can('moodle/grade:edit', $cmid, $userid);
-    }
-
-    /**
-     * Check capability
-     *
-     * @param string $permission
-     * @param int    $cmid
-     * @param int    $userid
-     *
-     * @return bool
-     */
-    public static function can($permission, $cmid, $userid) {
-        return has_capability($permission, context_module::instance($cmid), $userid);
+        return capability::user_can('moodle/grade:edit', $cmid, $userid);
     }
 
     /**

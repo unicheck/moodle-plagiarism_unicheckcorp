@@ -26,9 +26,11 @@
 
 use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\helpers\unicheck_stored_file;
+use plagiarism_unicheck\classes\permissions\capability;
 use plagiarism_unicheck\classes\services\report\unicheck_url;
+use plagiarism_unicheck\classes\services\storage\unicheck_file_metadata;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
-use plagiarism_unicheck\classes\unicheck_core;
+use plagiarism_unicheck\classes\unicheck_plagiarism_entity;
 
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once(dirname(__FILE__) . '/lib.php');
@@ -62,7 +64,7 @@ echo $OUTPUT->header();
 
 $tabs = [];
 $fileinfos = [];
-$canvieweditreport = unicheck_core::can('plagiarism/unicheck:vieweditreport', $cmid, $USER->id);
+$canvieweditreport = capability::user_can(capability::VIEW_EDIT_REPORT, $cmid, $USER->id);
 foreach ($childs as $child) {
 
     switch ($child->state) {
@@ -128,6 +130,31 @@ if ($cpf !== null) {
     }
 
     echo html_writer::table($table);
+
+    $fileobj = unicheck_file_provider::find_by_id($pf);
+    if ($fileobj && $fileobj->type === unicheck_plagiarism_entity::TYPE_ARCHIVE) {
+        $metadata = $fileobj->metadata;
+        if ($metadata) {
+            $metadata = json_decode($metadata, true);
+            $archivefilescount = 0;
+            if (isset($metadata[unicheck_file_metadata::ARCHIVE_SUPPORTED_FILES_COUNT])) {
+                $archivefilescount = $metadata[unicheck_file_metadata::ARCHIVE_SUPPORTED_FILES_COUNT];
+            }
+
+            $extractedfilescount = 0;
+            if (isset($metadata[unicheck_file_metadata::EXTRACTED_SUPPORTED_FILES_FROM_ARCHIVE_COUNT])) {
+                $extractedfilescount = $metadata[unicheck_file_metadata::EXTRACTED_SUPPORTED_FILES_FROM_ARCHIVE_COUNT];
+            }
+
+            if ($archivefilescount > $extractedfilescount) {
+                $params = new stdClass();
+                $params->filename = $fileobj->filename;
+                $params->max_supported_count = $extractedfilescount;
+
+                echo html_writer::span(plagiarism_unicheck::trans('archive:limitreachedfulldescription', $params), 'text-danger');
+            }
+        }
+    }
 }
 echo $OUTPUT->box_end();
 

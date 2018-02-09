@@ -14,23 +14,42 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * version.php
+ * commentable_interface.class.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
-if (!isset($plugin)) {
-    $plugin = new stdClass();
+namespace plagiarism_unicheck\classes\services\comments;
+
+if (!defined('MOODLE_INTERNAL')) {
+    die('Direct access to this script is forbidden.');
 }
 
-$plugin->version = 2018020700; // YYYYMMDDVV.
-$plugin->requires = 2017051501; // Requires Moodle 3.3 .
-$plugin->maturity = MATURITY_STABLE;
+/**
+ * Interface commentable_interface
+ *
+ * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+interface commentable_interface {
+    /**
+     * Get commentable object id
+     *
+     * @return int
+     */
+    public function get_commentable_id();
 
-$plugin->component = 'plagiarism_unicheck';
-$plugin->release = '2.2.7';
+    /**
+     * Get commentable object type
+     *
+     * @return string
+     */
+    public function get_commentable_type();
+}

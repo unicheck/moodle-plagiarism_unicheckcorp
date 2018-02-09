@@ -98,5 +98,29 @@ function xmldb_plagiarism_unicheck_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2017120100, 'plagiarism', 'unicheck');
     }
 
+    if ($oldversion < 2018020700) {
+        $table = new xmldb_table('plagiarism_unicheck_comments');
+
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
+        }
+
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', true, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
+        $table->add_field('body', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null, null);
+        $table->add_field('commentableid', XMLDB_TYPE_INTEGER, '10', true, XMLDB_NOTNULL, null, null, null);
+        $table->add_field('commentabletype', XMLDB_TYPE_CHAR, '64', null, XMLDB_NOTNULL, null, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, null);
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id'], null, null);
+        $dbman->create_table($table);
+
+        $table = new xmldb_table('plagiarism_unicheck_files');
+        $field = new xmldb_field('metadata', XMLDB_TYPE_TEXT, null, null, null, null, null, 'external_file_uuid');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2018020700, 'plagiarism', 'unicheck');
+    }
+
     return true;
 }

@@ -13,24 +13,43 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
- * version.php
+ * range_rule.class.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
-if (!isset($plugin)) {
-    $plugin = new stdClass();
+namespace plagiarism_unicheck\classes\forms\rules;
+
+if (!defined('MOODLE_INTERNAL')) {
+    die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
 }
 
-$plugin->version = 2018020700; // YYYYMMDDVV.
-$plugin->requires = 2017051501; // Requires Moodle 3.3 .
-$plugin->maturity = MATURITY_STABLE;
+/**
+ * Class range_rule
+ *
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class range_rule extends \HTML_QuickForm_Rule {
+    /**
+     * validate
+     *
+     * @param int        $value Value to check
+     * @param array|null $options
+     *
+     * @return bool true if value in valid range
+     */
+    public function validate($value, $options = null) {
+        if ($value < $options['min'] || $value > $options['max']) {
+            return false;
+        }
 
-$plugin->component = 'plagiarism_unicheck';
-$plugin->release = '2.2.7';
+        return true;
+    }
+}

@@ -26,6 +26,8 @@
 namespace plagiarism_unicheck\classes;
 
 use plagiarism_unicheck\classes\helpers\unicheck_response;
+use plagiarism_unicheck\classes\services\comments\commentable_interface;
+use plagiarism_unicheck\classes\services\comments\commentable_type;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 
 if (!defined('MOODLE_INTERNAL')) {
@@ -41,7 +43,7 @@ if (!defined('MOODLE_INTERNAL')) {
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-abstract class unicheck_plagiarism_entity {
+abstract class unicheck_plagiarism_entity implements commentable_interface {
     /**
      * TYPE_ARCHIVE
      */
@@ -145,5 +147,23 @@ abstract class unicheck_plagiarism_entity {
         unicheck_response::process_after_upload($uploadresponse, $internalfile);
 
         return $internalfile;
+    }
+
+    /**
+     * Get commentable object id
+     *
+     * @return int
+     */
+    public function get_commentable_id() {
+        return $this->get_internal_file()->id;
+    }
+
+    /**
+     * Get Commentable object type
+     *
+     * @return string
+     */
+    public function get_commentable_type() {
+        return commentable_type::FILE;
     }
 }
