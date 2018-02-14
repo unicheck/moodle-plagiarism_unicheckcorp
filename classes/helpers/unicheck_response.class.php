@@ -97,7 +97,7 @@ class unicheck_response {
      *
      * @param array     $errors
      * @param \stdClass $plagiarismfile
-     * @param string          $eventtype
+     * @param string    $eventtype
      * @return bool
      */
     public static function store_errors(array $errors, \stdClass $plagiarismfile, $eventtype) {
@@ -108,10 +108,11 @@ class unicheck_response {
 
         switch ($eventtype) {
             case 'file_similarity_check':
-                file_similarity_check_failed::create_from_plagiarismfile($plagiarismfile, $plagiarismfile->errorresponse);
+                file_similarity_check_failed::create_from_plagiarismfile($plagiarismfile, $plagiarismfile->errorresponse)
+                    ->trigger();
                 break;
             default:
-                file_upload_failed::create_from_plagiarismfile($plagiarismfile, $plagiarismfile->errorresponse);
+                file_upload_failed::create_from_plagiarismfile($plagiarismfile, $plagiarismfile->errorresponse)->trigger();
                 break;
         }
 
@@ -131,10 +132,11 @@ class unicheck_response {
 
                 switch ($eventtype) {
                     case 'file_similarity_check':
-                        file_similarity_check_failed::create_from_plagiarismfile($plagiarismfile, $plagiarismfile->errorresponse);
+                        file_similarity_check_failed::create_from_plagiarismfile($plagiarismfile, $plagiarismfile->errorresponse)
+                            ->trigger();
                         break;
                     default:
-                        file_upload_failed::create_from_plagiarismfile($plagiarismfile, $plagiarismfile->errorresponse);
+                        file_upload_failed::create_from_plagiarismfile($plagiarismfile, $plagiarismfile->errorresponse)->trigger();
                         break;
                 }
             }
