@@ -92,6 +92,8 @@ class submission_observer extends abstract_observer {
     }
 
     /**
+     * status_viewed
+     *
      * @param unicheck_core $core
      * @param base          $event
      */

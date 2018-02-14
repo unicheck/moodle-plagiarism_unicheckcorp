@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * file_upload_failed.php
+ * error_handled.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
@@ -35,7 +35,7 @@ if (!defined('MOODLE_INTERNAL')) {
 require_once(dirname(__FILE__) . '/../../locallib.php');
 
 /**
- * Class file_upload_failed
+ * Class error_handled
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
@@ -44,7 +44,7 @@ require_once(dirname(__FILE__) . '/../../locallib.php');
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class file_upload_failed extends base {
+class error_handled extends base {
     /**
      * Init method.
      *
@@ -53,7 +53,7 @@ class file_upload_failed extends base {
     protected function init() {
         $this->data['crud'] = 'r';
         $this->data['edulevel'] = self::LEVEL_OTHER;
-        $this->data['objecttable'] = UNICHECK_FILES_TABLE;
+        $this->data['context'] = \context_system::instance();
     }
 
     /**
@@ -62,7 +62,7 @@ class file_upload_failed extends base {
      * @return string
      */
     public static function get_name() {
-        return plagiarism_unicheck::trans('event:file_upload_failed');
+        return plagiarism_unicheck::trans('event:error_handled');
     }
 
     /**
@@ -71,24 +71,20 @@ class file_upload_failed extends base {
      * @return string
      */
     public function get_description() {
-        return "File {$this->objectid} upload failed. Reason {$this->other['errormessage']}: ";
+        return "Error handled. Message '{$this->other['errormessage']}'";
     }
 
     /**
-     * Create from plagiarism file
+     * Create from exception
      *
-     * @param object $plagiarismfile
-     * @param string $errormessage
+     * @param \Exception $exception
      * @return base
      */
-    public static function create_from_plagiarismfile($plagiarismfile, $errormessage) {
+    public static function create_from_exception(\Exception $exception) {
         $data = [
-            'objectid' => $plagiarismfile->id,
-            'context'  => \context_module::instance($plagiarismfile->cm),
-            'other'    =>
+            'other' =>
                 [
-                    'fileid'       => $plagiarismfile->identifier,
-                    'errormessage' => $errormessage,
+                    'errormessage' => $exception->getMessage(),
                 ]
         ];
 

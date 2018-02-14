@@ -66,7 +66,7 @@ class setup_form extends moodleform {
             }
         };
 
-        $addyesnoelem('unicheck_use', 'enable_plugin');
+        $addyesnoelem('unicheck_use', 'enable_plugin', false);
 
         $settingstext = '<div id="fitem_id_settings_link" class="fitem fitem_ftext ">
                             <div class="felement ftext">
@@ -99,6 +99,8 @@ class setup_form extends moodleform {
                 $addyesnoelem('unicheck_enable_mod_' . $mod, 'enable_mod_' . $mod);
             }
         }
+
+        $addyesnoelem('unicheck_enable_api_logging', 'enable_api_logging', false);
 
         $this->add_action_buttons(true);
     }

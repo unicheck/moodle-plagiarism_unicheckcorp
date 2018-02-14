@@ -14,33 +14,63 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * file_observer.class.php
+ * archive_files_uploaded.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
  * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
- * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @copyright   2018 UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plagiarism_unicheck\classes\observers;
+namespace plagiarism_unicheck\event;
 
-use core\event\base;
-use plagiarism_unicheck\classes\unicheck_core;
+use plagiarism_unicheck;
+use plagiarism_unicheck\classes\event\abstract_file_event;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
+require_once(dirname(__FILE__) . '/../../locallib.php');
+
 /**
- * Class file_observer
+ * Class archive_files_uploaded
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
+ *
  * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class forum_observer extends abstract_observer {
+class archive_files_uploaded extends abstract_file_event {
+    /**
+     * Init method.
+     *
+     * @return void
+     */
+    protected function init() {
+        $this->data['crud'] = 'c';
+        $this->data['edulevel'] = self::LEVEL_OTHER;
+        $this->data['objecttable'] = UNICHECK_FILES_TABLE;
+    }
 
+    /**
+     * Return the event name.
+     *
+     * @return string
+     */
+    public static function get_name() {
+        return plagiarism_unicheck::trans('event:archive_files_uploaded');
+    }
+
+    /**
+     * Returns description of what happened.
+     *
+     * @return string
+     */
+    public function get_description() {
+        return "User archive '{$this->other['fileid']}' files uploaded to UNICHECK in course module {$this->contextinstanceid}";
+    }
 }

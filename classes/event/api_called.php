@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * file_upload_failed.php
+ * api_called.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
@@ -35,7 +35,7 @@ if (!defined('MOODLE_INTERNAL')) {
 require_once(dirname(__FILE__) . '/../../locallib.php');
 
 /**
- * Class file_upload_failed
+ * Class api_called
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
@@ -44,7 +44,7 @@ require_once(dirname(__FILE__) . '/../../locallib.php');
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class file_upload_failed extends base {
+class api_called extends base {
     /**
      * Init method.
      *
@@ -53,7 +53,7 @@ class file_upload_failed extends base {
     protected function init() {
         $this->data['crud'] = 'r';
         $this->data['edulevel'] = self::LEVEL_OTHER;
-        $this->data['objecttable'] = UNICHECK_FILES_TABLE;
+        $this->context = \context_system::instance();
     }
 
     /**
@@ -62,7 +62,7 @@ class file_upload_failed extends base {
      * @return string
      */
     public static function get_name() {
-        return plagiarism_unicheck::trans('event:file_upload_failed');
+        return plagiarism_unicheck::trans('event:api_called');
     }
 
     /**
@@ -71,27 +71,54 @@ class file_upload_failed extends base {
      * @return string
      */
     public function get_description() {
-        return "File {$this->objectid} upload failed. Reason {$this->other['errormessage']}: ";
+        $message = '';
+        $apiurl = isset($this->other['api_url']) ? $this->other['api_url'] : '';
+        $message .= "URL: $apiurl<br>";
+        $responsecode = isset($this->other['response_code']) ? $this->other['response_code'] : null;
+        if (null !== $responsecode) {
+            $message .= "Response code: $responsecode<br>";
+        }
+
+        $requestdata = isset($this->other['request_data']) ? $this->other['request_data'] : [];
+        if ($requestdata) {
+            $message .= 'Request data: ' . json_encode($requestdata) . '<br>';
+        }
+        $response = isset($this->other['response_data']) ? $this->other['response_data'] : '';
+        $message .= "Response: $response<br>";
+        $apikey = isset($this->other['api_key']) ? $this->other['api_key'] : '';
+        $message .= "API key: $apikey";
+
+        return $message;
     }
 
     /**
-     * Create from plagiarism file
+     * Creates the event object.
      *
-     * @param object $plagiarismfile
-     * @param string $errormessage
+     * @param string $apikey
+     * @param string $apiurl
+     * @param array  $requestdata
+     * @param string $responsedata
+     * @param int    $responsecode
      * @return base
      */
-    public static function create_from_plagiarismfile($plagiarismfile, $errormessage) {
-        $data = [
-            'objectid' => $plagiarismfile->id,
-            'context'  => \context_module::instance($plagiarismfile->cm),
-            'other'    =>
-                [
-                    'fileid'       => $plagiarismfile->identifier,
-                    'errormessage' => $errormessage,
-                ]
-        ];
+    public static function create_log_message($apikey, $apiurl, $requestdata, $responsedata, $responsecode = 200) {
 
-        return self::create($data);
+        if (is_array($requestdata) && isset($requestdata['file_data'])) {
+            $requestdata['file_data'] = 'base64 encoding of file';
+        }
+
+        return self::create(
+            [
+                'other' =>
+                    [
+                        'api_key'       => $apikey,
+                        'api_url'       => $apiurl,
+                        'request_data'  => $requestdata,
+                        'response_data' => $responsedata,
+                        'response_code' => $responsecode,
+
+                    ]
+            ]
+        );
     }
 }

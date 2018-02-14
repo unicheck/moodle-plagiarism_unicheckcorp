@@ -27,6 +27,8 @@ namespace plagiarism_unicheck\classes\helpers;
 
 use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
+use plagiarism_unicheck\event\archive_files_uploaded;
+use plagiarism_unicheck\event\file_upload_completed;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -61,6 +63,8 @@ class unicheck_upload_helper {
             return false;
         }
 
+        file_upload_completed::create_from_plagiarismfile($plagiarismfile)->trigger();
+
         if ($plagiarismfile->parent_id !== null) {
             $parentrecord = unicheck_file_provider::get_by_id($plagiarismfile->parent_id);
             $childs = $DB->get_records_select(UNICHECK_FILES_TABLE, "parent_id = ? AND state in (?)",
@@ -70,6 +74,7 @@ class unicheck_upload_helper {
                 $parentrecord->state = unicheck_file_state::UPLOADED;
                 $plagiarismfile->errorresponse = null;
                 unicheck_file_provider::save($parentrecord);
+                archive_files_uploaded::create_from_plagiarismfile($parentrecord)->trigger();
             }
         }
 

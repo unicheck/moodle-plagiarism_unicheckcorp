@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * file_upload_failed.php
+ * file_upload_started.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
@@ -25,8 +25,8 @@
 
 namespace plagiarism_unicheck\event;
 
-use core\event\base;
 use plagiarism_unicheck;
+use plagiarism_unicheck\classes\event\abstract_file_event;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -35,7 +35,7 @@ if (!defined('MOODLE_INTERNAL')) {
 require_once(dirname(__FILE__) . '/../../locallib.php');
 
 /**
- * Class file_upload_failed
+ * Class file_upload_started
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
@@ -43,15 +43,16 @@ require_once(dirname(__FILE__) . '/../../locallib.php');
  * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @since       Moodle 3.3
  */
-class file_upload_failed extends base {
+class file_upload_started extends abstract_file_event {
     /**
      * Init method.
      *
      * @return void
      */
     protected function init() {
-        $this->data['crud'] = 'r';
+        $this->data['crud'] = 'c';
         $this->data['edulevel'] = self::LEVEL_OTHER;
         $this->data['objecttable'] = UNICHECK_FILES_TABLE;
     }
@@ -62,7 +63,7 @@ class file_upload_failed extends base {
      * @return string
      */
     public static function get_name() {
-        return plagiarism_unicheck::trans('event:file_upload_failed');
+        return plagiarism_unicheck::trans('event:file_upload_started');
     }
 
     /**
@@ -71,27 +72,6 @@ class file_upload_failed extends base {
      * @return string
      */
     public function get_description() {
-        return "File {$this->objectid} upload failed. Reason {$this->other['errormessage']}: ";
-    }
-
-    /**
-     * Create from plagiarism file
-     *
-     * @param object $plagiarismfile
-     * @param string $errormessage
-     * @return base
-     */
-    public static function create_from_plagiarismfile($plagiarismfile, $errormessage) {
-        $data = [
-            'objectid' => $plagiarismfile->id,
-            'context'  => \context_module::instance($plagiarismfile->cm),
-            'other'    =>
-                [
-                    'fileid'       => $plagiarismfile->identifier,
-                    'errormessage' => $errormessage,
-                ]
-        ];
-
-        return self::create($data);
+        return "User file '{$this->other['fileid']}' upload started in course module {$this->contextinstanceid}";
     }
 }

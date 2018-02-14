@@ -43,6 +43,7 @@ global $CFG;
 require_once($CFG->dirroot . '/plagiarism/lib.php');
 require_once($CFG->libdir . '/filelib.php');
 require_once($CFG->libdir . '/accesslib.php');
+require_once(dirname(__FILE__) . '/autoloader.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 
 // There is a new Unicheck API - The Integration Service - we only currently use this to verify the receiver address.

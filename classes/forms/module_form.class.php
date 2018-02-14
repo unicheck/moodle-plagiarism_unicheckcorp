@@ -135,11 +135,11 @@ class module_form extends moodleform {
                 plagiarism_unicheck::trans('use_assign_desc_value'));
         }
 
-        $addyesnoelem(unicheck_settings::ENABLE_UNICHECK, true);
+        $addyesnoelem(unicheck_settings::ENABLE_UNICHECK, true, 0);
 
         if (!in_array($this->modname, [UNICHECK_MODNAME_FORUM, UNICHECK_MODNAME_WORKSHOP])) {
-            $addyesnoelem(unicheck_settings::CHECK_ALREADY_DELIVERED_ASSIGNMENT_SUBMISSIONS, true);
-            $addyesnoelem(unicheck_settings::ADD_TO_INSTITUTIONAL_LIBRARY, true);
+            $addyesnoelem(unicheck_settings::CHECK_ALREADY_DELIVERED_ASSIGNMENT_SUBMISSIONS, true, 0);
+            $addyesnoelem(unicheck_settings::ADD_TO_INSTITUTIONAL_LIBRARY, true, 0);
         }
 
         $checktypedata = [];
@@ -154,17 +154,11 @@ class module_form extends moodleform {
             $elem->freeze();
         }
 
-        $availablefromgroup = [];
-        $availablefromgroup[] =& $mform->createElement('date_selector', 'availablefrom', '');
-        $availablefromgroup[] =& $mform->createElement('checkbox', 'availablefromenabled', '', get_string('enable'));
-        $mform->addGroup($availablefromgroup, 'availablefromgroup', get_string('availablefromdate', 'data'), ' ', false);
-        $mform->disabledIf('availablefromgroup', 'availablefromenabled');
-
         $addtextelem(unicheck_settings::SENSITIVITY_SETTING_NAME, 0);
         $addtextelem(unicheck_settings::WORDS_SENSITIVITY, 8);
         $addyesnoelem(unicheck_settings::EXCLUDE_CITATIONS, true, 1);
-        $addyesnoelem(unicheck_settings::SHOW_STUDENT_SCORE, true);
-        $addyesnoelem(unicheck_settings::SHOW_STUDENT_REPORT, true);
+        $addyesnoelem(unicheck_settings::SHOW_STUDENT_SCORE, true, 0);
+        $addyesnoelem(unicheck_settings::SHOW_STUDENT_REPORT, true, 0);
         $addtextelem(unicheck_settings::MAX_SUPPORTED_ARCHIVE_FILES_COUNT, 10);
 
         $mform::registerRule('range', null, new range_rule());

@@ -29,13 +29,18 @@ define('AJAX_SCRIPT', true);
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 
+use plagiarism_unicheck\classes\unicheck_callback;
+use plagiarism_unicheck\classes\unicheck_core;
+use plagiarism_unicheck\classes\unicheck_settings;
+use plagiarism_unicheck\event\callback_accepted;
+
 $token = optional_param('token', '', PARAM_RAW);
 if (!$token) {
     require_login();
     require_sesskey();
 }
 
-$body = \plagiarism_unicheck\classes\unicheck_core::parse_json(file_get_contents('php://input'));
+$body = unicheck_core::parse_json(file_get_contents('php://input'));
 if (!is_object($body)) {
     http_response_code(400);
     echo 'Invalid callback body';
@@ -43,8 +48,13 @@ if (!is_object($body)) {
     die;
 }
 
-$callback = new \plagiarism_unicheck\classes\unicheck_callback();
+$callback = new unicheck_callback();
 try {
+    $isapiloggingenable = unicheck_settings::get_settings('enable_api_logging');
+    if ($isapiloggingenable) {
+        callback_accepted::create_log_message($body, $token)->trigger();
+    }
+
     $callback->handle($body, $token);
 } catch (\Exception $exception) {
     http_response_code(400);

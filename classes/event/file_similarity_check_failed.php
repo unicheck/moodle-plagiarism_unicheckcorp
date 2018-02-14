@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * file_upload_failed.php
+ * similarity_check_failed.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
@@ -35,7 +35,7 @@ if (!defined('MOODLE_INTERNAL')) {
 require_once(dirname(__FILE__) . '/../../locallib.php');
 
 /**
- * Class file_upload_failed
+ * Class similarity_check_failed
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
@@ -44,7 +44,7 @@ require_once(dirname(__FILE__) . '/../../locallib.php');
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class file_upload_failed extends base {
+class file_similarity_check_failed extends base {
     /**
      * Init method.
      *
@@ -62,7 +62,7 @@ class file_upload_failed extends base {
      * @return string
      */
     public static function get_name() {
-        return plagiarism_unicheck::trans('event:file_upload_failed');
+        return plagiarism_unicheck::trans('event:file_similarity_check_failed');
     }
 
     /**
@@ -71,7 +71,7 @@ class file_upload_failed extends base {
      * @return string
      */
     public function get_description() {
-        return "File {$this->objectid} upload failed. Reason {$this->other['errormessage']}: ";
+        return "File {$this->objectid} similarity check failed. Reason {$this->other['errormessage']}: ";
     }
 
     /**

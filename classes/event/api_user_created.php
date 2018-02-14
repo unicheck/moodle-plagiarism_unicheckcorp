@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * file_upload_failed.class.php
+ * api_user_created.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
@@ -26,13 +26,16 @@
 namespace plagiarism_unicheck\event;
 
 use core\event\base;
+use plagiarism_unicheck;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
+require_once(dirname(__FILE__) . '/../../locallib.php');
+
 /**
- * Class file_upload_failed
+ * Class api_user_created
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
@@ -41,16 +44,17 @@ if (!defined('MOODLE_INTERNAL')) {
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class file_upload_failed extends base {
+class api_user_created extends base {
     /**
      * Init method.
      *
      * @return void
      */
     protected function init() {
-        $this->data['crud'] = 'r';
+        $this->data['crud'] = 'c';
         $this->data['edulevel'] = self::LEVEL_OTHER;
         $this->context = \context_system::instance();
+        $this->data['objecttable'] = UNICHECK_USER_DATA_TABLE;
     }
 
     /**
@@ -59,7 +63,7 @@ class file_upload_failed extends base {
      * @return string
      */
     public static function get_name() {
-        return 'file_upload_failed';
+        return plagiarism_unicheck::trans('event:user_created');
     }
 
     /**
@@ -68,19 +72,21 @@ class file_upload_failed extends base {
      * @return string
      */
     public function get_description() {
-        return 'log description';
+        return "API user with ID '{$this->other['external_user_id']}'";
     }
 
     /**
+     * Create from api user
+     *
+     * @param object $apiuser
      * @return base
      */
-    public static function create_from_error_handler() {
+    public static function create_from_apiuser($apiuser) {
         return self::create([
-            'other' => [
-                'message'      => 'message',
-                'submissionid' => 'id',
-                'resource'     => 'api_log',
-                'params'       => []
+            'relateduserid' => $apiuser->user_id,
+            'objectid'      => $apiuser->id,
+            'other'         => [
+                'external_user_id' => $apiuser->external_user_id
             ]
         ]);
     }

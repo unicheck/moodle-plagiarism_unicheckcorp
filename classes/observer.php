@@ -24,7 +24,11 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(__FILE__) . '/../locallib.php');
+if (!defined('MOODLE_INTERNAL')) {
+    die('Direct access to this script is forbidden.');
+}
+
+require_once($CFG->dirroot . '/plagiarism/unicheck/lib.php');
 
 use core\event\base;
 use plagiarism_unicheck\classes\observers\assessable_observer;
@@ -33,10 +37,6 @@ use plagiarism_unicheck\classes\observers\online_text_observer;
 use plagiarism_unicheck\classes\observers\submission_observer;
 use plagiarism_unicheck\classes\observers\workshop_observer;
 use plagiarism_unicheck\classes\unicheck_core;
-
-if (!defined('MOODLE_INTERNAL')) {
-    die('Direct access to this script is forbidden.');
-}
 
 /**
  * Class plagiarism_unicheck_observer
@@ -50,6 +50,8 @@ if (!defined('MOODLE_INTERNAL')) {
 class plagiarism_unicheck_observer {
 
     /**
+     * assignsubmission_file_submission_updated
+     *
      * @param base $event
      */
     public static function assignsubmission_file_submission_updated(base $event) {
@@ -57,6 +59,8 @@ class plagiarism_unicheck_observer {
     }
 
     /**
+     * assignsubmission_file_assessable_uploaded
+     *
      * @param base $event
      */
     public static function assignsubmission_file_assessable_uploaded(base $event) {
@@ -64,6 +68,8 @@ class plagiarism_unicheck_observer {
     }
 
     /**
+     * assignsubmission_onlinetext_assessable_uploaded
+     *
      * @param base $event
      */
     public static function assignsubmission_onlinetext_assessable_uploaded(base $event) {
@@ -71,6 +77,8 @@ class plagiarism_unicheck_observer {
     }
 
     /**
+     * mod_forum_assessable_uploaded
+     *
      * @param base $event
      */
     public static function mod_forum_assessable_uploaded(base $event) {
@@ -81,6 +89,8 @@ class plagiarism_unicheck_observer {
     }
 
     /**
+     * mod_workshop_assessable_uploaded
+     *
      * @param base $event
      */
     public static function mod_workshop_assessable_uploaded(base $event) {
@@ -88,6 +98,8 @@ class plagiarism_unicheck_observer {
     }
 
     /**
+     * mod_assign_assessable_submitted
+     *
      * @param base $event
      */
     public static function mod_assign_assessable_submitted(base $event) {
@@ -95,6 +107,8 @@ class plagiarism_unicheck_observer {
     }
 
     /**
+     * mod_workshop_phase_switched
+     *
      * @param base $event
      */
     public static function mod_workshop_phase_switched(base $event) {
@@ -102,6 +116,8 @@ class plagiarism_unicheck_observer {
     }
 
     /**
+     * mod_assign_submission_status_updated
+     *
      * @param base $event
      */
     public static function mod_assign_submission_status_updated(base $event) {
@@ -109,6 +125,8 @@ class plagiarism_unicheck_observer {
     }
 
     /**
+     * mod_assign_submission_status_viewed
+     *
      * @param base $event
      */
     public static function mod_assign_submission_status_viewed(base $event) {
@@ -116,6 +134,8 @@ class plagiarism_unicheck_observer {
     }
 
     /**
+     * get_core
+     *
      * @param base $event
      * @return unicheck_core
      */
