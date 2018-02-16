@@ -103,7 +103,7 @@ class unicheck_progress {
 
             $response = unicheck_api::instance()->get_file_upload_progress($trackedfile->external_file_uuid);
             if (!$response->result) {
-                unicheck_response::store_errors($response->errors, $plagiarismfile, 'file_upload');
+                unicheck_response::store_errors($response->errors, $plagiarismfile, unicheck_response::FILE_RESOURCE);
                 continue;
             }
 

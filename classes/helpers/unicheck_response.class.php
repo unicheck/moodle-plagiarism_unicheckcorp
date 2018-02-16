@@ -46,6 +46,15 @@ if (!defined('MOODLE_INTERNAL')) {
  */
 class unicheck_response {
     /**
+     * FILE_RESOURCE
+     */
+    const FILE_RESOURCE = 'file';
+    /**
+     * SIMILARITY_CHECK_RESOURCE
+     */
+    const SIMILARITY_CHECK_RESOURCE = 'similarity_check';
+
+    /**
      * handle_check_response
      *
      * @param \stdClass $response
@@ -54,7 +63,7 @@ class unicheck_response {
      */
     public static function handle_check_response(\stdClass $response, \stdClass $plagiarismfile) {
         if (!$response->result) {
-            return self::store_errors($response->errors, $plagiarismfile, 'file_similarity_check');
+            return self::store_errors($response->errors, $plagiarismfile, self::SIMILARITY_CHECK_RESOURCE);
         }
 
         if ($response->check->id) {
@@ -81,7 +90,7 @@ class unicheck_response {
      */
     public static function process_after_upload(\stdClass $response, \stdClass $plagiarismfile) {
         if (!$response->result) {
-            return self::store_errors($response->errors, $plagiarismfile, 'file_upload');
+            return self::store_errors($response->errors, $plagiarismfile, self::FILE_RESOURCE);
         }
 
         $plagiarismfile->external_file_uuid = $response->file->uuid;
@@ -97,28 +106,22 @@ class unicheck_response {
      *
      * @param array     $errors
      * @param \stdClass $plagiarismfile
-     * @param string    $eventtype
+     * @param string    $resourcetype
      * @return bool
      */
-    public static function store_errors(array $errors, \stdClass $plagiarismfile, $eventtype) {
+    public static function store_errors(array $errors, \stdClass $plagiarismfile, $resourcetype) {
         global $DB;
 
         $plagiarismfile->state = unicheck_file_state::HAS_ERROR;
         $plagiarismfile->errorresponse = json_encode($errors);
-
-        switch ($eventtype) {
-            case 'file_similarity_check':
-                file_similarity_check_failed::create_from_plagiarismfile($plagiarismfile, $plagiarismfile->errorresponse)
-                    ->trigger();
-                break;
-            default:
-                file_upload_failed::create_from_plagiarismfile($plagiarismfile, $plagiarismfile->errorresponse)->trigger();
-                break;
+        $result = unicheck_file_provider::save($plagiarismfile);
+        if (!$result) {
+            return false;
         }
 
-        $result = unicheck_file_provider::save($plagiarismfile);
+        self::trigger_failed_event($plagiarismfile, $resourcetype);
 
-        if ($result && $plagiarismfile->parent_id) {
+        if ($plagiarismfile->parent_id) {
             $hasgoodchild = $DB->count_records_select(UNICHECK_FILES_TABLE, "parent_id = ? AND state not in (?)",
                 [$plagiarismfile->parent_id, unicheck_file_state::HAS_ERROR]
             );
@@ -130,18 +133,32 @@ class unicheck_response {
 
                 unicheck_file_provider::save($parentplagiarismfile);
 
-                switch ($eventtype) {
-                    case 'file_similarity_check':
-                        file_similarity_check_failed::create_from_plagiarismfile($plagiarismfile, $plagiarismfile->errorresponse)
-                            ->trigger();
-                        break;
-                    default:
-                        file_upload_failed::create_from_plagiarismfile($plagiarismfile, $plagiarismfile->errorresponse)->trigger();
-                        break;
-                }
+                self::trigger_failed_event($parentplagiarismfile, $resourcetype);
             }
         }
 
         return $result;
+    }
+
+    /**
+     * Trigger failed event
+     *
+     * @param object $plagiarismfile
+     * @param string $resourcetype
+     */
+    private static function trigger_failed_event($plagiarismfile, $resourcetype) {
+        switch ($resourcetype) {
+            case self::SIMILARITY_CHECK_RESOURCE:
+                $event = file_similarity_check_failed::create_from_failed_plagiarismfile(
+                    $plagiarismfile,
+                    $plagiarismfile->errorresponse
+                );
+                break;
+            default:
+                $event = file_upload_failed::create_from_failed_plagiarismfile($plagiarismfile, $plagiarismfile->errorresponse);
+                break;
+        }
+
+        $event->trigger();
     }
 }

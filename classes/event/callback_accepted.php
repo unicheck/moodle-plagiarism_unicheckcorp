@@ -43,6 +43,7 @@ require_once(dirname(__FILE__) . '/../../locallib.php');
  * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @since       Moodle 3.3
  */
 class callback_accepted extends base {
     /**
@@ -51,7 +52,7 @@ class callback_accepted extends base {
      * @return void
      */
     protected function init() {
-        $this->data['crud'] = 'c';
+        $this->data['crud'] = 'u';
         $this->data['edulevel'] = self::LEVEL_OTHER;
         $this->context = \context_system::instance();
     }
@@ -73,7 +74,7 @@ class callback_accepted extends base {
     public function get_description() {
         $body = isset($this->other['body']) ? json_encode($this->other['body']) : '-';
         $token = isset($this->other['token']) ? $this->other['token'] : '-';
-        $message = "Token: $token<br>";
+        $message = "Token: '$token'<br>";
         $message .= "$body";
 
         return $message;
@@ -87,13 +88,11 @@ class callback_accepted extends base {
      * @return base
      */
     public static function create_log_message($body, $token) {
-        return self::create(
-            [
-                'other' =>
-                    [
-                        'body'  => $body,
-                        'token' => $token
-                    ]
+        return self::create([
+                'other' => [
+                    'body'  => $body,
+                    'token' => $token
+                ]
             ]
         );
     }

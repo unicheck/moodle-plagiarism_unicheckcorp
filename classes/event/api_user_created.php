@@ -43,6 +43,7 @@ require_once(dirname(__FILE__) . '/../../locallib.php');
  * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @since       Moodle 3.3
  */
 class api_user_created extends base {
     /**
@@ -63,7 +64,7 @@ class api_user_created extends base {
      * @return string
      */
     public static function get_name() {
-        return plagiarism_unicheck::trans('event:user_created');
+        return plagiarism_unicheck::trans('event:api_user_created');
     }
 
     /**
@@ -72,7 +73,7 @@ class api_user_created extends base {
      * @return string
      */
     public function get_description() {
-        return "API user with ID '{$this->other['external_user_id']}'";
+        return "API user with external ID '{$this->other['external_user_id']}'";
     }
 
     /**

@@ -25,8 +25,8 @@
 
 namespace plagiarism_unicheck\event;
 
-use core\event\base;
 use plagiarism_unicheck;
+use plagiarism_unicheck\classes\event\abstract_file_event;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -43,15 +43,16 @@ require_once(dirname(__FILE__) . '/../../locallib.php');
  * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @since       Moodle 3.3
  */
-class file_similarity_check_failed extends base {
+class file_similarity_check_failed extends abstract_file_event {
     /**
      * Init method.
      *
      * @return void
      */
     protected function init() {
-        $this->data['crud'] = 'r';
+        $this->data['crud'] = 'u';
         $this->data['edulevel'] = self::LEVEL_OTHER;
         $this->data['objecttable'] = UNICHECK_FILES_TABLE;
     }
@@ -71,27 +72,19 @@ class file_similarity_check_failed extends base {
      * @return string
      */
     public function get_description() {
-        return "File {$this->objectid} similarity check failed. Reason {$this->other['errormessage']}: ";
+        return "File '{$this->other['fileid']}' similarity check failed. Reason '{$this->other['errormessage']}'";
     }
 
     /**
-     * Create from plagiarism file
+     * Validate plagiarismfile data
      *
-     * @param object $plagiarismfile
-     * @param string $errormessage
-     * @return base
+     * @throws \coding_exception
      */
-    public static function create_from_plagiarismfile($plagiarismfile, $errormessage) {
-        $data = [
-            'objectid' => $plagiarismfile->id,
-            'context'  => \context_module::instance($plagiarismfile->cm),
-            'other'    =>
-                [
-                    'fileid'       => $plagiarismfile->identifier,
-                    'errormessage' => $errormessage,
-                ]
-        ];
+    protected function validate_data() {
+        parent::validate_data();
 
-        return self::create($data);
+        if (!isset($this->other['errormessage'])) {
+            throw new \coding_exception("The 'errormessage' value must be set in other.");
+        }
     }
 }

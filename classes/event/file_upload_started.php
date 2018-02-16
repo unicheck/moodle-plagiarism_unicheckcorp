@@ -72,6 +72,6 @@ class file_upload_started extends abstract_file_event {
      * @return string
      */
     public function get_description() {
-        return "User file '{$this->other['fileid']}' upload started in course module {$this->contextinstanceid}";
+        return "User file '{$this->other['fileid']}' upload started in course module '{$this->contextinstanceid}'";
     }
 }

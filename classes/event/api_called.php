@@ -43,6 +43,7 @@ require_once(dirname(__FILE__) . '/../../locallib.php');
  * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @since       Moodle 3.3
  */
 class api_called extends base {
     /**
@@ -107,17 +108,15 @@ class api_called extends base {
             $requestdata['file_data'] = 'base64 encoding of file';
         }
 
-        return self::create(
-            [
-                'other' =>
-                    [
-                        'api_key'       => $apikey,
-                        'api_url'       => $apiurl,
-                        'request_data'  => $requestdata,
-                        'response_data' => $responsedata,
-                        'response_code' => $responsecode,
+        return self::create([
+                'other' => [
+                    'api_key'       => $apikey,
+                    'api_url'       => $apiurl,
+                    'request_data'  => $requestdata,
+                    'response_data' => $responsedata,
+                    'response_code' => $responsecode,
 
-                    ]
+                ]
             ]
         );
     }

@@ -150,7 +150,7 @@ class unicheck_upload_task extends unicheck_abstract_task {
         } catch (\Exception $e) {
             if ($this->internalfile) {
                 unicheck_file_provider::to_error_state($this->internalfile, $e->getMessage());
-                file_upload_failed::create_from_plagiarismfile($this->internalfile, $e->getMessage())->trigger();
+                file_upload_failed::create_from_failed_plagiarismfile($this->internalfile, $e->getMessage())->trigger();
             } else {
                 unicheck_file_provider::to_error_state_by_pathnamehash($data->pathnamehash, $e->getMessage());
                 error_handled::create_from_exception($e)->trigger();

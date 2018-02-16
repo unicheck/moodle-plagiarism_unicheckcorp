@@ -34,6 +34,7 @@ use plagiarism_unicheck\classes\unicheck_plagiarism_entity;
 use plagiarism_unicheck\classes\unicheck_settings;
 use plagiarism_unicheck\event\archive_files_checked;
 use plagiarism_unicheck\event\file_similarity_check_completed;
+use plagiarism_unicheck\event\file_similarity_check_failed;
 use plagiarism_unicheck\event\file_similarity_check_started;
 
 if (!defined('MOODLE_INTERNAL')) {
@@ -72,6 +73,11 @@ class unicheck_check_helper {
 
         $updated = unicheck_file_provider::save($plagiarismfile);
         if (!$updated) {
+            file_similarity_check_failed::create_from_failed_plagiarismfile(
+                $plagiarismfile,
+                "Can't update DB row"
+            )->trigger();
+
             return false;
         }
 

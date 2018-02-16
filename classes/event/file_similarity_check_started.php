@@ -43,6 +43,7 @@ require_once(dirname(__FILE__) . '/../../locallib.php');
  * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @since       Moodle 3.3
  */
 class file_similarity_check_started extends abstract_file_event {
     /**
@@ -51,7 +52,7 @@ class file_similarity_check_started extends abstract_file_event {
      * @return void
      */
     protected function init() {
-        $this->data['crud'] = 'r';
+        $this->data['crud'] = 'u';
         $this->data['edulevel'] = self::LEVEL_OTHER;
         $this->data['objecttable'] = UNICHECK_FILES_TABLE;
     }
@@ -71,6 +72,6 @@ class file_similarity_check_started extends abstract_file_event {
      * @return string
      */
     public function get_description() {
-        return "User file '{$this->other['fileid']}' similarity check started in course module {$this->contextinstanceid}";
+        return "User file '{$this->other['fileid']}' similarity check started in course module '{$this->contextinstanceid}'";
     }
 }

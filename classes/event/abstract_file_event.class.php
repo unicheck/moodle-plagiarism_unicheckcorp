@@ -42,6 +42,7 @@ require_once(dirname(__FILE__) . '/../../locallib.php');
  * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @since       Moodle 3.3
  */
 abstract class abstract_file_event extends base {
     /**
@@ -52,15 +53,52 @@ abstract class abstract_file_event extends base {
      */
     public static function create_from_plagiarismfile($plagiarismfile) {
         $data = [
-            'relateduserid' => $plagiarismfile->userid,
-            'objectid'      => $plagiarismfile->id,
-            'context'       => \context_module::instance($plagiarismfile->cm),
-            'other'         =>
-                [
-                    'fileid' => $plagiarismfile->identifier
-                ]
+            'userid'   => $plagiarismfile->userid,
+            'objectid' => $plagiarismfile->id,
+            'context'  => \context_module::instance($plagiarismfile->cm),
+            'other'    => [
+                'fileid' => $plagiarismfile->identifier
+            ]
         ];
 
         return self::create($data);
+    }
+
+    /**
+     * Create from plagiarism file and failed result message
+     *
+     * @param object $plagiarismfile
+     * @param string $errormessage
+     * @return base
+     */
+    public static function create_from_failed_plagiarismfile($plagiarismfile, $errormessage) {
+        $data = [
+            'userid'   => $plagiarismfile->userid,
+            'objectid' => $plagiarismfile->id,
+            'context'  => \context_module::instance($plagiarismfile->cm),
+            'other'    => [
+                'fileid'       => $plagiarismfile->identifier,
+                'errormessage' => $errormessage,
+            ]
+        ];
+
+        return self::create($data);
+    }
+
+    /**
+     * Validate plagiarismfile data
+     *
+     * @throws \coding_exception
+     */
+    protected function validate_data() {
+        parent::validate_data();
+
+        if (!isset($this->objectid)) {
+            throw new \coding_exception("The 'objectid' must be set.");
+        }
+
+        if (!isset($this->other['fileid'])) {
+            throw new \coding_exception("The 'fileid' value must be set in other.");
+        }
     }
 }

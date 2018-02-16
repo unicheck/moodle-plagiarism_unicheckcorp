@@ -43,6 +43,7 @@ require_once(dirname(__FILE__) . '/../../locallib.php');
  * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @since       Moodle 3.3
  */
 class error_handled extends base {
     /**
@@ -82,10 +83,9 @@ class error_handled extends base {
      */
     public static function create_from_exception(\Exception $exception) {
         $data = [
-            'other' =>
-                [
-                    'errormessage' => $exception->getMessage(),
-                ]
+            'other' => [
+                'errormessage' => $exception->getMessage(),
+            ]
         ];
 
         return self::create($data);
