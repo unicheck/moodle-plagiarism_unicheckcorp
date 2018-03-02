@@ -274,7 +274,8 @@ class unicheck_core {
                 $externaluserdata->external_user_id = $resp->user->id;
                 $externaluserdata->external_token = $resp->user->token;
 
-                $DB->insert_record(UNICHECK_USER_DATA_TABLE, $externaluserdata);
+                $apiuserid = $DB->insert_record(UNICHECK_USER_DATA_TABLE, $externaluserdata);
+                $externaluserdata->id = $apiuserid;
 
                 api_user_created::create_from_apiuser($externaluserdata)->trigger();
 
