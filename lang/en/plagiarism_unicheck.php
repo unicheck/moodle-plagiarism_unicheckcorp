@@ -48,6 +48,8 @@ $string['enable_mod_workshop'] = 'Enable Unicheck in Workshop activity';
 $string['enable_mod_assign_help'] = 'Enable Unicheck Plagiarism Service for the Assignment activity (online text and file submissions supported)';
 $string['enable_mod_forum_help'] = 'Enable Unicheck Plagiarism Service for the Forum activity (text replies and file submissions supported)';
 $string['enable_mod_workshop_help'] = 'Enable Unicheck Plagiarism Service for the Workshop activity (text and file submissions supported)';
+$string['enable_api_logging'] = 'Enable API logging';
+$string['enable_api_logging_help'] = 'Check this box to enable Unicheck API logging in this Moodle instance. This option shows the raw data of request/response to Unicheck API';
 $string['savedconfigsuccess'] = 'Plagiarism detection settings saved';
 $string['savedconfigfailed'] = 'An incorrect Client ID/API Secret combination has been entered. Unicheck has been disabled, please try again.';
 // Module settings.
@@ -155,3 +157,17 @@ $string['unicheck:changemaxsupportedarchivefilescountsetting'] = 'Allow change m
 // Archive.
 $string['archive:limitreachedshortdescripton'] = 'Not all documents were analyzed';
 $string['archive:limitreachedfulldescription'] = 'There are more documents in the file "{$a->filename}" but they have not been analyzed because the limit of documents to be analyzed within a zip file is {$a->max_supported_count}. You can check it with the administrator of this Moodle installation to modify this value';
+// Plugin events.
+$string['event:api_called'] = 'API request';
+$string['event:api_user_created'] = 'User created';
+$string['event:archive_files_unpacked'] = 'Archive files unpacked and ready for similarity checking';
+$string['event:archive_files_uploaded'] = 'Archive files uploaded';
+$string['event:archive_files_checked'] = 'Archive files checked';
+$string['event:callback_accepted'] = 'Callback accepted';
+$string['event:error_handled'] = 'Error handled';
+$string['event:file_upload_completed'] = 'File upload completed';
+$string['event:file_upload_failed'] = 'File upload failed';
+$string['event:file_upload_started'] = 'File upload started';
+$string['event:file_similarity_check_completed'] = 'Similarity check completed';
+$string['event:file_similarity_check_failed'] = 'Similarity check failed';
+$string['event:file_similarity_check_started'] = 'Similarity check started';

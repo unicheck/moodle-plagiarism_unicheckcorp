@@ -75,7 +75,6 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
      * @return string
      */
     public function get_links($linkarray) {
-
         if (!plagiarism_unicheck::is_plugin_enabled() || !unicheck_settings::get_activity_settings(
                 $linkarray['cmid'], unicheck_settings::ENABLE_UNICHECK
             )

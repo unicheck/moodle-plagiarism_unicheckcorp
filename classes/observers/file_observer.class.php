@@ -14,16 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * unicheck_event_file_submited.class.php
+ * file_observer.class.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plagiarism_unicheck\classes\event;
+namespace plagiarism_unicheck\classes\observers;
 
 use core\event\base;
 use plagiarism_unicheck\classes\unicheck_core;
@@ -33,22 +33,22 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 /**
- * Class unicheck_event_file_submited
+ * Class file_observer
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class unicheck_event_file_submited extends unicheck_abstract_event {
+class file_observer extends abstract_observer {
     /**
      * handle_event
      *
      * @param unicheck_core $core
      * @param base          $event
      */
-    public function handle_event(unicheck_core $core, base $event) {
+    public function file_submitted(unicheck_core $core, base $event) {
         if (self::is_submition_draft($event) ||
             !isset($event->other['pathnamehashes']) || empty($event->other['pathnamehashes'])
         ) {

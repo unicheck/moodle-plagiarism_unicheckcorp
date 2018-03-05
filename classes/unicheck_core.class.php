@@ -32,6 +32,7 @@ use plagiarism_unicheck\classes\entities\unicheck_archive;
 use plagiarism_unicheck\classes\exception\unicheck_exception;
 use plagiarism_unicheck\classes\permissions\capability;
 use plagiarism_unicheck\classes\plagiarism\unicheck_file;
+use plagiarism_unicheck\event\api_user_created;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -57,12 +58,17 @@ class unicheck_core {
      * @var int
      */
     public $userid = null;
+
     /**
+     * Context module instance ID (assign/forum/workshop ID)
+     *
      * @var int
      */
     public $cmid = null;
 
     /**
+     * Assign/forum/workshop
+     *
      * @var string
      */
     public $modname = null;
@@ -268,7 +274,10 @@ class unicheck_core {
                 $externaluserdata->external_user_id = $resp->user->id;
                 $externaluserdata->external_token = $resp->user->token;
 
-                $DB->insert_record(UNICHECK_USER_DATA_TABLE, $externaluserdata);
+                $apiuserid = $DB->insert_record(UNICHECK_USER_DATA_TABLE, $externaluserdata);
+                $externaluserdata->id = $apiuserid;
+
+                api_user_created::create_from_apiuser($externaluserdata)->trigger();
 
                 return $externaluserdata->external_token;
             }

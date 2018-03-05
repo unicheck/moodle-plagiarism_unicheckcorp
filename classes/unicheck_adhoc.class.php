@@ -29,6 +29,7 @@ use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\task\unicheck_check_starter;
 use plagiarism_unicheck\classes\task\unicheck_upload_task;
+use plagiarism_unicheck\event\plagiarism_entity_accepted;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');

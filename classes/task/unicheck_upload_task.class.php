@@ -33,6 +33,9 @@ use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\unicheck_assign;
 use plagiarism_unicheck\classes\unicheck_core;
 use plagiarism_unicheck\classes\unicheck_settings;
+use plagiarism_unicheck\event\archive_files_unpacked;
+use plagiarism_unicheck\event\error_handled;
+use plagiarism_unicheck\event\file_upload_failed;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -139,14 +142,18 @@ class unicheck_upload_task extends unicheck_abstract_task {
                 ]);
             }
 
+            archive_files_unpacked::create_from_plagiarismfile($this->internalfile)->trigger();
+
             foreach ($fileforprocessing as $item) {
                 $this->process_archive_item($item);
             }
         } catch (\Exception $e) {
             if ($this->internalfile) {
                 unicheck_file_provider::to_error_state($this->internalfile, $e->getMessage());
+                file_upload_failed::create_from_failed_plagiarismfile($this->internalfile, $e->getMessage())->trigger();
             } else {
                 unicheck_file_provider::to_error_state_by_pathnamehash($data->pathnamehash, $e->getMessage());
+                error_handled::create_from_exception($e)->trigger();
             }
 
             mtrace("File {$data->pathnamehash}(pathnamehash) processing error: " . $e->getMessage());

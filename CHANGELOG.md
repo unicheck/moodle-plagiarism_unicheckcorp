@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.2.10] - 2018-02-15
+### Added
+- Plugin events
+- Setting "Enable API logging"
+
+### Changed
+- Event observers
+
 ## [2.2.7] - 2018-02-07
 ### Added
 - Permissions to change plugin settings
@@ -50,6 +58,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Change validation mode
 - Massive refactoring comparing to Unplag plugin
 
+[2.2.10]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.2.10
 [2.2.7]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.2.7
 [2.2.1]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.2.1
 [2.2.0]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.2.0
