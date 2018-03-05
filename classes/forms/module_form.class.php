@@ -159,6 +159,10 @@ class module_form extends moodleform {
         $addyesnoelem(unicheck_settings::EXCLUDE_CITATIONS, true, 1);
         $addyesnoelem(unicheck_settings::SHOW_STUDENT_SCORE, true, 0);
         $addyesnoelem(unicheck_settings::SHOW_STUDENT_REPORT, true, 0);
+
+        $elem = $addyesnoelem(unicheck_settings::SENT_STUDENT_REPORT, true, 0);
+        $mform->disabledIf($elem, unicheck_settings::SHOW_STUDENT_SCORE, 'eq', 0);
+
         $addtextelem(unicheck_settings::MAX_SUPPORTED_ARCHIVE_FILES_COUNT, 10);
 
         $mform::registerRule('range', null, new range_rule());

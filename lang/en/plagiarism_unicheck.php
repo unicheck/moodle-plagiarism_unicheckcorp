@@ -59,6 +59,8 @@ $string['show_student_score'] = 'Show similarity scores to student';
 $string['show_student_score_help'] = 'Students only see similarity scores for their own submissions and do not see scores of other students.';
 $string['show_student_report'] = 'Show similarity reports to student';
 $string['show_student_report_help'] = 'Students only see similarity ​reports for their own submissions and do not see ​reports of other students.';
+$string['sent_student_report'] = 'Sent students report';
+$string['sent_student_report_help'] = 'Sent students report with similarity percent via email';
 $string['draft_submit'] = 'When should the file be submitted to Unicheck';
 $string['showwhenclosed'] = 'When Activity closed';
 $string['submitondraft'] = 'Submit file when first uploaded';
@@ -154,6 +156,7 @@ $string['unicheck:changeexcludecitationssetting'] = 'Allow enable/disable exclud
 $string['unicheck:changeshowstudentscoresetting'] = 'Allow enable/disable show similarity scores to student';
 $string['unicheck:changeshowstudentreportsetting'] = 'Allow enable/disable show similarity reports to student';
 $string['unicheck:changemaxsupportedarchivefilescountsetting'] = 'Allow change maximum number of files to be checked in archive';
+$string['unicheck:changesentstudentreportsetting'] = 'Allow enable/disable sent student report via email';
 // Archive.
 $string['archive:limitreachedshortdescripton'] = 'Not all documents were analyzed';
 $string['archive:limitreachedfulldescription'] = 'There are more documents in the file "{$a->filename}" but they have not been analyzed because the limit of documents to be analyzed within a zip file is {$a->max_supported_count}. You can check it with the administrator of this Moodle installation to modify this value';
