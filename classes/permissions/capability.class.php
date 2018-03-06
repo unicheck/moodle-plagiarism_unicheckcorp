@@ -107,6 +107,10 @@ class capability {
      * CHANGE_MAX_SUPPORTED_ARCHIVE_FILES_COUNT_SETTING
      */
     const CHANGE_MAX_SUPPORTED_ARCHIVE_FILES_COUNT_SETTING = 'plagiarism/unicheck:changemaxsupportedarchivefilescountsetting';
+    /**
+     * CHANGE_SENT_STUDENT_REPORT_SETTING
+     */
+    const CHANGE_SENT_STUDENT_REPORT_SETTING = 'plagiarism/unicheck:changesentstudentreportsetting';
 
     /**
      * Check user capability
