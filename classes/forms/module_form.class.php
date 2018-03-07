@@ -66,6 +66,8 @@ class module_form extends moodleform {
      * @param context|null $context
      */
     public function __construct($mform = null, $modname = null, context $context = null) {
+        global $PAGE;
+
         $this->context = $context;
 
         parent::__construct();
@@ -82,6 +84,7 @@ class module_form extends moodleform {
             }
         }
 
+        $PAGE->requires->js_call_amd(UNICHECK_PLAGIN_NAME . '/activity_form', 'init');
     }
 
     /**
@@ -128,7 +131,7 @@ class module_form extends moodleform {
             }
         };
 
-        $mform->addElement('header', 'plagiarismdesc', plagiarism_unicheck::trans('unicheck'));
+        $mform->addElement('header', UNICHECK_PLAGIN_NAME, plagiarism_unicheck::trans('unicheck'));
 
         if ($this->modname === UNICHECK_MODNAME_ASSIGN) {
             $mform->addElement('static', 'use_static_description', plagiarism_unicheck::trans('use_assign_desc_param'),
@@ -159,9 +162,7 @@ class module_form extends moodleform {
         $addyesnoelem(unicheck_settings::EXCLUDE_CITATIONS, true, 1);
         $addyesnoelem(unicheck_settings::SHOW_STUDENT_SCORE, true, 0);
         $addyesnoelem(unicheck_settings::SHOW_STUDENT_REPORT, true, 0);
-
-        $elem = $addyesnoelem(unicheck_settings::SENT_STUDENT_REPORT, true, 0);
-        $mform->disabledIf($elem, unicheck_settings::SHOW_STUDENT_SCORE, 'eq', 0);
+        $addyesnoelem(unicheck_settings::SENT_STUDENT_REPORT, true, 0);
 
         $addtextelem(unicheck_settings::MAX_SUPPORTED_ARCHIVE_FILES_COUNT, 10);
 
