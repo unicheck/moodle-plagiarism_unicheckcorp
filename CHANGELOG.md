@@ -60,7 +60,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Change validation mode
 - Massive refactoring comparing to Unplag plugin
 
-[2.2.11]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.2.12
+[2.2.12]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.2.12
 [2.2.7]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.2.7
 [2.2.1]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.2.1
 [2.2.0]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.2.0
