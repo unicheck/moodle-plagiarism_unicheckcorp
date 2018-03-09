@@ -27,6 +27,8 @@ namespace plagiarism_unicheck\classes\helpers;
 
 use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
+use plagiarism_unicheck\event\file_similarity_check_failed;
+use plagiarism_unicheck\event\file_upload_failed;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -44,6 +46,15 @@ if (!defined('MOODLE_INTERNAL')) {
  */
 class unicheck_response {
     /**
+     * FILE_RESOURCE
+     */
+    const FILE_RESOURCE = 'file';
+    /**
+     * SIMILARITY_CHECK_RESOURCE
+     */
+    const SIMILARITY_CHECK_RESOURCE = 'similarity_check';
+
+    /**
      * handle_check_response
      *
      * @param \stdClass $response
@@ -52,7 +63,7 @@ class unicheck_response {
      */
     public static function handle_check_response(\stdClass $response, \stdClass $plagiarismfile) {
         if (!$response->result) {
-            return self::store_errors($response->errors, $plagiarismfile);
+            return self::store_errors($response->errors, $plagiarismfile, self::SIMILARITY_CHECK_RESOURCE);
         }
 
         if ($response->check->id) {
@@ -79,7 +90,7 @@ class unicheck_response {
      */
     public static function process_after_upload(\stdClass $response, \stdClass $plagiarismfile) {
         if (!$response->result) {
-            return self::store_errors($response->errors, $plagiarismfile);
+            return self::store_errors($response->errors, $plagiarismfile, self::FILE_RESOURCE);
         }
 
         $plagiarismfile->external_file_uuid = $response->file->uuid;
@@ -95,17 +106,22 @@ class unicheck_response {
      *
      * @param array     $errors
      * @param \stdClass $plagiarismfile
+     * @param string    $resourcetype
      * @return bool
      */
-    public static function store_errors(array $errors, \stdClass $plagiarismfile) {
+    public static function store_errors(array $errors, \stdClass $plagiarismfile, $resourcetype) {
         global $DB;
 
         $plagiarismfile->state = unicheck_file_state::HAS_ERROR;
         $plagiarismfile->errorresponse = json_encode($errors);
-
         $result = unicheck_file_provider::save($plagiarismfile);
+        if (!$result) {
+            return false;
+        }
 
-        if ($result && $plagiarismfile->parent_id) {
+        self::trigger_failed_event($plagiarismfile, $resourcetype);
+
+        if ($plagiarismfile->parent_id) {
             $hasgoodchild = $DB->count_records_select(UNICHECK_FILES_TABLE, "parent_id = ? AND state not in (?)",
                 [$plagiarismfile->parent_id, unicheck_file_state::HAS_ERROR]
             );
@@ -116,9 +132,33 @@ class unicheck_response {
                 $parentplagiarismfile->errorresponse = json_encode($errors);
 
                 unicheck_file_provider::save($parentplagiarismfile);
+
+                self::trigger_failed_event($parentplagiarismfile, $resourcetype);
             }
         }
 
         return $result;
+    }
+
+    /**
+     * Trigger failed event
+     *
+     * @param object $plagiarismfile
+     * @param string $resourcetype
+     */
+    private static function trigger_failed_event($plagiarismfile, $resourcetype) {
+        switch ($resourcetype) {
+            case self::SIMILARITY_CHECK_RESOURCE:
+                $event = file_similarity_check_failed::create_from_failed_plagiarismfile(
+                    $plagiarismfile,
+                    $plagiarismfile->errorresponse
+                );
+                break;
+            default:
+                $event = file_upload_failed::create_from_failed_plagiarismfile($plagiarismfile, $plagiarismfile->errorresponse);
+                break;
+        }
+
+        $event->trigger();
     }
 }

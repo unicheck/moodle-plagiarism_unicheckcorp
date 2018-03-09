@@ -196,4 +196,15 @@ $capabilities = [
             'student'        => CAP_PROHIBIT
         ],
     ],
+    'plagiarism/unicheck:changesentstudentreportsetting'               => [
+        'captype'      => 'write',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes'   => [
+            'editingteacher' => CAP_ALLOW,
+            'teacher'        => CAP_PREVENT,
+            'manager'        => CAP_ALLOW,
+            'coursecreator'  => CAP_ALLOW,
+            'student'        => CAP_PROHIBIT
+        ],
+    ],
 ];

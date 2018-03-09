@@ -29,6 +29,7 @@ use plagiarism_unicheck\classes\helpers\unicheck_response;
 use plagiarism_unicheck\classes\services\comments\commentable_interface;
 use plagiarism_unicheck\classes\services\comments\commentable_type;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
+use plagiarism_unicheck\event\file_upload_started;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -138,6 +139,7 @@ abstract class unicheck_plagiarism_entity implements commentable_interface {
             return $internalfile;
         }
 
+        file_upload_started::create_from_plagiarismfile($internalfile)->trigger();
         list($content, $name, $ext, $cmid, $owner) = $this->build_upload_data();
         $uploadresponse = unicheck_api::instance()->upload_file($content, $name, $ext, $cmid, $owner, $internalfile);
 
