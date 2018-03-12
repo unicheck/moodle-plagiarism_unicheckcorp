@@ -18,7 +18,7 @@
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>
+ * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -34,8 +34,10 @@ if (AJAX_SCRIPT) {
 }
 
 $htmlparts = ['<span class="un_report">'];
-$htmlparts[] = sprintf('<img  width="32" height="32" src="%s" title="%s"> ',
-    $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME), plagiarism_unicheck::trans('pluginname')
+$htmlparts[] = sprintf('<a href="%s" target="_blank"><img  width="32" height="32" src="%s" title="%s"></a> ',
+    new moodle_url(UNICHECK_DOMAIN),
+    $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME),
+    plagiarism_unicheck::trans('pluginname')
 );
 
 $erroresponse = plagiarism_unicheck::error_resp_handler($fileobj->errorresponse);
