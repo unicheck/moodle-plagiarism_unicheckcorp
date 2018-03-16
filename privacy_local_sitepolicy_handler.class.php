@@ -13,27 +13,31 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
- * version.php
+ * plagiarism_unicheck_privacy_local_sitepolicy_handler.class.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
-if (!isset($plugin)) {
-    $plugin = new stdClass();
+use core_privacy\local\sitepolicy\default_handler;
+
+if (!defined('MOODLE_INTERNAL')) {
+    die('Direct access to this script is forbidden.');
 }
 
-$plugin->version = 2018021505; // YYYYMMDDVV.
-$plugin->requires = 2017051501; // Requires Moodle 3.3 .
-$plugin->maturity = MATURITY_STABLE;
-
-$plugin->component = 'plagiarism_unicheck';
-$plugin->release = '2.2.15 (Build: 20180316)'; // Human-friendly version name.
-$plugin->dependencies = [
-    'mod_assign' => ANY_VERSION
-];
+/**
+ * Class plagiarism_unicheck_privacy_local_sitepolicy_handler
+ *
+ * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class plagiarism_unicheck_privacy_local_sitepolicy_handler extends default_handler {
+}
