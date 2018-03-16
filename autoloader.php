@@ -53,7 +53,9 @@ class unicheck_autoloader {
         $class = str_replace('\\', '/', $class);
 
         $autoload = sprintf('%s%s.class.php', __DIR__, str_replace('plagiarism_unicheck', '', $class));
-        require_once($autoload);
+        if (file_exists($autoload)) {
+            include_once($autoload);
+        }
     }
 }
 
