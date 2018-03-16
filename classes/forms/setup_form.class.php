@@ -70,7 +70,7 @@ class setup_form extends moodleform {
 
         $settingstext = '<div id="fitem_id_settings_link" class="fitem fitem_ftext ">
                             <div class="felement ftext">
-                                <a href="' . UNICHECK_DOMAIN . 'profile/apisettings" target="_blank"> '
+                                <a href="' . UNICHECK_CORP_DOMAIN . 'profile/apisettings" target="_blank"> '
             . plagiarism_unicheck::trans('unicheck_settings_url_text') . '
                                 </a>
                             </div>
