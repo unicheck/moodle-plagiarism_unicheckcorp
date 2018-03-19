@@ -19,7 +19,7 @@
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>
+ * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -50,8 +50,10 @@ if (empty($cid) && !empty($linkarray['cmid'])) {
 if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similarityscore)) {
     // User is allowed to view the report.
     // Score is contained in report, so they can see the score too.
-    $htmlparts[] = sprintf('<img  width="32" height="32" src="%s" title="%s"> ',
-        $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME), plagiarism_unicheck::trans('pluginname')
+    $htmlparts[] = sprintf('<a href="%s" target="_blank"><img  width="32" height="32" src="%s" title="%s"></a> ',
+        new moodle_url(UNICHECK_DOMAIN),
+        $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME),
+        plagiarism_unicheck::trans('pluginname')
     );
 
     // This is a teacher viewing the responses.

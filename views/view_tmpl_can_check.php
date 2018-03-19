@@ -47,7 +47,7 @@ if (has_capability(capability::CHECK_FILE, $modulecontext) && empty($fileobj->ch
         'sesskey' => sesskey(),
     ]);
 
-    $check = sprintf('&nbsp;<a href="%1$s" class="un-check"><img src="%2$s" title="%3$s" width="32" height="32">%4$s</a>',
+    $check = sprintf('<a href="%1$s" class="un-check">%4$s</a>',
         $url,
         $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME),
         plagiarism_unicheck::trans('check_file'),
@@ -56,6 +56,11 @@ if (has_capability(capability::CHECK_FILE, $modulecontext) && empty($fileobj->ch
 }
 
 $htmlparts = ['<span class="un_report">'];
+$htmlparts[] = sprintf('<a href="%s" target="_blank"><img  width="32" height="32" src="%s" title="%s"></a> ',
+    new moodle_url(UNICHECK_DOMAIN),
+    $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME),
+    plagiarism_unicheck::trans('pluginname')
+);
 $htmlparts[] = sprintf('%1$s', $check);
 $htmlparts[] = '</span>';
 
