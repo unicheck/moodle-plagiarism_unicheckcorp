@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.2.15] - 2018-03-40
+### Changed
+- Show Unicheck ID new the student file
+- Similarity score colorful background
+- Logo and link image quality
+
 ## [2.2.14] - 2018-03-16
 ### Changed
 - Rename setting "Sent student report" to "Notify students via email"
@@ -64,6 +70,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Change validation mode
 - Massive refactoring comparing to Unplag plugin
 
+[2.2.15]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.2.15
 [2.2.14]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.2.14
 [2.2.12]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.2.12
 [2.2.7]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.2.7
