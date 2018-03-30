@@ -50,7 +50,7 @@ if (empty($cid) && !empty($linkarray['cmid'])) {
 if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similarityscore)) {
     // User is allowed to view the report.
     // Score is contained in report, so they can see the score too.
-    $htmlparts[] = sprintf('<a href="%s" target="_blank"><img  width="32" height="32" src="%s" title="%s"></a> ',
+    $htmlparts[] = sprintf('<a href="%s" target="_blank"><img src="%s" title="%s"></a>',
         new moodle_url(UNICHECK_DOMAIN),
         $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME),
         plagiarism_unicheck::trans('pluginname')
@@ -62,9 +62,27 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
 
     if (isset($fileobj->similarityscore)) {
         if ($canviewsimilarity || $activitycfg[unicheck_settings::SHOW_STUDENT_SCORE]) {
+            $score = $fileobj->similarityscore;
+            $rankclass = 'rankBlue';
+            switch ($score) {
+                case ($score >= 1 && $score <= 24):
+                    $rankclass = 'rankGreen';
+                    break;
+                case ($score >= 25 && $score <= 49):
+                    $rankclass = 'rankYellow';
+                    break;
+                case ($score >= 50 && $score <= 74):
+                    $rankclass = 'rankOrange';
+                    break;
+                case ($score >= 75 && $score <= 100):
+                    $rankclass = 'rankRed';
+                    break;
+            }
+
             // User is allowed to view only the score.
-            $htmlparts[] = sprintf('%s: <span class="rank1">%s%%</span>',
-                plagiarism_unicheck::trans('similarity'),
+            $htmlparts[] = sprintf('%s<br><span class="rank1 %s">%s%%</span>',
+                plagiarism_unicheck::trans('plagiarismcheckerid', ['id' => $fileobj->check_id]),
+                $rankclass,
                 $fileobj->similarityscore
             );
         }

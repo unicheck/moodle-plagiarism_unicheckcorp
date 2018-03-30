@@ -34,7 +34,7 @@ if (AJAX_SCRIPT) {
 }
 
 $htmlparts = ['<span class="un_report">'];
-$htmlparts[] = sprintf('<a href="%s" target="_blank"><img  width="32" height="32" src="%s" title="%s"></a> ',
+$htmlparts[] = sprintf('<a href="%s" target="_blank"><img src="%s" title="%s"></a> ',
     new moodle_url(UNICHECK_DOMAIN),
     $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME),
     plagiarism_unicheck::trans('pluginname')
