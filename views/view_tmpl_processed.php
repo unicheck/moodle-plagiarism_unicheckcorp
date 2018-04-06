@@ -64,7 +64,7 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
         if ($canviewsimilarity || $activitycfg[unicheck_settings::SHOW_STUDENT_SCORE]) {
             $score = (float)$fileobj->similarityscore;
             $rankclass = 'rankBlue';
-            switch ($score) {
+            switch (true) {
                 case ($score >= 1 && $score < 25):
                     $rankclass = 'rankGreen';
                     break;
