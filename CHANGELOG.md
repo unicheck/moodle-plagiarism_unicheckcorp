@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.2.17] - 2018-06-03
+### Fixed
+- Similarity background color in 0.00%
+- CSS code prechecks
+
 ## [2.2.16] - 2018-04-03
 ### Changed
 - Show Unicheck ID new the student file
@@ -70,6 +75,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Change validation mode
 - Massive refactoring comparing to Unplag plugin
 
+[2.2.17]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.2.17
 [2.2.16]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.2.16
 [2.2.14]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.2.14
 [2.2.12]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.2.12
