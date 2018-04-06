@@ -101,6 +101,7 @@ $string['deletedwarning'] = 'This file could not be found - it may have been del
 $string['heldevents'] = 'Held events';
 $string['heldeventsdescription'] = 'These are events that did not complete on the first attempt and were queued for resubmission - this prevents subsequent events from completing and may need further investigation. Some of these events may not be relevant to Unicheck.';
 $string['ufiles'] = 'Unicheck Files';
+$string['plagiarismcheckerid'] = 'Unicheck ID: {$a->id}';
 $string['getscore'] = 'Get score';
 $string['scorenotavailableyet'] = 'This file has not been processed by Unicheck yet.';
 $string['scoreavailable'] = 'This file has been processed by Unicheck and a report is now available.';

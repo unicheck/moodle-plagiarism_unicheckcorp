@@ -1,7 +1,26 @@
 span.un_report span.rank1 {
-    color: inherit;
-    font-weight: bold;
+    color: white;
     padding: 2px;
+}
+
+span.un_report span.rankBlue {
+    background-color: #4193FF;
+}
+
+span.un_report span.rankGreen {
+    background-color: #84BE32;
+}
+
+span.un_report span.rankYellow {
+    background-color: #FBD41C;
+}
+
+span.un_report span.rankOrange {
+    background-color: #F79D62;
+}
+
+span.un_report span.rankRed {
+    background-color: #F76262;
 }
 
 span.un_report a {
