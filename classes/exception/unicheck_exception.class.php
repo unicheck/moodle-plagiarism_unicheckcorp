@@ -56,4 +56,8 @@ class unicheck_exception extends \Exception {
      * FILE_NOT_FOUND
      */
     const FILE_NOT_FOUND = 'File not found';
+    /**
+     * FILE_IS_TOO_LARGE
+     */
+    const FILE_IS_TOO_LARGE = 'File is too large for similarity checking';
 }

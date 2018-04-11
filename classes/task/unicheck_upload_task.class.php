@@ -28,6 +28,7 @@ use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\entities\unicheck_archive;
 use plagiarism_unicheck\classes\exception\unicheck_exception;
 use plagiarism_unicheck\classes\plagiarism\unicheck_content;
+use plagiarism_unicheck\classes\services\storage\filesize_checker;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_metadata;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\unicheck_assign;
@@ -147,16 +148,20 @@ class unicheck_upload_task extends unicheck_abstract_task {
             foreach ($fileforprocessing as $item) {
                 $this->process_archive_item($item);
             }
-        } catch (\Exception $e) {
+        } catch (\Exception $exception) {
             if ($this->internalfile) {
-                unicheck_file_provider::to_error_state($this->internalfile, $e->getMessage());
-                file_upload_failed::create_from_failed_plagiarismfile($this->internalfile, $e->getMessage())->trigger();
+                unicheck_file_provider::to_error_state($this->internalfile, $exception->getMessage());
+                try {
+                    file_upload_failed::create_from_failed_plagiarismfile($this->internalfile, $exception->getMessage())->trigger();
+                } catch (\Exception $exception) {
+                    error_handled::create_from_exception($exception)->trigger();
+                }
             } else {
-                unicheck_file_provider::to_error_state_by_pathnamehash($data->pathnamehash, $e->getMessage());
-                error_handled::create_from_exception($e)->trigger();
+                unicheck_file_provider::to_error_state_by_pathnamehash($data->pathnamehash, $exception->getMessage());
+                error_handled::create_from_exception($exception)->trigger();
             }
 
-            mtrace("File {$data->pathnamehash}(pathnamehash) processing error: " . $e->getMessage());
+            mtrace("File {$data->pathnamehash}(pathnamehash) processing error: " . $exception->getMessage());
         }
     }
 
@@ -190,8 +195,13 @@ class unicheck_upload_task extends unicheck_abstract_task {
      * Process single stored file
      *
      * @param \stored_file $file
+     * @throws unicheck_exception
      */
     protected function process_single_file(\stored_file $file) {
+        if (filesize_checker::file_is_to_large($file)) {
+            throw new unicheck_exception(unicheck_exception::FILE_IS_TOO_LARGE);
+        }
+
         if ($this->internalfile->external_file_uuid) {
             mtrace("File already uploaded. Skipped. Plugin file id: {$this->internalfile->id}");
 

@@ -27,6 +27,7 @@ namespace plagiarism_unicheck\classes\entities\extractors;
 
 use plagiarism_unicheck\classes\entities\unicheck_archive;
 use plagiarism_unicheck\classes\exception\unicheck_exception;
+use plagiarism_unicheck\classes\services\storage\filesize_checker;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -91,6 +92,10 @@ class unicheck_zip_extractor implements unicheck_extractor_interface {
 
         foreach ($this->ziparch as $file) {
             if ($file->is_directory) {
+                continue;
+            }
+
+            if (filesize_checker::is_too_large($file->size)) {
                 continue;
             }
 

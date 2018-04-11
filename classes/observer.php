@@ -32,6 +32,7 @@ require_once($CFG->dirroot . '/plagiarism/unicheck/lib.php');
 
 use core\event\base;
 use plagiarism_unicheck\classes\observers\assessable_observer;
+use plagiarism_unicheck\classes\observers\event_validator;
 use plagiarism_unicheck\classes\observers\file_observer;
 use plagiarism_unicheck\classes\observers\online_text_observer;
 use plagiarism_unicheck\classes\observers\submission_observer;
@@ -55,6 +56,10 @@ class plagiarism_unicheck_observer {
      * @param base $event
      */
     public static function assignsubmission_file_submission_updated(base $event) {
+        if (!self::can_observe($event)) {
+            return;
+        }
+
         file_observer::instance()->file_submitted(self::get_core($event), $event);
     }
 
@@ -64,6 +69,10 @@ class plagiarism_unicheck_observer {
      * @param base $event
      */
     public static function assignsubmission_file_assessable_uploaded(base $event) {
+        if (!self::can_observe($event)) {
+            return;
+        }
+
         file_observer::instance()->file_submitted(self::get_core($event), $event);
     }
 
@@ -73,6 +82,10 @@ class plagiarism_unicheck_observer {
      * @param base $event
      */
     public static function assignsubmission_onlinetext_assessable_uploaded(base $event) {
+        if (!self::can_observe($event)) {
+            return;
+        }
+
         online_text_observer::instance()->assessable_uploaded(self::get_core($event), $event);
     }
 
@@ -82,6 +95,10 @@ class plagiarism_unicheck_observer {
      * @param base $event
      */
     public static function mod_forum_assessable_uploaded(base $event) {
+        if (!self::can_observe($event)) {
+            return;
+        }
+
         $core = self::get_core($event);
 
         online_text_observer::instance()->assessable_uploaded($core, $event);
@@ -94,6 +111,10 @@ class plagiarism_unicheck_observer {
      * @param base $event
      */
     public static function mod_workshop_assessable_uploaded(base $event) {
+        if (!self::can_observe($event)) {
+            return;
+        }
+
         self::get_core($event)->create_file_from_content($event);
     }
 
@@ -103,6 +124,10 @@ class plagiarism_unicheck_observer {
      * @param base $event
      */
     public static function mod_assign_assessable_submitted(base $event) {
+        if (!self::can_observe($event)) {
+            return;
+        }
+
         assessable_observer::instance()->submitted(self::get_core($event), $event);
     }
 
@@ -112,6 +137,10 @@ class plagiarism_unicheck_observer {
      * @param base $event
      */
     public static function mod_workshop_phase_switched(base $event) {
+        if (!self::can_observe($event)) {
+            return;
+        }
+
         workshop_observer::instance()->phase_switched(self::get_core($event), $event);
     }
 
@@ -121,6 +150,10 @@ class plagiarism_unicheck_observer {
      * @param base $event
      */
     public static function mod_assign_submission_status_updated(base $event) {
+        if (!self::can_observe($event)) {
+            return;
+        }
+
         submission_observer::instance()->status_updated(self::get_core($event), $event);
     }
 
@@ -130,6 +163,10 @@ class plagiarism_unicheck_observer {
      * @param base $event
      */
     public static function mod_assign_submission_status_viewed(base $event) {
+        if (!self::can_observe($event)) {
+            return;
+        }
+
         submission_observer::instance()->status_viewed(self::get_core($event), $event);
     }
 
@@ -143,5 +180,19 @@ class plagiarism_unicheck_observer {
         $cm = get_coursemodule_from_id('', $event->get_context()->instanceid);
 
         return new unicheck_core($event->get_context()->instanceid, $event->userid, $cm->modname);
+    }
+
+    /**
+     * can_observe
+     *
+     * @param base $event
+     * @return bool
+     */
+    private static function can_observe(base $event) {
+        if (event_validator::validate_event($event)) {
+            return true;
+        }
+
+        return false;
     }
 }
