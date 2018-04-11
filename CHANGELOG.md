@@ -4,7 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.2.17] - 2018-06-03
+## [2.2.18] - 2018-04-11
+### Fixed
+- Incorrect processing of large files
+- Error handled trigger
+
+### Changed 
+- Skipping files larger than 70 MB (Unicheck max file upload size)
+- Event observe validation
+
+## [2.2.17] - 2018-04-06
 ### Fixed
 - Similarity background color in 0.00%
 - CSS code prechecks
@@ -75,6 +84,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Change validation mode
 - Massive refactoring comparing to Unplag plugin
 
+[2.2.18]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.2.18
 [2.2.17]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.2.17
 [2.2.16]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.2.16
 [2.2.14]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.2.14

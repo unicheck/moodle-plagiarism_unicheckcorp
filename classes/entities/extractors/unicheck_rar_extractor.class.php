@@ -27,6 +27,7 @@ namespace plagiarism_unicheck\classes\entities\extractors;
 
 use plagiarism_unicheck\classes\entities\unicheck_archive;
 use plagiarism_unicheck\classes\exception\unicheck_exception;
+use plagiarism_unicheck\classes\services\storage\filesize_checker;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -91,6 +92,10 @@ class unicheck_rar_extractor implements unicheck_extractor_interface {
         }
 
         foreach ($entries as $entry) {
+            if (!$entry->getUnpackedSize() || filesize_checker::is_too_large($entry->getUnpackedSize())) {
+                continue;
+            }
+
             $tmpfile = tempnam($CFG->tempdir, 'unicheck_unrar');
 
             if (!$entry->extract(false, $tmpfile)) {
