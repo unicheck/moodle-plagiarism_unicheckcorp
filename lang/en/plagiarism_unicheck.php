@@ -19,7 +19,7 @@
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>
+ * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -27,16 +27,17 @@
 $string['pluginname'] = 'Unicheck plagiarism plugin';
 $string['unicheck_enable'] = 'Enable Unicheck plugin';
 $string['studentdisclosuredefault'] = 'All  uploaded files will be submitted to the plagiarism detection system Unicheck.';
-$string['studentdisclosure'] = 'Familiarize students with the Unicheck Privacy Policy';
-$string['studentdisclosure_help'] = 'This text will be displayed to all students on the file upload page.';
+$string['studentdisclosure'] = 'Familiarize students about Unicheck Plagiarism Service';
+$string['studentdisclosure_help'] = 'Students will see this message when uploading a file in an assignment, where Unicheck is enabled.';
 $string['unicheck'] = 'Unicheck plagiarism plugin';
 $string['unicheck_settings_url_text'] = 'Open unicheck.com admin account to view/copy Client ID/API Secret';
+// Setup settings.
 $string['client_id'] = 'Client ID';
-$string['client_id_help'] = 'ID of Client provided by Unicheck to access the API you can find it on <a href="https://unicheck.com/profile/apisettings">https://unicheck.com/profile/apisettings</a>';
+$string['client_id_help'] = 'Client ID provided by Unicheck to identify Unicheck account. You can find it on <a href="https://corp.unicheck.com/profile/apisettings">https://corp.unicheck.com/profile/apisettings</a>';
 $string['unicheck_lang'] = 'Language';
 $string['unicheck_lang_help'] = 'Language code provided by Unicheck';
 $string['api_secret'] = 'API Secret';
-$string['api_secret_help'] = 'API Secret provided by Unicheck to access the API you can find it on <a href="https://unicheck.com/profile/apisettings">https://unicheck.com/profile/apisettings</a>';
+$string['api_secret_help'] = 'API Secret provided by Unicheck to activate Moodle plugin. You can find it on <a href="https://corp.unicheck.com/profile/apisettings">https://corp.unicheck.com/profile/apisettings</a>';
 $string['use_unicheck'] = 'Auto check new submissions';
 $string['use_unicheck_help'] = 'When enabled, student ​assignments will be checked in real-time​, right after ​submission. ​Otherwise, ​you will need to either manually kick start check for selected submissions or use "​Check already submitted assignments" option.';
 $string['use_assign_desc_param'] = 'To unlock Unicheck settings';
@@ -53,7 +54,7 @@ $string['showwhenclosed'] = 'When Activity closed';
 $string['submitondraft'] = 'Submit file when first uploaded';
 $string['submitonfinal'] = 'Submit file when student sends it for grading';
 $string['defaultupdated'] = 'Default values updated';
-$string['defaultsdesc'] = 'Configure defaults for Assignment activity. Teachers can adjust settings in the individual assignments';
+$string['defaultsdesc'] = 'Default settings for new assignments: Choose from the options next to the following items to configure the default settings for new assignments. Teachers can adjust available settings in the assignments';
 $string['unicheckdefaults'] = 'Unicheck defaults';
 $string['similarity'] = 'Similarity';
 $string['processing'] = 'This file has been submitted to Unicheck, now waiting for the analysis to be available';
@@ -93,6 +94,7 @@ $string['deletedwarning'] = 'This file could not be found - it may have been del
 $string['heldevents'] = 'Held events';
 $string['heldeventsdescription'] = 'These are events that did not complete on the first attempt and were queued for resubmission - this prevents subsequent events from completing and may need further investigation. Some of these events may not be relevant to Unicheck.';
 $string['ufiles'] = 'Unicheck Files';
+$string['plagiarismcheckerid'] = 'Unicheck ID: {$a->id}';
 $string['getscore'] = 'Get score';
 $string['scorenotavailableyet'] = 'This file has not been processed by Unicheck yet.';
 $string['scoreavailable'] = 'This file has been processed by Unicheck and a report is now available.';
@@ -101,37 +103,33 @@ $string['attempts'] = 'Attempts made';
 $string['refresh'] = 'Refresh page to see results';
 $string['delete'] = 'Delete';
 $string['plagiarism_run_success'] = 'File sent for plagiarism scan';
-
-$string['check_type'] = 'Sources to check';
-$string['check_type_help'] = 'Internet source - billions of articles, pages, files available on Internet. This includes academic and scientific articles (open access), blog posts and news.
-Library source - institution\'s Unicheck database which includes recorded past student submissions except for \'drafts\'.
-​​';
+$string['check_type'] = 'Sources for comparison';
+$string['check_type_help'] = 'a) Internet - live Internet collection of billions of online resources (articles, web pages, blog posts, news, files etc.). This source includes open access publications in repositories, journals and publications on authors\' personal sites.
+<br>b) Unicheck Institutional Library - collection of student submissions maintained by this institution. Files are added to collection only when option "Add to Unicheck Institutional Library" is enabled.
+<br>c) External database - additional text data sources maintained by this institution (i.e. historical student submissions).';
 $string['check_confirm'] = 'Are you sure you want start checking by Unicheck plagiarism plugin?';
 $string['check_start'] = 'Unicheck originality grading in progress';
 $string['check_file'] = 'Start a scan';
-
-$string['web'] = 'Doc vs Internet';
-$string['my_library'] = 'Doc vs Library';
-$string['web_and_my_library'] = 'Doc vs Internet + Library';
-$string['external_database'] = 'Doc vs External Database';
-$string['web_and_my_lib_and_external_db'] = 'Doc vs Internet + Library + DB';
-
+$string['web'] = 'Internet';
+$string['my_library'] = 'Library';
+$string['web_and_my_library'] = 'Internet + Library';
+$string['external_database'] = 'External database';
+$string['web_and_my_lib_and_external_db'] = 'Internet + Library + External database';
 $string['reportready'] = 'Report ready';
 $string['generalinfo'] = 'General information';
-$string['similarity_sensitivity'] = 'Hide sources with a match less than (%)';
-$string['similarity_sensitivity_help'] = 'Specify minimum total % match for a source. Such sources will not be shown in the list of sources and will be excluded from total similarity score.';
-$string['similarity_words_sensitivity'] = 'Hide sources with a match less than (words)';
-$string['similarity_words_sensitivity_help'] = 'Specify minimum total word count match for a source. Such sources will not be shown in the list of sources and will be excluded from total similarity score.';
-$string['exclude_citations'] = 'Identify citations and references';
-$string['exclude_citations_help'] = 'Enable this option to filter ​properly ​cite​d material and a references block. Unicheck identifies citation​s ​​​​according to ​rules described in APA, MLA, Chicago, ​​Turabian, Harvard​ guides. ​Citations will be marked with blue color and references will be marked with violet color. Such items will be excluded from total similarity score.';
+$string['similarity_sensitivity'] = 'Exclude sources with a match less than (%)';
+$string['similarity_sensitivity_help'] = 'Sources which have less than specified similarity % will not be included in the total similarity score.';
+$string['similarity_words_sensitivity'] = 'Exclude sources with a match less than (words)';
+$string['similarity_words_sensitivity_help'] = 'Sources which have less than specified number of words (8 minimum) will not be included in the total similarity score.';
+$string['exclude_citations'] = 'Exclude references and citations';
+$string['exclude_citations_help'] = 'Enable this option to identify and exclude references and citations. Unicheck identifies citation​s ​​​​according to ​rules described in APA, MLA, Chicago, ​​Turabian, Harvard​ guides. ​Citations will be marked with blue color and references will be marked with violet color. Such items will be excluded from total similarity score.';
 $string['exclude_self_plagiarism'] = 'Exclude self-plagiarism';
-$string['check_all_submitted_assignments'] = 'Check already submitted assignments';
-$string['check_all_submitted_assignments_help'] = 'Use this option to ​manually run ​a bulk check of all submitted assignments​ in current activity​. ​C​heck ​will start in about 10 minutes after ​updating assignment settings.';
-$string['no_index_files'] = 'Draft assignment';
-$string['no_index_files_help'] = 'Use this option to mark an assignment as \'draft\' if you create separate assignments for draft and final submissions.
-Drafts will not be saved in the institution\'s Unicheck database.';
+$string['check_all_submitted_assignments'] = 'Check already delivered assignment submissions';
+$string['check_all_submitted_assignments_help'] = 'In case Unicheck was disabled or if you want to generate reports for past submissions, enable this option and save assignment settings. This will trigger bulk check of all work (files and/or text) submitted for grading. Check will start after few minutes after enabling the option.';
+$string['no_index_files'] = 'Add submissions to Institutional Library';
+$string['no_index_files_help'] = 'Student submissions are added to private Institutional Library only when this option is enabled. New student submissions are compared with works stored in this Institutional Library, in addition to Internet. This library consists only from papers submitted by students of this institution and is not shared with other institutions.';
 $string['min_30_words'] = 'At least 30 words are required';
 $string['max_100000_words'] = 'File(s) should have no more than 100 000 words and be not larger than 70MB';
-$string['max_supported_archive_files_count'] = 'Max supported archive files';
-$string['max_supported_archive_files_count_help'] = 'The maximum number of supported files that will be extracted from the archives';
+$string['max_supported_archive_files_count'] = 'Maximum number of files to be checked in archive';
+$string['max_supported_archive_files_count_help'] = 'Specify maximum number of files to be reviewed by Unicheck. System will pick only file types supported by Unicheck and will process files one by one. Supported formats: ZIP, RAR.';
 $string['uploading'] = 'Uploading';

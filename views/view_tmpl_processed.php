@@ -19,7 +19,7 @@
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>
+ * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -48,8 +48,10 @@ if (empty($cid) && !empty($linkarray['cmid'])) {
 if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similarityscore)) {
     // User is allowed to view the report.
     // Score is contained in report, so they can see the score too.
-    $htmlparts[] = sprintf('<img  width="32" height="32" src="%s" title="%s"> ',
-        $OUTPUT->pix_url('logo', UNICHECK_PLAGIN_NAME), plagiarism_unicheck::trans('pluginname')
+    $htmlparts[] = sprintf('<a href="%s" target="_blank"><img src="%s" title="%s"></a>',
+        new moodle_url(UNICHECK_DOMAIN),
+        $OUTPUT->pix_url('logo', UNICHECK_PLAGIN_NAME),
+        plagiarism_unicheck::trans('pluginname')
     );
 
     // This is a teacher viewing the responses.
@@ -58,9 +60,27 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
 
     if (isset($fileobj->similarityscore)) {
         if ($canviewsimilarity || $assigncfg[unicheck_settings::SHOW_STUDENT_SCORE]) {
+            $score = (float)$fileobj->similarityscore;
+            $rankclass = 'rankBlue';
+            switch (true) {
+                case ($score >= 1 && $score < 25):
+                    $rankclass = 'rankGreen';
+                    break;
+                case ($score >= 25 && $score < 50):
+                    $rankclass = 'rankYellow';
+                    break;
+                case ($score >= 50 && $score < 75):
+                    $rankclass = 'rankOrange';
+                    break;
+                case ($score >= 75 && $score <= 100):
+                    $rankclass = 'rankRed';
+                    break;
+            }
+
             // User is allowed to view only the score.
-            $htmlparts[] = sprintf('%s: <span class="rank1">%s%%</span>',
-                plagiarism_unicheck::trans('similarity'),
+            $htmlparts[] = sprintf('%s<br><span class="rank1 %s">%s%%</span>',
+                plagiarism_unicheck::trans('plagiarismcheckerid', ['id' => $fileobj->check_id]),
+                $rankclass,
                 $fileobj->similarityscore
             );
         }

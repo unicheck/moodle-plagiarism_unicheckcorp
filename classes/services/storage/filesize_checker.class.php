@@ -14,49 +14,61 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * autoloader.php
+ * filesize_checker.class.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plagiarism_unicheck\library;
+namespace plagiarism_unicheck\classes\services\storage;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
 /**
- * Class unicheck_autoloader
+ * Class filesize_checker
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class unicheck_autoloader {
+class filesize_checker {
     /**
-     * Init autoloader
-     *
-     * @param string $class
+     * MAX_FILESIZE
      */
-    public static function init($class) {
-        if (strpos($class, 'plagiarism_unicheck') === false) {
-            return;
+    const MAX_FILESIZE = '70M';
+
+    /**
+     * Check if file is too large
+     *
+     * @param \stored_file $file
+     * @return bool
+     */
+    public static function file_is_to_large(\stored_file $file) {
+        if ($file->get_filesize() > get_real_size(self::MAX_FILESIZE)) {
+            return true;
         }
 
-        $class = str_replace('plagiarism_unicheck', '', $class);
-        $class = str_replace('\\', '/', $class);
+        return false;
+    }
 
-        $autoload = sprintf('%s%s.class.php', __DIR__, str_replace('plagiarism_unicheck', '', $class));
-        if (file_exists($autoload)) {
-            include_once($autoload);
+    /**
+     * Check if filesize is too large
+     *
+     * @param int $filesize In bytes
+     * @return bool
+     */
+    public static function is_too_large($filesize) {
+        if ($filesize > get_real_size(self::MAX_FILESIZE)) {
+            return true;
         }
+
+        return false;
     }
 }
-
-spl_autoload_register(['plagiarism_unicheck\library\unicheck_autoloader', 'init']);

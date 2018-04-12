@@ -18,7 +18,7 @@
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- * @author      Aleksandr Kostylev <v.titov@p1k.co.uk>
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -54,6 +54,11 @@ if (has_capability('plagiarism/unicheck:checkfile', $modulecontext) && empty($fi
 }
 
 $htmlparts = ['<span class="un_report">'];
+$htmlparts[] = sprintf('<a href="%s" target="_blank"><img src="%s" title="%s"></a> ',
+    new moodle_url(UNICHECK_DOMAIN),
+    $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME),
+    plagiarism_unicheck::trans('pluginname')
+);
 $htmlparts[] = sprintf('%1$s', $check);
 $htmlparts[] = '</span>';
 
