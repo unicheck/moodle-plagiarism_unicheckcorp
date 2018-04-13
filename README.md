@@ -1,7 +1,7 @@
 # moodle-plagiarism_unicheck  
 
-[![Build Status](https://travis-ci.org/unicheck/moodle-plagiarism_unicheckcorp.svg?branch=master)](https://travis-ci.org/unicheck/moodle-plagiarism_unicheckcorp)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/unicheck/moodle-plagiarism_unicheckcorp/badges/quality-score.png?b=release%2F1.x)](https://scrutinizer-ci.com/g/unicheck/moodle-plagiarism_unicheckcorp/?branch=release%2F1.x)
+[![Build Status](https://travis-ci.org/unicheck/moodle-plagiarism_unicheckcorp.svg?branch=release%2F1.x)](https://travis-ci.org/unicheck/moodle-plagiarism_unicheckcorp)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/unicheck/moodle-plagiarism_unicheckcorp/badges/quality-score.png?b=release%2F2.x)](https://scrutinizer-ci.com/g/unicheck/moodle-plagiarism_unicheckcorp/?branch=release%2F1.x)
 
 ## Unicheck Plagiarism plugin for Moodle
 
@@ -9,8 +9,8 @@
 
 | Moodle | PHP | Unicheck plugin | Branch | Changelog
 | :---: | :---: | :---: | :---: | :---: |
-| 3.3 - 3.4 | 5.6 - 7.2 | 2.x.x | [release/2.x](/unicheck/moodle-plagiarism_unicheckcorp/tree/release/2.x) | [link](/unicheck/moodle-plagiarism_unicheckcorp/blob/release/2.x/CHANGELOG.md)
-| 2.7 - 3.2 | 5.4 - 7.2 | 1.x.x | [release/1.x](/unicheck/moodle-plagiarism_unicheckcorp/tree/release/1.x) | [link](/unicheck/moodle-plagiarism_unicheckcorp/blob/release/1.x/CHANGELOG.md)
+| 3.3 - 3.4 | 5.6 - 7.1 | 2.x.x | [release/2.x](/unicheck/moodle-plagiarism_unicheckcorp/tree/release/2.x) | [link](/unicheck/moodle-plagiarism_unicheckcorp/blob/release/2.x/CHANGELOG.md)
+| 2.7 - 3.2 | 5.4 - 7.1 | 1.x.x | [release/1.x](/unicheck/moodle-plagiarism_unicheckcorp/tree/release/1.x) | [link](/unicheck/moodle-plagiarism_unicheckcorp/blob/release/1.x/CHANGELOG.md)
 
 
 **Moodle plugins directory:** https://moodle.org/plugins/plagiarism_unicheck
@@ -35,6 +35,10 @@ Copyright: UKU Group, LTD, https://www.unicheck.com
 
  - For supporting RAR archives you have to install php-ext using command 
 `pecl install rar`. Find more info on [php.net](http://php.net/manual/en/rar.installation.php).
+
+ - We use URL `https://<moodle_server_domain>/plagiarism/unicheck/callback.php?token={token}>` as listener for HTTP callbacks 
+that receive notification messages for events (FILE_UPLOAD_ERROR, etc). If this address is available only in private network, 
+you must open it for the network _5.39.49.208/28_
 
 #### Upgrading from *Unplag Plagiarism plugin for Moodle*
 

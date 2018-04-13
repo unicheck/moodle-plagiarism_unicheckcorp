@@ -28,6 +28,7 @@ use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\entities\unicheck_archive;
 use plagiarism_unicheck\classes\exception\unicheck_exception;
 use plagiarism_unicheck\classes\plagiarism\unicheck_content;
+use plagiarism_unicheck\classes\services\storage\filesize_checker;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\unicheck_assign;
 use plagiarism_unicheck\classes\unicheck_core;
@@ -167,8 +168,13 @@ class unicheck_upload_task extends unicheck_abstract_task {
      * Process single stored file
      *
      * @param \stored_file $file
+     * @throws unicheck_exception
      */
     protected function process_single_file(\stored_file $file) {
+        if (filesize_checker::file_is_to_large($file)) {
+            throw new unicheck_exception(unicheck_exception::FILE_IS_TOO_LARGE);
+        }
+
         if ($this->internalfile->external_file_uuid) {
             mtrace("File already uploaded. Skipped. Plugin file id: {$this->internalfile->id}");
 
