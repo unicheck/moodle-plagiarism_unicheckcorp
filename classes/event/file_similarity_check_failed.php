@@ -43,7 +43,7 @@ require_once(dirname(__FILE__) . '/../../locallib.php');
  * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @since       Moodle 3.3
+ * @since       Moodle 2.7
  */
 class file_similarity_check_failed extends abstract_file_event {
     /**
