@@ -30,10 +30,6 @@ if (!defined('MOODLE_INTERNAL')) {
 global $CFG;
 
 require_once($CFG->dirroot . '/plagiarism/unicheck/tests/advanced_test.php');
-require_once($CFG->dirroot . '/plagiarism/unicheck/classes/task/unicheck_abstract_task.class.php');
-require_once($CFG->dirroot . '/plagiarism/unicheck/classes/task/unicheck_upload_task.class.php');
-require_once($CFG->dirroot . '/plagiarism/unicheck/classes/services/storage/unicheck_file_state.class.php');
-require_once($CFG->dirroot . '/plagiarism/unicheck/classes/entities/providers/unicheck_file_provider.class.php');
 
 use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
