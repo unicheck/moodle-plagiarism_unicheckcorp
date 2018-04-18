@@ -114,10 +114,7 @@ class unicheck_api {
         }
 
         $contextid = $cmid;
-        $excludeselfplagiarism = (bool)unicheck_settings::get_activity_settings(
-            $cmid,
-            unicheck_settings::EXCLUDE_SELF_PLAGIARISM
-        );
+        $excludeselfplagiarism = unicheck_settings::get_settings('exclude_self_plagiarism');
 
         if ($excludeselfplagiarism) {
             $cm = \context_module::instance($cmid);

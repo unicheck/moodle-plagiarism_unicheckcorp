@@ -86,10 +86,6 @@ class unicheck_settings {
      * Sent students report
      */
     const SENT_STUDENT_REPORT = 'sent_student_report';
-    /**
-     * EXCLUDE_SELF_PLAGIARISM
-     */
-    const EXCLUDE_SELF_PLAGIARISM = 'exclude_self_plagiarism';
 
     /**
      * DRAFT_SUBMIT
@@ -121,8 +117,7 @@ class unicheck_settings {
         self::SHOW_STUDENT_SCORE                             => capability::CHANGE_SHOW_STUDENT_SCORE_SETTING,
         self::SHOW_STUDENT_REPORT                            => capability::CHANGE_SHOW_STUDENT_REPORT_SETTING,
         self::MAX_SUPPORTED_ARCHIVE_FILES_COUNT              => capability::CHANGE_MAX_SUPPORTED_ARCHIVE_FILES_COUNT_SETTING,
-        self::SENT_STUDENT_REPORT                            => capability::CHANGE_SENT_STUDENT_REPORT_SETTING,
-        self::EXCLUDE_SELF_PLAGIARISM                        => capability::CHANGE_EXCLUDE_SELF_PLAGIARISM_SETTING
+        self::SENT_STUDENT_REPORT                            => capability::CHANGE_SENT_STUDENT_REPORT_SETTING
     ];
 
     /**
@@ -139,8 +134,7 @@ class unicheck_settings {
         self::SHOW_STUDENT_SCORE                             => PARAM_BOOL,
         self::SHOW_STUDENT_REPORT                            => PARAM_BOOL,
         self::MAX_SUPPORTED_ARCHIVE_FILES_COUNT              => PARAM_INT,
-        self::SENT_STUDENT_REPORT                            => PARAM_BOOL,
-        self::EXCLUDE_SELF_PLAGIARISM                        => PARAM_BOOL
+        self::SENT_STUDENT_REPORT                            => PARAM_BOOL
     ];
 
     /**

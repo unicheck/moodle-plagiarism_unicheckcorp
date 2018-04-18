@@ -163,7 +163,6 @@ class module_form extends moodleform {
         $addyesnoelem(unicheck_settings::SHOW_STUDENT_SCORE, true, 0);
         $addyesnoelem(unicheck_settings::SHOW_STUDENT_REPORT, true, 0);
         $addyesnoelem(unicheck_settings::SENT_STUDENT_REPORT, true, 0);
-        $addyesnoelem(unicheck_settings::EXCLUDE_SELF_PLAGIARISM, true, 0);
 
         $addtextelem(unicheck_settings::MAX_SUPPORTED_ARCHIVE_FILES_COUNT, 10);
 
