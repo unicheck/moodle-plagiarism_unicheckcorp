@@ -76,6 +76,11 @@ class unicheck_api {
      */
     const USER_CREATE = 'user/create';
     /**
+     * Get supported similarity check source types API url
+     */
+    const GET_SUPPORTED_SEARCH_TYPES = 'check/get_supported_search_types';
+
+    /**
      * @var null|unicheck_api
      */
     private static $instance = null;
@@ -108,6 +113,17 @@ class unicheck_api {
             $content = stream_get_contents($content);
         }
 
+        $contextid = $cmid;
+        $excludeselfplagiarism = unicheck_settings::get_settings('exclude_self_plagiarism');
+
+        if ($excludeselfplagiarism) {
+            $cm = \context_module::instance($cmid);
+            $coursecontext = $cm->get_course_context();
+            if ($coursecontext) {
+                $contextid = 'context-' . $coursecontext->id;
+            }
+        }
+
         $postdata = [
             'format'       => strtolower($format),
             'file_data'    => base64_encode($content),
@@ -117,15 +133,14 @@ class unicheck_api {
             ),
             'options'      => [
                 'utoken'        => unicheck_core::get_external_token($cmid, $owner),
-                'submission_id' => $cmid,
+                'submission_id' => $contextid,
             ],
         ];
 
         $content = null;
 
-        if ($noindex = unicheck_settings::get_assign_settings($cmid, unicheck_settings::NO_INDEX_FILES)) {
-            $postdata['options']['no_index'] = $noindex;
-        }
+        $mustindex = (bool)unicheck_settings::get_activity_settings($cmid, unicheck_settings::ADD_TO_INSTITUTIONAL_LIBRARY);
+        $postdata['options']['no_index'] = !$mustindex;
 
         $response = unicheck_api_request::instance()->http_post()->request(self::FILE_UPLOAD, $postdata);
         if (!is_object($response)) {
@@ -147,30 +162,31 @@ class unicheck_api {
     /**
      * Run check
      *
-     * @param \stdClass $file
+     * @param \stdClass $plagiarismfile
      *
      * @return \stdClass
      */
-    public function run_check(\stdClass $file) {
+    public function run_check(\stdClass $plagiarismfile) {
         global $CFG;
 
-        if (empty($file)) {
+        if (empty($plagiarismfile)) {
             throw new \InvalidArgumentException('Invalid argument $file');
         }
 
-        $checktype = unicheck_settings::get_assign_settings($file->cm, 'check_type');
+        $checktype = unicheck_settings::get_activity_settings($plagiarismfile->cm, unicheck_settings::SOURCES_FOR_COMPARISON);
+        $fileowner = unicheck_core::get_user($plagiarismfile->userid);
 
         $options = [];
-        $this->advanced_check_options($file->cm, $options);
+        $this->advanced_check_options($plagiarismfile->cm, $options, $fileowner);
 
         $postdata = [
             'type'         => is_null($checktype) ? UNICHECK_CHECK_TYPE_WEB : $checktype,
-            'file_id'      => $file->external_file_id,
-            'callback_url' => sprintf('%1$s%2$s?token=%3$s', $CFG->wwwroot, UNICHECK_CALLBACK_URL, $file->identifier),
+            'file_id'      => $plagiarismfile->external_file_id,
+            'callback_url' => sprintf('%1$s%2$s?token=%3$s', $CFG->wwwroot, UNICHECK_CALLBACK_URL, $plagiarismfile->identifier),
             'options'      => $options,
         ];
 
-        if (unicheck_settings::get_assign_settings($file->cm, 'exclude_citations')) {
+        if (unicheck_settings::get_activity_settings($plagiarismfile->cm, unicheck_settings::EXCLUDE_CITATIONS)) {
             $postdata = array_merge($postdata, ['exclude_citations' => 1, 'exclude_references' => 1]);
         }
 
@@ -264,20 +280,53 @@ class unicheck_api {
     /**
      * Set advanced check options
      *
-     * @param int   $cmid
-     * @param array $options
+     * @param int    $cmid
+     * @param array  $options
+     * @param object $fileowner
      */
-    private function advanced_check_options($cmid, &$options) {
+    private function advanced_check_options($cmid, &$options, $fileowner = null) {
         $options['exclude_self_plagiarism'] = 1;
 
-        $similaritysensitivity = unicheck_settings::get_assign_settings($cmid, unicheck_settings::SENSITIVITY_SETTING_NAME);
+        $similaritysensitivity = unicheck_settings::get_activity_settings($cmid, unicheck_settings::SENSITIVITY_SETTING_NAME);
         if (!empty($similaritysensitivity)) {
             $options['sensitivity'] = $similaritysensitivity / 100;
         }
 
-        $wordssensitivity = unicheck_settings::get_assign_settings($cmid, unicheck_settings::WORDS_SENSITIVITY);
+        $wordssensitivity = unicheck_settings::get_activity_settings($cmid, unicheck_settings::WORDS_SENSITIVITY);
         if (!empty($wordssensitivity)) {
             $options['words_sensitivity'] = $wordssensitivity;
         }
+
+        $sendstudentreport = (bool)unicheck_settings::get_activity_settings($cmid, unicheck_settings::SENT_STUDENT_REPORT);
+        $showstudentscore = (bool)unicheck_settings::get_activity_settings($cmid, unicheck_settings::SHOW_STUDENT_SCORE);
+
+        if (null !== $fileowner && $sendstudentreport && $showstudentscore) {
+            $showstudentreport = (bool)unicheck_settings::get_activity_settings(
+                $cmid,
+                unicheck_settings::SHOW_STUDENT_REPORT
+            );
+            $utoken = unicheck_core::get_external_token($cmid, $fileowner);
+            $context = \context_module::instance($cmid, IGNORE_MISSING);
+            if ($context) {
+                $contextname = $context->get_context_name(true);
+            } else {
+                $contextname = get_string('other');
+            }
+
+            $options['report_email_notification'] = [
+                'api_user_token' => $utoken,
+                'show_link'      => $showstudentreport,
+                'resource_title' => $contextname
+            ];
+        }
+    }
+
+    /**
+     * Get supported similarity check source types
+     *
+     * @return \stdClass
+     */
+    public function get_supported_search_types() {
+        return unicheck_api_request::instance()->http_get()->request(self::GET_SUPPORTED_SEARCH_TYPES, []);
     }
 }

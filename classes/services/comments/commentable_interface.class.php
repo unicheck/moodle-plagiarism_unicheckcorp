@@ -14,56 +14,42 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * unicheck_event_file_submited.class.php
+ * commentable_interface.class.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plagiarism_unicheck\classes\event;
-
-use core\event\base;
-use plagiarism_unicheck\classes\unicheck_core;
+namespace plagiarism_unicheck\classes\services\comments;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
 /**
- * Class unicheck_event_file_submited
+ * Interface commentable_interface
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class unicheck_event_file_submited extends unicheck_abstract_event {
+interface commentable_interface {
     /**
-     * handle_event
+     * Get commentable object id
      *
-     * @param unicheck_core $core
-     * @param base          $event
+     * @return int
      */
-    public function handle_event(unicheck_core $core, base $event) {
-        if (self::is_submition_draft($event) ||
-            !isset($event->other['pathnamehashes']) || empty($event->other['pathnamehashes'])
-        ) {
-            return;
-        }
+    public function get_commentable_id();
 
-        foreach ($event->other['pathnamehashes'] as $pathnamehash) {
-            $file = get_file_storage()->get_file_by_hash($pathnamehash);
-            if (!$file || $file->is_directory()) {
-                continue;
-            }
-
-            $this->add_after_handle_task($file);
-        }
-
-        $this->after_handle_event($core);
-    }
+    /**
+     * Get commentable object type
+     *
+     * @return string
+     */
+    public function get_commentable_type();
 }

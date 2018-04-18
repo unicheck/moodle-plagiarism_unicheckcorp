@@ -13,57 +13,43 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
- * unicheck_event_onlinetext_submited.class.php
+ * range_rule.class.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plagiarism_unicheck\classes\event;
-
-use core\event\base;
-use plagiarism_unicheck\classes\unicheck_core;
-use stored_file;
+namespace plagiarism_unicheck\classes\forms\rules;
 
 if (!defined('MOODLE_INTERNAL')) {
-    die('Direct access to this script is forbidden.');
+    die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
 }
 
 /**
- * Class unicheck_event_onlinetext_submited
+ * Class range_rule
  *
- * @package     plagiarism_unicheck
- * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class unicheck_event_onlinetext_submited extends unicheck_abstract_event {
+class range_rule extends \HTML_QuickForm_Rule {
     /**
-     * handle_event
+     * validate
      *
-     * @param unicheck_core $core
-     * @param base          $event
+     * @param int        $value Value to check
+     * @param array|null $options
+     *
+     * @return bool true if value in valid range
      */
-    public function handle_event(unicheck_core $core, base $event) {
-        if (empty($event->other['content'])) {
-            return;
+    public function validate($value, $options = null) {
+        if ($value < $options['min'] || $value > $options['max']) {
+            return false;
         }
 
-        $file = $core->create_file_from_content($event);
-
-        if (self::is_submition_draft($event)) {
-            return;
-        }
-
-        if ($file instanceof stored_file) {
-            $this->add_after_handle_task($file);
-        }
-
-        $this->after_handle_event($core);
+        return true;
     }
 }

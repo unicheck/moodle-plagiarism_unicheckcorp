@@ -17,7 +17,7 @@
  * File events.php
  *
  * @package     plagiarism_unicheck
- * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,13 +25,44 @@ if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
+/*
+ * Event observers
+*/
 $observers = [
-    /*
-     * Event Handlers
-    */
     [
-        'eventname'   => '*',
-        'includefile' => '/plagiarism/unicheck/locallib.php',
-        'callback'    => 'plagiarism_unicheck::event_handler',
+        'eventname' => '\assignsubmission_file\event\submission_updated',
+        'callback'  => 'plagiarism_unicheck_observer::assignsubmission_file_submission_updated',
     ],
+    [
+        'eventname' => '\assignsubmission_file\event\assessable_uploaded',
+        'callback'  => 'plagiarism_unicheck_observer::assignsubmission_file_assessable_uploaded',
+    ],
+    [
+        'eventname' => '\assignsubmission_onlinetext\event\assessable_uploaded',
+        'callback'  => 'plagiarism_unicheck_observer::assignsubmission_onlinetext_assessable_uploaded',
+    ],
+    [
+        'eventname' => '\mod_forum\event\assessable_uploaded',
+        'callback'  => 'plagiarism_unicheck_observer::mod_forum_assessable_uploaded',
+    ],
+    [
+        'eventname' => '\mod_workshop\event\assessable_uploaded',
+        'callback'  => 'plagiarism_unicheck_observer::mod_workshop_assessable_uploaded',
+    ],
+    [
+        'eventname' => '\mod_assign\event\assessable_submitted',
+        'callback'  => 'plagiarism_unicheck_observer::mod_assign_assessable_submitted',
+    ],
+    [
+        'eventname' => '\mod_workshop\event\phase_switched',
+        'callback'  => 'plagiarism_unicheck_observer::mod_workshop_phase_switched',
+    ],
+    [
+        'eventname' => '\mod_assign\event\submission_status_updated',
+        'callback'  => 'plagiarism_unicheck_observer::mod_assign_submission_status_updated',
+    ],
+    [
+        'eventname' => '\mod_assign\event\submission_status_viewed',
+        'callback'  => 'plagiarism_unicheck_observer::mod_assign_submission_status_viewed',
+    ]
 ];

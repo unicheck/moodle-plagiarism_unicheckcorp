@@ -25,10 +25,10 @@
  */
 
 use plagiarism_unicheck\classes\unicheck_notification;
+use plagiarism_unicheck\classes\forms\setup_form;
 
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once(dirname(__FILE__) . '/lib.php');
-require_once(dirname(__FILE__) . '/uform.php');
 
 global $CFG, $OUTPUT, $USER;
 
@@ -41,7 +41,7 @@ admin_externalpage_setup('plagiarismunicheck');
 $context = context_system::instance();
 require_capability('moodle/site:config', $context, $USER->id, true, "nopermissions");
 
-$mform = new unicheck_setup_form();
+$mform = new setup_form();
 
 if ($mform->is_cancelled()) {
     redirect('');
@@ -53,8 +53,8 @@ require_once(dirname(__FILE__) . '/views/view_tabs.php');
 
 if (($data = $mform->get_data()) && confirm_sesskey()) {
     foreach (plagiarism_plugin_unicheck::default_plugin_options() as $option) {
-        if (!isset($data->$option)) {
-            $data->$option = 0;
+        if (!isset($data->{$option})) {
+            $data->{$option} = 0;
         }
     }
 

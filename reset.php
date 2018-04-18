@@ -25,6 +25,7 @@
  */
 
 use plagiarism_unicheck\classes\unicheck_core;
+use plagiarism_unicheck\classes\permissions\capability;
 
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once(dirname(__FILE__) . '/lib.php');
@@ -43,7 +44,7 @@ $PAGE->set_url($url);
 require_login($cm->course, true, $cm);
 
 $modulecontext = context_module::instance($cmid);
-require_capability('plagiarism/unicheck:resetfile', $modulecontext);
+require_capability(capability::RESET_FILE, $modulecontext);
 
 unicheck_core::resubmit_file($pf);
 

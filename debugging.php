@@ -74,7 +74,7 @@ if (!$table->is_downloading($download, $exportfilename)) {
 
     if ($resetuser == 1 && $id && confirm_sesskey()) {
         if (unicheck_core::resubmit_file($id)) {
-            unicheck_notification::error('fileresubmitted', true);
+            unicheck_notification::success('fileresubmitted', true);
         }
     } else {
         if ($resetuser == 2 && $id && confirm_sesskey()) {

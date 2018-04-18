@@ -29,10 +29,14 @@ use plagiarism_unicheck\classes\entities\unicheck_archive;
 use plagiarism_unicheck\classes\exception\unicheck_exception;
 use plagiarism_unicheck\classes\plagiarism\unicheck_content;
 use plagiarism_unicheck\classes\services\storage\filesize_checker;
+use plagiarism_unicheck\classes\services\storage\unicheck_file_metadata;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\unicheck_assign;
 use plagiarism_unicheck\classes\unicheck_core;
 use plagiarism_unicheck\classes\unicheck_settings;
+use plagiarism_unicheck\event\archive_files_unpacked;
+use plagiarism_unicheck\event\error_handled;
+use plagiarism_unicheck\event\file_upload_failed;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -90,7 +94,8 @@ class unicheck_upload_task extends unicheck_abstract_task {
             }
 
             $file = get_file_storage()->get_file_by_hash($data->pathnamehash);
-            $this->internalfile = $this->ucore->get_plagiarism_entity($file)->get_internal_file();
+            $plagiarismentity = $this->ucore->get_plagiarism_entity($file);
+            $this->internalfile = $plagiarismentity->get_internal_file();
 
             if (!\plagiarism_unicheck::is_archive($file)) {
                 $this->process_single_file($file);
@@ -98,7 +103,7 @@ class unicheck_upload_task extends unicheck_abstract_task {
                 return;
             }
 
-            $maxsupportedcount = unicheck_settings::get_assign_settings(
+            $maxsupportedcount = unicheck_settings::get_activity_settings(
                 $this->ucore->cmid,
                 unicheck_settings::MAX_SUPPORTED_ARCHIVE_FILES_COUNT
             );
@@ -108,33 +113,55 @@ class unicheck_upload_task extends unicheck_abstract_task {
                 $maxsupportedcount = unicheck_archive::DEFAULT_SUPPORTED_FILES_COUNT;
             }
 
-            $supportedcount = 0;
-            $extracted = (new unicheck_archive($file, $this->ucore))->extract();
-            if (!count($extracted)) {
+            $archivefiles = (new unicheck_archive($file, $this->ucore))->extract();
+            if (!$archivefiles) {
                 throw new unicheck_exception(unicheck_exception::ARCHIVE_IS_EMPTY);
             }
 
-            foreach ($extracted as $item) {
-                if ($supportedcount >= $maxsupportedcount) {
-                    unicheck_archive::unlink($item['path']);
+            $extractedcount = 0;
+            $archivefilescount = 0;
+            $fileforprocessing = [];
+            foreach ($archivefiles as $archivefile) {
+                $archivefilescount++;
+                if ($extractedcount >= $maxsupportedcount) {
+                    unicheck_archive::unlink($archivefile['path']);
                     continue;
                 }
 
-                $this->process_archive_item($item);
-                $supportedcount++;
+                $fileforprocessing[] = $archivefile;
+                $extractedcount++;
             }
 
-            if ($supportedcount < 1) {
+            if ($extractedcount < 1) {
                 throw new unicheck_exception(unicheck_exception::ARCHIVE_IS_EMPTY);
             }
-        } catch (\Exception $e) {
-            if ($this->internalfile) {
-                unicheck_file_provider::to_error_state($this->internalfile, $e->getMessage());
-            } else {
-                unicheck_file_provider::to_error_state_by_pathnamehash($data->pathnamehash, $e->getMessage());
+
+            if ($archivefilescount > $maxsupportedcount) {
+                unicheck_file_provider::add_metadata($this->internalfile->id, [
+                    unicheck_file_metadata::ARCHIVE_SUPPORTED_FILES_COUNT                => $archivefilescount,
+                    unicheck_file_metadata::EXTRACTED_SUPPORTED_FILES_FROM_ARCHIVE_COUNT => $extractedcount
+                ]);
             }
 
-            mtrace("File {$data->pathnamehash}(pathnamehash) processing error: " . $e->getMessage());
+            archive_files_unpacked::create_from_plagiarismfile($this->internalfile)->trigger();
+
+            foreach ($fileforprocessing as $item) {
+                $this->process_archive_item($item);
+            }
+        } catch (\Exception $exception) {
+            if ($this->internalfile) {
+                unicheck_file_provider::to_error_state($this->internalfile, $exception->getMessage());
+                try {
+                    file_upload_failed::create_from_failed_plagiarismfile($this->internalfile, $exception->getMessage())->trigger();
+                } catch (\Exception $exception) {
+                    error_handled::create_from_exception($exception)->trigger();
+                }
+            } else {
+                unicheck_file_provider::to_error_state_by_pathnamehash($data->pathnamehash, $exception->getMessage());
+                error_handled::create_from_exception($exception)->trigger();
+            }
+
+            mtrace("File {$data->pathnamehash}(pathnamehash) processing error: " . $exception->getMessage());
         }
     }
 

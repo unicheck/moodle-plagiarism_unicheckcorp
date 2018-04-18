@@ -25,6 +25,7 @@
  */
 
 use plagiarism_unicheck\classes\unicheck_assign;
+use plagiarism_unicheck\classes\permissions\capability;
 
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once(dirname(__FILE__) . '/lib.php');
@@ -43,7 +44,7 @@ $PAGE->set_url($url);
 require_login($cm->course, true, $cm);
 
 $modulecontext = context_module::instance($cmid);
-require_capability('plagiarism/unicheck:checkfile', $modulecontext);
+require_capability(capability::CHECK_FILE, $modulecontext);
 
 unicheck_assign::check_submitted_assignment($pf);
 

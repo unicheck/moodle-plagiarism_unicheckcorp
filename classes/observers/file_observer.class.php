@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * unicheck_event_file_submited.class.php
+ * file_observer.class.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
@@ -23,10 +23,9 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plagiarism_unicheck\classes\event;
+namespace plagiarism_unicheck\classes\observers;
 
 use core\event\base;
-use plagiarism_unicheck\classes\unicheck_assign;
 use plagiarism_unicheck\classes\unicheck_core;
 
 if (!defined('MOODLE_INTERNAL')) {
@@ -34,59 +33,37 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 /**
- * Class unicheck_event_submission_updated
+ * Class file_observer
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
  * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
  */
-class unicheck_event_submission_updated extends unicheck_abstract_event {
-    /**
-     * DRAFT_STATUS
-     */
-    const DRAFT_STATUS = 'draft';
-
+class file_observer extends abstract_observer {
     /**
      * handle_event
      *
      * @param unicheck_core $core
      * @param base          $event
-     *
-     * @return bool
      */
-    public function handle_event(unicheck_core $core, base $event) {
-
-        global $DB;
-        if (!isset($event->other['newstatus'])) {
-            return false;
-        }
-        $newstatus = $event->other['newstatus'];
-        if (!$event->relateduserid) {
-            $core->enable_teamsubmission();
-        } else {
-            $core->userid = $event->relateduserid;
+    public function file_submitted(unicheck_core $core, base $event) {
+        if (self::is_submition_draft($event) ||
+            !isset($event->other['pathnamehashes']) || empty($event->other['pathnamehashes'])
+        ) {
+            return;
         }
 
-        if ($newstatus == self::DRAFT_STATUS) {
-            $unfiles = \plagiarism_unicheck::get_area_files($event->contextid, UNICHECK_DEFAULT_FILES_AREA, $event->objectid);
-            $assignfiles = unicheck_assign::get_area_files($event->contextid, $event->objectid);
-
-            $files = array_merge($unfiles, $assignfiles);
-
-            $ids = [];
-            foreach ($files as $file) {
-                $plagiarismentity = $core->get_plagiarism_entity($file);
-                $internalfile = $plagiarismentity->get_internal_file();
-                $ids[] = $internalfile->id;
+        foreach ($event->other['pathnamehashes'] as $pathnamehash) {
+            $file = get_file_storage()->get_file_by_hash($pathnamehash);
+            if (!$file || $file->is_directory()) {
+                continue;
             }
 
-            $allrecordssql = implode(',', $ids);
-            $DB->delete_records_select(UNICHECK_FILES_TABLE, "id IN ($allrecordssql) OR parent_id IN ($allrecordssql)");
+            $this->add_after_handle_task($file);
         }
 
-        return true;
+        $this->after_handle_event($core);
     }
 }
