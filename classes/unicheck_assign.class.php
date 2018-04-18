@@ -94,10 +94,14 @@ class unicheck_assign {
             }
 
             $ucore = new unicheck_core($plagiarismfile->cm, $plagiarismfile->userid, $cm->modname);
-            if (plagiarism_unicheck::is_archive($file)) {
-                (new unicheck_archive($file, $ucore))->upload();
-            } else {
-                unicheck_adhoc::upload($file, $ucore);
+            try {
+                if (plagiarism_unicheck::is_archive($file)) {
+                    (new unicheck_archive($file, $ucore))->upload();
+                } else {
+                    unicheck_adhoc::upload($file, $ucore);
+                }
+            } catch (\Exception $exception) {
+                unicheck_file_provider::to_error_state($plagiarismfile, $exception->getMessage());
             }
         }
     }

@@ -64,6 +64,10 @@ class unicheck_rar_extractor implements unicheck_extractor_interface {
     public function __construct(\stored_file $file) {
         global $CFG;
 
+        if (!extension_loaded('rar')) {
+            throw new unicheck_exception(unicheck_exception::ARCHIVE_CANT_BE_OPEN);
+        }
+
         $this->file = $file;
 
         $this->tmprarfile = tempnam($CFG->tempdir, 'unicheck_rar');

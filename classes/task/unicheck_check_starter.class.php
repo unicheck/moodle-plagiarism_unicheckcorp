@@ -69,19 +69,24 @@ class unicheck_check_starter extends unicheck_abstract_task {
             return;
         }
 
-        $file = unicheck_file_provider::find_by_id($data->plugin_file_id);
-        if (!$file) {
-            mtrace("File not found. Skipped. Plugin file id: {$data->plugin_file_id}");
+        try {
+            $file = unicheck_file_provider::find_by_id($data->plugin_file_id);
+            if (!$file) {
+                mtrace("File not found. Plugin file id: {$data->plugin_file_id}. Skipped");
 
-            return;
+                return;
+            }
+
+            if ($file->check_id) {
+                mtrace("File already checked. Plugin file id: {$data->plugin_file_id}. Skipped");
+
+                return;
+            }
+
+            unicheck_check_helper::run_plagiarism_detection($file);
+        } catch (\Exception $exception) {
+            mtrace('Caught exception. Task skipped');
+            mtrace('Message: ' . $exception->getMessage() . '. Task data: ' . $this->get_custom_data_as_string());
         }
-
-        if ($file->check_id) {
-            mtrace("File already checked. Skipped. Plugin file id: {$data->plugin_file_id}");
-
-            return;
-        }
-
-        unicheck_check_helper::run_plagiarism_detection($file);
     }
 }

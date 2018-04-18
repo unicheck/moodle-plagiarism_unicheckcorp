@@ -111,6 +111,10 @@ class capability {
      * CHANGE_SENT_STUDENT_REPORT_SETTING
      */
     const CHANGE_SENT_STUDENT_REPORT_SETTING = 'plagiarism/unicheck:changesentstudentreportsetting';
+    /**
+     * CHANGE_SENT_STUDENT_REPORT_SETTING
+     */
+    const CHANGE_EXCLUDE_SELF_PLAGIARISM_SETTING = 'plagiarism/unicheck:changeexcludeselfplagiarismsetting';
 
     /**
      * Check user capability
