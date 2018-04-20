@@ -91,10 +91,6 @@ class unicheck_settings {
      * DRAFT_SUBMIT
      */
     const DRAFT_SUBMIT = 'draft_submit';
-    /**
-     * EXCLUDE_SELF_PLAGIARISM
-     */
-    const EXCLUDE_SELF_PLAGIARISM = 'exclude_self_plagiarism';
 
     /**
      * @var array

@@ -27,6 +27,7 @@ namespace plagiarism_unicheck\classes\observers;
 
 use core\event\base;
 use plagiarism_unicheck;
+use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\entities\unicheck_archive;
 use plagiarism_unicheck\classes\unicheck_adhoc;
 use plagiarism_unicheck\classes\unicheck_assign;
@@ -59,15 +60,20 @@ class assessable_observer extends abstract_observer {
         $ufiles = plagiarism_unicheck::get_area_files($event->contextid, UNICHECK_DEFAULT_FILES_AREA, $submissionid);
         $assignfiles = unicheck_assign::get_area_files($event->contextid, $submissionid);
 
+        /** @var \stored_file[] $files */
         $files = array_merge($ufiles, $assignfiles);
         if (!empty($files)) {
             foreach ($files as $file) {
-                if (\plagiarism_unicheck::is_archive($file)) {
-                    (new unicheck_archive($file, $core))->upload();
-                    continue;
-                }
+                try {
+                    if (\plagiarism_unicheck::is_archive($file)) {
+                        (new unicheck_archive($file, $core))->upload();
+                        continue;
+                    }
 
-                unicheck_adhoc::upload($file, $core);
+                    unicheck_adhoc::upload($file, $core);
+                } catch (\Exception $exception) {
+                    unicheck_file_provider::to_error_state_by_pathnamehash($file->get_pathnamehash(), $exception->getMessage());
+                }
             }
         }
     }

@@ -24,6 +24,7 @@
 
 namespace plagiarism_unicheck\classes\task;
 
+use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\entities\unicheck_archive;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\unicheck_adhoc;
@@ -44,6 +45,16 @@ if (!defined('MOODLE_INTERNAL')) {
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unicheck_bulk_check_assign_files extends unicheck_abstract_task {
+    /**
+     * Key of contextid data parameter
+     */
+    const CONTEXT_ID_KEY = 'contextid';
+
+    /**
+     * Key of cmid data parameter
+     */
+    const INSTANCE_ID_KEY = 'cmid';
+
     /** @var  unicheck_core */
     private $ucore;
 
@@ -53,28 +64,53 @@ class unicheck_bulk_check_assign_files extends unicheck_abstract_task {
     public function execute() {
         $data = $this->get_custom_data();
 
-        $storedfiles = unicheck_assign::get_area_files($data->contextid);
-
-        if (empty($storedfiles)) {
+        if (!is_object($data)) {
             return;
         }
 
-        foreach ($storedfiles as $storedfile) {
-            if (unicheck_assign::is_draft($storedfile->get_itemid())) {
-                continue;
+        if (!property_exists($data, self::CONTEXT_ID_KEY) || !property_exists($data, self::INSTANCE_ID_KEY)) {
+            return;
+        }
+
+        try {
+            $contextid = $data->{self::CONTEXT_ID_KEY};
+            $instanceid = $data->{self::INSTANCE_ID_KEY};
+
+            $storedfiles = unicheck_assign::get_area_files($contextid);
+            if (empty($storedfiles)) {
+                mtrace("File not found in context with ID {$contextid}. Skipped");
+
+                return;
             }
 
-            $this->ucore = new unicheck_core($data->cmid, $storedfile->get_userid(), $this->get_modname($data));
-            $plagiarismfile = $this->get_plagiarism_file($storedfile);
-            if (!$plagiarismfile || $plagiarismfile->state !== unicheck_file_state::CREATED) {
-                continue;
-            }
+            foreach ($storedfiles as $storedfile) {
+                if (unicheck_assign::is_draft($storedfile->get_itemid())) {
+                    mtrace("File with ID {$storedfile->get_itemid()} is draft. Skipped");
 
-            if (\plagiarism_unicheck::is_archive($storedfile)) {
-                (new unicheck_archive($storedfile, $this->ucore))->upload();
-            } else {
-                unicheck_adhoc::upload($storedfile, $this->ucore);
+                    continue;
+                }
+
+                $this->ucore = new unicheck_core($instanceid, $storedfile->get_userid(), $this->get_modname($data));
+                $plagiarismfile = $this->get_plagiarism_file($storedfile);
+                if (!$plagiarismfile || $plagiarismfile->state !== unicheck_file_state::CREATED) {
+                    mtrace("File with ID {$storedfile->get_itemid()} can't processed. Skipped");
+
+                    continue;
+                }
+
+                try {
+                    if (\plagiarism_unicheck::is_archive($storedfile)) {
+                        (new unicheck_archive($storedfile, $this->ucore))->upload();
+                    } else {
+                        unicheck_adhoc::upload($storedfile, $this->ucore);
+                    }
+                } catch (\Exception $exception) {
+                    unicheck_file_provider::to_error_state($plagiarismfile, $exception->getMessage());
+                }
             }
+        } catch (\Exception $exception) {
+            mtrace('Exception catched');
+            mtrace('Message: ' . $exception->getMessage() . '. Task Data: ' . $this->get_custom_data_as_string());
         }
     }
 
@@ -88,8 +124,6 @@ class unicheck_bulk_check_assign_files extends unicheck_abstract_task {
         $plagiarismentity = $this->ucore->get_plagiarism_entity($storedfile);
         $plagiarismfile = $plagiarismentity->get_internal_file();
         if (!$plagiarismfile) {
-            mtrace("... Can't process stored file {$storedfile->get_id()}");
-
             return null;
         }
 

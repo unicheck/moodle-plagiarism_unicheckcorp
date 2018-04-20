@@ -117,6 +117,8 @@ class unicheck_api_request {
         $ch->setHeader($this->gen_oauth_headers());
         $ch->setHeader('Content-Type: application/json');
         $ch->setHeader('Plugin-Identifier: ' . $domain[1]);
+        $ch->setHeader('Plugin-Version: ' . get_config(UNICHECK_PLAGIN_NAME, 'version'));
+        $ch->setHeader('Plugin-Type: ' . UNICHECK_PLAGIN_NAME);
         $ch->setopt([
             'CURLOPT_RETURNTRANSFER' => true,
             'CURLOPT_CONNECTTIMEOUT' => 10,
