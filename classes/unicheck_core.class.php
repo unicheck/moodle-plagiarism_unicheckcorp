@@ -109,28 +109,34 @@ class unicheck_core {
             return false;
         }
 
-        $cm = get_coursemodule_from_id('', $plagiarismfile->cm);
+        try {
+            $cm = get_coursemodule_from_id('', $plagiarismfile->cm);
 
-        if (!plagiarism_unicheck::is_support_mod($cm->modname)) {
+            if (!plagiarism_unicheck::is_support_mod($cm->modname)) {
+                return false;
+            }
+
+            $file = get_file_storage()->get_file_by_hash($plagiarismfile->identifier);
+            $ucore = new unicheck_core($plagiarismfile->cm, $plagiarismfile->userid, $cm->modname);
+
+            if (plagiarism_unicheck::is_archive($file)) {
+                $archive = new unicheck_archive($file, $ucore);
+                $archive->restart_check();
+
+                return true;
+            }
+
+            if ($plagiarismfile->check_id) {
+                unicheck_api::instance()->delete_check($plagiarismfile);
+            }
+            unicheck_adhoc::upload($file, $ucore);
+
+            unicheck_notification::success('plagiarism_run_success', true);
+        } catch (\Exception $exception) {
+            unicheck_file_provider::to_error_state($plagiarismfile, $exception->getMessage());
+
             return false;
         }
-
-        $file = get_file_storage()->get_file_by_hash($plagiarismfile->identifier);
-        $ucore = new unicheck_core($plagiarismfile->cm, $plagiarismfile->userid, $cm->modname);
-
-        if (plagiarism_unicheck::is_archive($file)) {
-            $archive = new unicheck_archive($file, $ucore);
-            $archive->restart_check();
-
-            return true;
-        }
-
-        if ($plagiarismfile->check_id) {
-            unicheck_api::instance()->delete_check($plagiarismfile);
-        }
-        unicheck_adhoc::upload($file, $ucore);
-
-        unicheck_notification::success('plagiarism_run_success', true);
 
         return true;
     }

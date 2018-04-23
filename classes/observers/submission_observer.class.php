@@ -26,6 +26,7 @@
 namespace plagiarism_unicheck\classes\observers;
 
 use core\event\base;
+use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\entities\unicheck_archive;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\unicheck_assign;
@@ -126,15 +127,19 @@ class submission_observer extends abstract_observer {
                 continue;
             }
 
-            if (\plagiarism_unicheck::is_archive($assignfile)) {
-                $archive = new unicheck_archive($assignfile, $core);
-                $archive->upload();
+            try {
+                if (\plagiarism_unicheck::is_archive($assignfile)) {
+                    $archive = new unicheck_archive($assignfile, $core);
+                    $archive->upload();
 
-                continue;
-            }
+                    continue;
+                }
 
-            if ($internalfile->external_file_id == null) {
-                $this->add_after_handle_task($assignfile);
+                if ($internalfile->external_file_id == null) {
+                    $this->add_after_handle_task($assignfile);
+                }
+            } catch (\Exception $exception) {
+                unicheck_file_provider::to_error_state($internalfile, $exception->getMessage());
             }
         }
 

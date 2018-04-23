@@ -113,6 +113,17 @@ class unicheck_api {
             $content = stream_get_contents($content);
         }
 
+        $contextid = $cmid;
+        $excludeselfplagiarism = unicheck_settings::get_settings('exclude_self_plagiarism');
+
+        if ($excludeselfplagiarism) {
+            $cm = \context_module::instance($cmid);
+            $coursecontext = $cm->get_course_context();
+            if ($coursecontext) {
+                $contextid = 'context-' . $coursecontext->id;
+            }
+        }
+
         $postdata = [
             'format'       => strtolower($format),
             'file_data'    => base64_encode($content),
@@ -122,7 +133,7 @@ class unicheck_api {
             ),
             'options'      => [
                 'utoken'        => unicheck_core::get_external_token($cmid, $owner),
-                'submission_id' => $cmid,
+                'submission_id' => $contextid,
             ],
         ];
 

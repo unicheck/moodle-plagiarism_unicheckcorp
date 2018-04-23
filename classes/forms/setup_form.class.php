@@ -101,6 +101,7 @@ class setup_form extends moodleform {
         }
 
         $addyesnoelem('unicheck_enable_api_logging', 'enable_api_logging', false);
+        $addyesnoelem('unicheck_exclude_self_plagiarism', 'exclude_self_plagiarism', false);
 
         $this->add_action_buttons(true);
     }
