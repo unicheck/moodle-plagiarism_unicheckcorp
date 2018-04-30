@@ -84,7 +84,13 @@ class module_form extends moodleform {
             }
         }
 
-        $PAGE->requires->js_call_amd(UNICHECK_PLAGIN_NAME . '/activity_form', 'init');
+        $jsmodule = [
+            'name'     => UNICHECK_PLAGIN_NAME,
+            'fullpath' => '/plagiarism/unicheck/ajax.js',
+            'requires' => ['json'],
+        ];
+
+        $PAGE->requires->js_init_call('M.plagiarismUnicheck.activityForm', [], true, $jsmodule);
     }
 
     /**

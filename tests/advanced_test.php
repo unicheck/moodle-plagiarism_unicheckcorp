@@ -29,8 +29,7 @@ if (!defined('MOODLE_INTERNAL')) {
 
 global $CFG;
 
-require_once($CFG->dirroot . '/plagiarism/unicheck/autoloader.php');
-require_once($CFG->dirroot . '/plagiarism/unicheck/locallib.php');
+require_once($CFG->dirroot . '/plagiarism/unicheck/lib.php');
 require_once($CFG->dirroot . '/plagiarism/unicheck/tests/fixtures/unicheck_api_fixture.php');
 
 use plagiarism_unicheck_unittests\unicheck_api_fixture;

@@ -100,3 +100,12 @@ M.plagiarismUnicheck.init = function(Y, contextid) {
 
     runPlugin();
 };
+
+M.plagiarismUnicheck.activityForm = function() {
+    Y.one("#id_plagiarism_unicheck #id_show_student_score").on('change', function (e) {
+        var val = e.currentTarget.get('value');
+        if (val == 0) {
+            Y.one("#id_plagiarism_unicheck #id_sent_student_report").set("selectedIndex", 0)
+        }
+    });
+};
