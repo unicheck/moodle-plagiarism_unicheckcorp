@@ -30,7 +30,12 @@ use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\unicheck_api;
 use plagiarism_unicheck\classes\unicheck_core;
 use plagiarism_unicheck\classes\unicheck_notification;
+use plagiarism_unicheck\classes\unicheck_plagiarism_entity;
 use plagiarism_unicheck\classes\unicheck_settings;
+use plagiarism_unicheck\event\archive_files_checked;
+use plagiarism_unicheck\event\file_similarity_check_completed;
+use plagiarism_unicheck\event\file_similarity_check_failed;
+use plagiarism_unicheck\event\file_similarity_check_started;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -49,34 +54,53 @@ class unicheck_check_helper {
     /**
      * check_complete
      *
-     * @param \stdClass $record
+     * @param \stdClass $plagiarismfile
      * @param \stdClass $check
      * @param int       $progress
      * @return bool
      */
-    public static function check_complete(\stdClass &$record, \stdClass $check, $progress = 100) {
+    public static function check_complete(\stdClass &$plagiarismfile, \stdClass $check, $progress = 100) {
         global $DB;
 
         if ($progress == 100) {
-            $record->state = unicheck_file_state::CHECKED;
+            $plagiarismfile->state = unicheck_file_state::CHECKED;
         }
 
-        $record->similarityscore = (float)$check->report->similarity;
-        $record->reporturl = $check->report->view_url;
-        $record->reportediturl = $check->report->view_edit_url;
-        $record->progress = round($progress, 0, PHP_ROUND_HALF_DOWN);
+        $plagiarismfile->similarityscore = (float)$check->report->similarity;
+        $plagiarismfile->reporturl = $check->report->view_url;
+        $plagiarismfile->reportediturl = $check->report->view_edit_url;
+        $plagiarismfile->progress = round($progress, 0, PHP_ROUND_HALF_DOWN);
 
-        $updated = unicheck_file_provider::save($record);
+        $updated = unicheck_file_provider::save($plagiarismfile);
+        if (!$updated) {
+            file_similarity_check_failed::create_from_failed_plagiarismfile(
+                $plagiarismfile,
+                "Can't update DB row"
+            )->trigger();
 
-        $emailstudents = unicheck_settings::get_assign_settings($record->cm, 'unicheck_studentemail');
-        if ($updated && !empty($emailstudents)) {
-            unicheck_notification::send_student_email_notification($record);
+            return false;
         }
 
-        if ($updated && $record->parent_id !== null) {
-            $parentrecord = $DB->get_record(UNICHECK_FILES_TABLE, ['id' => $record->parent_id]);
+        $emailstudents = unicheck_settings::get_activity_settings($plagiarismfile->cm, 'unicheck_studentemail');
+        if ($progress == 100) {
+            switch ($plagiarismfile->type) {
+                case unicheck_plagiarism_entity::TYPE_ARCHIVE:
+                    archive_files_checked::create_from_plagiarismfile($plagiarismfile)->trigger();
+                    break;
+                default:
+                    file_similarity_check_completed::create_from_plagiarismfile($plagiarismfile)->trigger();
+                    break;
+            }
+
+            if (!empty($emailstudents)) {
+                unicheck_notification::send_student_email_notification($plagiarismfile);
+            }
+        }
+
+        if ($plagiarismfile->parent_id !== null) {
+            $parentrecord = $DB->get_record(UNICHECK_FILES_TABLE, ['id' => $plagiarismfile->parent_id]);
             $childs = $DB->get_records_select(UNICHECK_FILES_TABLE, "parent_id = ? AND state not in (?)",
-                [$record->parent_id, unicheck_file_state::HAS_ERROR]);
+                [$plagiarismfile->parent_id, unicheck_file_state::HAS_ERROR]);
 
             $similarity = 0;
             $parentprogress = 0;
@@ -103,7 +127,7 @@ class unicheck_check_helper {
             self::check_complete($parentrecord, $parentcheck, $parentprogress);
         }
 
-        return $updated;
+        return true;
     }
 
     /**
@@ -119,7 +143,10 @@ class unicheck_check_helper {
 
             unicheck_notification::success('plagiarism_run_success', true);
 
-            unicheck_response::handle_check_response(unicheck_api::instance()->run_check($plagiarismfile), $plagiarismfile);
+            file_similarity_check_started::create_from_plagiarismfile($plagiarismfile)->trigger();
+            $response = unicheck_api::instance()->run_check($plagiarismfile);
+
+            unicheck_response::handle_check_response($response, $plagiarismfile);
         } else {
             $error = unicheck_core::parse_json($plagiarismfile->errorresponse);
             if (isset($error[0]) && is_object($error[0])) {

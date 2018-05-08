@@ -27,6 +27,8 @@ if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
+use plagiarism_unicheck\classes\permissions\capability;
+
 global $PAGE, $OUTPUT;
 
 if (AJAX_SCRIPT) {
@@ -37,7 +39,7 @@ $check = '';
 $modulecontext = context_module::instance($linkarray['cmid']);
 // This is a teacher viewing the responses.
 
-if (has_capability('plagiarism/unicheck:checkfile', $modulecontext) && empty($fileobj->check_id) && !empty($fileobj->id)) {
+if (has_capability(capability::CHECK_FILE, $modulecontext) && empty($fileobj->check_id) && !empty($fileobj->id)) {
 
     $url = new moodle_url('/plagiarism/unicheck/check.php', [
         'cmid'    => $linkarray['cmid'],
@@ -45,7 +47,7 @@ if (has_capability('plagiarism/unicheck:checkfile', $modulecontext) && empty($fi
         'sesskey' => sesskey(),
     ]);
 
-    $check = sprintf('&nbsp;<a href="%1$s" class="un-check"><img src="%2$s" title="%3$s" width="32" height="32">%4$s</a>',
+    $check = sprintf('<a href="%1$s" class="un-check">%4$s</a>',
         $url,
         $OUTPUT->pix_url('logo', UNICHECK_PLAGIN_NAME),
         plagiarism_unicheck::trans('check_file'),
@@ -56,7 +58,7 @@ if (has_capability('plagiarism/unicheck:checkfile', $modulecontext) && empty($fi
 $htmlparts = ['<span class="un_report">'];
 $htmlparts[] = sprintf('<a href="%s" target="_blank"><img src="%s" title="%s"></a> ',
     new moodle_url(UNICHECK_DOMAIN),
-    $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME),
+    $OUTPUT->pix_url('logo', UNICHECK_PLAGIN_NAME),
     plagiarism_unicheck::trans('pluginname')
 );
 $htmlparts[] = sprintf('%1$s', $check);

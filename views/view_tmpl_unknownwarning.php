@@ -27,6 +27,8 @@ if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
+use plagiarism_unicheck\classes\permissions\capability;
+
 global $OUTPUT, $PAGE;
 
 if (AJAX_SCRIPT) {
@@ -37,7 +39,7 @@ $title = plagiarism_unicheck::trans('unknownwarning');
 $reset = '';
 $modulecontext = context_module::instance($linkarray['cmid']);
 // This is a teacher viewing the responses.
-if (has_capability('plagiarism/unicheck:resetfile', $modulecontext) && !empty($fileobj->errorresponse)) {
+if (has_capability(capability::RESET_FILE, $modulecontext) && !empty($fileobj->errorresponse)) {
     // Strip out some possible known text to tidy it up.
     $erroresponse = plagiarism_unicheck::error_resp_handler($fileobj->errorresponse);
 

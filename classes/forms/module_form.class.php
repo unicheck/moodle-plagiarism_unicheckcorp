@@ -15,16 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * uform.php
+ * activity_form.class.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace plagiarism_unicheck\classes\forms;
+
+use context;
+use moodleform;
+use MoodleQuickForm;
+use plagiarism_plugin_unicheck;
+use plagiarism_unicheck;
 use plagiarism_unicheck\classes\entities\unicheck_archive;
+use plagiarism_unicheck\classes\forms\rules\range_rule;
 use plagiarism_unicheck\classes\unicheck_settings;
 
 if (!defined('MOODLE_INTERNAL')) {
@@ -36,77 +44,32 @@ global $CFG;
 require_once($CFG->libdir . '/formslib.php');
 
 /**
- * Class unicheck_setup_form
+ * Class activity_form
  *
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class unicheck_setup_form extends moodleform {
-    /**
-     * Define the form
-     *
-     * @throws coding_exception
-     */
-    public function definition() {
-        $mform = &$this->_form;
-        $mform->addElement('checkbox', 'unicheck_use', plagiarism_unicheck::trans(unicheck_settings::USE_UNICHECK));
-
-        $settingstext = '<div id="fitem_id_settings_link" class="fitem fitem_ftext ">
-                            <div class="felement ftext">
-                                <a href="' . UNICHECK_CORP_DOMAIN . 'profile/apisettings" target="_blank"> '
-            . plagiarism_unicheck::trans('unicheck_settings_url_text') . '
-                                </a>
-                            </div>
-                        </div>';
-        $mform->addElement('html', $settingstext);
-
-        $mform->addElement('text', 'unicheck_client_id', plagiarism_unicheck::trans('client_id'));
-        $mform->addHelpButton('unicheck_client_id', 'client_id', UNICHECK_PLAGIN_NAME);
-        $mform->addRule('unicheck_client_id', null, 'required', null, 'client');
-        $mform->setType('unicheck_client_id', PARAM_TEXT);
-
-        $mform->addElement('text', 'unicheck_api_secret', plagiarism_unicheck::trans('api_secret'));
-        $mform->addHelpButton('unicheck_api_secret', 'api_secret', UNICHECK_PLAGIN_NAME);
-        $mform->addRule('unicheck_api_secret', null, 'required', null, 'client');
-        $mform->setType('unicheck_api_secret', PARAM_TEXT);
-
-        $mform->addElement('textarea', 'unicheck_student_disclosure', plagiarism_unicheck::trans('studentdisclosure'),
-            'wrap="virtual" rows="6" cols="100"');
-        $mform->addHelpButton('unicheck_student_disclosure', 'studentdisclosure', UNICHECK_PLAGIN_NAME);
-        $mform->setDefault('unicheck_student_disclosure', plagiarism_unicheck::trans('studentdisclosuredefault'));
-        $mform->setType('unicheck_student_disclosure', PARAM_TEXT);
-
-        $mods = core_component::get_plugin_list('mod');
-        foreach (array_keys($mods) as $mod) {
-            if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM) && plagiarism_unicheck::is_support_mod($mod)) {
-                $modstring = 'unicheck_enable_mod_' . $mod;
-                $mform->addElement('checkbox', $modstring, plagiarism_unicheck::trans('unicheck_enableplugin', ucfirst($mod)));
-            }
-        }
-
-        $this->add_action_buttons(true);
-    }
-}
-
-/**
- * Class unicheck_defaults_form
- *
- * @copyright   UKU Group, LTD, https://www.unicheck.com
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class unicheck_defaults_form extends moodleform {
+class module_form extends moodleform {
     /** @var bool */
     private $internalusage = false;
     /** @var string */
     private $modname = '';
 
+    /** @var context */
+    private $context;
+
     /**
      * unicheck_defaults_form constructor.
      *
-     * @param object|null $mform - Moodle form
-     * @param string|null $modname
+     * @param object|null  $mform - Moodle form
+     * @param string|null  $modname
+     * @param context|null $context
      */
-    public function __construct($mform = null, $modname = null) {
+    public function __construct($mform = null, $modname = null, context $context = null) {
+        global $PAGE;
+
+        $this->context = $context;
+
         parent::__construct();
 
         if (!is_null($mform)) {
@@ -120,12 +83,18 @@ class unicheck_defaults_form extends moodleform {
                 $this->modname = $modname;
             }
         }
+
+        $jsmodule = [
+            'name'     => UNICHECK_PLAGIN_NAME,
+            'fullpath' => '/plagiarism/unicheck/ajax.js',
+            'requires' => ['json'],
+        ];
+
+        $PAGE->requires->js_init_call('M.plagiarismUnicheck.activityForm', [], true, $jsmodule);
     }
 
     /**
      * Define the form
-     *
-     * @throws coding_exception
      */
     public function definition() {
         /** @var MoodleQuickForm $mform */
@@ -139,7 +108,7 @@ class unicheck_defaults_form extends moodleform {
 
         $addyesnoelem = function($setting, $showhelpballoon = false, $defaultvalue = null) use (&$mform, $defaultsforfield) {
             $ynoptions = [get_string('no'), get_string('yes')];
-            $mform->addElement('select', $setting, plagiarism_unicheck::trans($setting), $ynoptions);
+            $elem = $mform->addElement('select', $setting, plagiarism_unicheck::trans($setting), $ynoptions);
             if ($showhelpballoon) {
                 $mform->addHelpButton($setting, $setting, UNICHECK_PLAGIN_NAME);
             }
@@ -147,48 +116,63 @@ class unicheck_defaults_form extends moodleform {
             if ($defaultvalue !== null) {
                 $defaultsforfield($mform, $setting, $defaultvalue);
             }
+
+            if (!$this->has_change_capability($setting)) {
+                $elem->freeze();
+            }
+
+            return $elem;
         };
 
         $addtextelem = function($setting, $defaultvalue = null) use ($defaultsforfield, &$mform) {
-            $mform->addElement('text', $setting, plagiarism_unicheck::trans($setting));
+            $elem = $mform->addElement('text', $setting, plagiarism_unicheck::trans($setting));
             $mform->addHelpButton($setting, $setting, UNICHECK_PLAGIN_NAME);
-            $mform->setType($setting, PARAM_TEXT);
+            $mform->setType($setting, unicheck_settings::get_setting_type($setting));
             if ($defaultvalue !== null) {
                 $defaultsforfield($mform, $setting, $defaultvalue);
             }
+
+            if (!$this->has_change_capability($setting)) {
+                $elem->freeze();
+            }
         };
 
-        $mform->addElement('header', 'plagiarismdesc', plagiarism_unicheck::trans('unicheck'));
+        $mform->addElement('header', UNICHECK_PLAGIN_NAME, plagiarism_unicheck::trans('unicheck'));
 
         if ($this->modname === UNICHECK_MODNAME_ASSIGN) {
             $mform->addElement('static', 'use_static_description', plagiarism_unicheck::trans('use_assign_desc_param'),
                 plagiarism_unicheck::trans('use_assign_desc_value'));
         }
 
-        $addyesnoelem(unicheck_settings::USE_UNICHECK, true);
+        $addyesnoelem(unicheck_settings::ENABLE_UNICHECK, true, 0);
 
         if (!in_array($this->modname, [UNICHECK_MODNAME_FORUM, UNICHECK_MODNAME_WORKSHOP])) {
-            $addyesnoelem(unicheck_settings::CHECK_ALL_SUBMITTED_ASSIGNMENTS, true);
-            $addyesnoelem(unicheck_settings::NO_INDEX_FILES, true);
+            $addyesnoelem(unicheck_settings::CHECK_ALREADY_DELIVERED_ASSIGNMENT_SUBMISSIONS, true, 0);
+            $addyesnoelem(unicheck_settings::ADD_TO_INSTITUTIONAL_LIBRARY, true, 0);
         }
 
         $checktypedata = [];
-        foreach (unicheck_settings::$supportedchecktypes as $checktype) {
+        foreach (unicheck_settings::get_supported_check_source_types() as $checktype) {
             $checktypedata[$checktype] = plagiarism_unicheck::trans($checktype);
         }
 
-        $setting = unicheck_settings::CHECK_TYPE;
-        $mform->addElement('select', $setting, plagiarism_unicheck::trans($setting), $checktypedata);
+        $setting = unicheck_settings::SOURCES_FOR_COMPARISON;
+        $elem = $mform->addElement('select', $setting, plagiarism_unicheck::trans($setting), $checktypedata);
         $mform->addHelpButton($setting, $setting, UNICHECK_PLAGIN_NAME);
+        if (!$this->has_change_capability($setting)) {
+            $elem->freeze();
+        }
 
         $addtextelem(unicheck_settings::SENSITIVITY_SETTING_NAME, 0);
         $addtextelem(unicheck_settings::WORDS_SENSITIVITY, 8);
         $addyesnoelem(unicheck_settings::EXCLUDE_CITATIONS, true, 1);
-        $addyesnoelem(unicheck_settings::SHOW_STUDENT_SCORE, true);
-        $addyesnoelem(unicheck_settings::SHOW_STUDENT_REPORT, true);
+        $addyesnoelem(unicheck_settings::SHOW_STUDENT_SCORE, true, 0);
+        $addyesnoelem(unicheck_settings::SHOW_STUDENT_REPORT, true, 0);
+        $addyesnoelem(unicheck_settings::SENT_STUDENT_REPORT, true, 0);
+
         $addtextelem(unicheck_settings::MAX_SUPPORTED_ARCHIVE_FILES_COUNT, 10);
 
-        $mform::registerRule('range', null, new unicheck_form_rule_range);
+        $mform::registerRule('range', null, new range_rule());
 
         $mform->addRule(unicheck_settings::WORDS_SENSITIVITY, 'Invalid value range. Allowed 8-999',
             'range', ['min' => 8, 'max' => 999], 'server'
@@ -209,28 +193,27 @@ class unicheck_defaults_form extends moodleform {
             $this->add_action_buttons(true);
         }
     }
-}
 
-/**
- * Class unicheck_form_rule_range
- *
- * @copyright   UKU Group, LTD, https://www.unicheck.com
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class unicheck_form_rule_range extends HTML_QuickForm_Rule {
     /**
-     * validate
+     * Check is current context can change setting
      *
-     * @param int        $value Value to check
-     * @param array|null $options
-     *
-     * @return bool true if value in valid range
+     * @param string $setting
+     * @return bool
      */
-    public function validate($value, $options = null) {
-        if ($value < $options['min'] || $value > $options['max']) {
+    private function has_change_capability($setting) {
+        if (!$this->internalusage) {
+            return true;
+        }
+
+        if (!$this->context) {
             return false;
         }
 
-        return true;
+        $capability = unicheck_settings::get_capability($setting);
+        if (null === $capability) {
+            return true;
+        }
+
+        return has_capability($capability, $this->context);
     }
 }

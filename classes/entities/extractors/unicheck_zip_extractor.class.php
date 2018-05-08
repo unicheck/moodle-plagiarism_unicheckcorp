@@ -64,6 +64,10 @@ class unicheck_zip_extractor implements unicheck_extractor_interface {
     public function __construct(\stored_file $file) {
         global $CFG;
 
+        if (!extension_loaded('zip')) {
+            throw new unicheck_exception(unicheck_exception::ARCHIVE_CANT_BE_OPEN);
+        }
+
         $this->file = $file;
 
         $this->tmpzipfile = tempnam($CFG->tempdir, 'unicheck_zip');

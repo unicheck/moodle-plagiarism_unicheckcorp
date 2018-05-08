@@ -47,7 +47,7 @@ class unicheck_exception extends \Exception {
     /**
      * ARCHIVE_CANT_BE_OPEN
      */
-    const ARCHIVE_CANT_BE_OPEN = 'Can\'t open zip archive';
+    const ARCHIVE_CANT_BE_OPEN = 'Can\'t open archive';
     /**
      * UNSUPPORTED_MIMETYPE
      */

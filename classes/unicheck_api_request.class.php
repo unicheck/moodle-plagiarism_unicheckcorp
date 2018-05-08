@@ -26,6 +26,7 @@
 
 namespace plagiarism_unicheck\classes;
 
+use plagiarism_unicheck\event\api_called;
 use plagiarism_unicheck\library\OAuth\OAuthConsumer;
 use plagiarism_unicheck\library\OAuth\OAuthRequest;
 use plagiarism_unicheck\library\OAuth\Signature\OAuthSignatureMethod_HMAC_SHA1;
@@ -116,6 +117,8 @@ class unicheck_api_request {
         $ch->setHeader($this->gen_oauth_headers());
         $ch->setHeader('Content-Type: application/json');
         $ch->setHeader('Plugin-Identifier: ' . $domain[1]);
+        $ch->setHeader('Plugin-Version: ' . get_config(UNICHECK_PLAGIN_NAME, 'version'));
+        $ch->setHeader('Plugin-Type: ' . UNICHECK_PLAGIN_NAME);
         $ch->setopt([
             'CURLOPT_RETURNTRANSFER' => true,
             'CURLOPT_CONNECTTIMEOUT' => 10,
@@ -128,9 +131,20 @@ class unicheck_api_request {
             ]);
         }
 
-        $resp = $ch->{$this->httpmethod}($this->url, $this->get_request_data());
+        $response = $ch->{$this->httpmethod}($this->url, $this->get_request_data());
 
-        return $this->handle_response($resp);
+        $isapiloggingenable = unicheck_settings::get_settings('enable_api_logging');
+        if ($isapiloggingenable) {
+            api_called::create_log_message(
+                unicheck_settings::get_settings('client_id'),
+                $this->url,
+                $data,
+                $response,
+                $ch->get_info()['http_code']
+            )->trigger();
+        }
+
+        return $this->handle_response($response);
     }
 
     /**

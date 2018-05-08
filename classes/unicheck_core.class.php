@@ -25,13 +25,14 @@
 
 namespace plagiarism_unicheck\classes;
 
-use context_module;
 use core\event\base;
 use plagiarism_unicheck;
 use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\entities\unicheck_archive;
 use plagiarism_unicheck\classes\exception\unicheck_exception;
+use plagiarism_unicheck\classes\permissions\capability;
 use plagiarism_unicheck\classes\plagiarism\unicheck_file;
+use plagiarism_unicheck\event\api_user_created;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -57,12 +58,17 @@ class unicheck_core {
      * @var int
      */
     public $userid = null;
+
     /**
+     * Context module instance ID (assign/forum/workshop ID)
+     *
      * @var int
      */
     public $cmid = null;
 
     /**
+     * Assign/forum/workshop
+     *
      * @var string
      */
     public $modname = null;
@@ -103,28 +109,34 @@ class unicheck_core {
             return false;
         }
 
-        $cm = get_coursemodule_from_id('', $plagiarismfile->cm);
+        try {
+            $cm = get_coursemodule_from_id('', $plagiarismfile->cm);
 
-        if (!plagiarism_unicheck::is_support_mod($cm->modname)) {
+            if (!plagiarism_unicheck::is_support_mod($cm->modname)) {
+                return false;
+            }
+
+            $file = get_file_storage()->get_file_by_hash($plagiarismfile->identifier);
+            $ucore = new unicheck_core($plagiarismfile->cm, $plagiarismfile->userid, $cm->modname);
+
+            if (plagiarism_unicheck::is_archive($file)) {
+                $archive = new unicheck_archive($file, $ucore);
+                $archive->restart_check();
+
+                return true;
+            }
+
+            if ($plagiarismfile->check_id) {
+                unicheck_api::instance()->delete_check($plagiarismfile);
+            }
+            unicheck_adhoc::upload($file, $ucore);
+
+            unicheck_notification::success('plagiarism_run_success', true);
+        } catch (\Exception $exception) {
+            unicheck_file_provider::to_error_state($plagiarismfile, $exception->getMessage());
+
             return false;
         }
-
-        $file = get_file_storage()->get_file_by_hash($plagiarismfile->identifier);
-        $ucore = new unicheck_core($plagiarismfile->cm, $plagiarismfile->userid, $cm->modname);
-
-        if (plagiarism_unicheck::is_archive($file)) {
-            $archive = new unicheck_archive($file, $ucore);
-            $archive->restart_check();
-
-            return true;
-        }
-
-        if ($plagiarismfile->check_id) {
-            unicheck_api::instance()->delete_check($plagiarismfile);
-        }
-        unicheck_adhoc::upload($file, $ucore);
-
-        unicheck_notification::success('plagiarism_run_success', true);
 
         return true;
     }
@@ -268,7 +280,10 @@ class unicheck_core {
                 $externaluserdata->external_user_id = $resp->user->id;
                 $externaluserdata->external_token = $resp->user->token;
 
-                $DB->insert_record(UNICHECK_USER_DATA_TABLE, $externaluserdata);
+                $apiuserid = $DB->insert_record(UNICHECK_USER_DATA_TABLE, $externaluserdata);
+                $externaluserdata->id = $apiuserid;
+
+                api_user_created::create_from_apiuser($externaluserdata)->trigger();
 
                 return $externaluserdata->external_token;
             }
@@ -286,20 +301,7 @@ class unicheck_core {
      * @return bool
      */
     public static function is_teacher($cmid, $userid) {
-        return self::can('moodle/grade:edit', $cmid, $userid);
-    }
-
-    /**
-     * Check capability
-     *
-     * @param string $permission
-     * @param int    $cmid
-     * @param int    $userid
-     *
-     * @return bool
-     */
-    public static function can($permission, $cmid, $userid) {
-        return has_capability($permission, context_module::instance($cmid), $userid);
+        return capability::user_can('moodle/grade:edit', $cmid, $userid);
     }
 
     /**

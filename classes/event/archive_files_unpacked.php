@@ -14,56 +14,64 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * unicheck_event_onlinetext_submited.class.php
+ * archive_unpacked.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>
- * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @copyright   2018 UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plagiarism_unicheck\classes\event;
+namespace plagiarism_unicheck\event;
 
-use core\event\base;
-use plagiarism_unicheck\classes\unicheck_core;
-use stored_file;
+use plagiarism_unicheck;
+use plagiarism_unicheck\classes\event\abstract_file_event;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
+require_once(dirname(__FILE__) . '/../../locallib.php');
+
 /**
- * Class unicheck_event_onlinetext_submited
+ * Class archive_unpacked
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ *
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @since       Moodle 2.7
  */
-class unicheck_event_onlinetext_submited extends unicheck_abstract_event {
+class archive_files_unpacked extends abstract_file_event {
     /**
-     * handle_event
+     * Init method.
      *
-     * @param unicheck_core $core
-     * @param base          $event
+     * @return void
      */
-    public function handle_event(unicheck_core $core, base $event) {
-        if (empty($event->other['content'])) {
-            return;
-        }
+    protected function init() {
+        $this->data['crud'] = 'c';
+        $this->data['edulevel'] = self::LEVEL_OTHER;
+        $this->data['objecttable'] = UNICHECK_FILES_TABLE;
+    }
 
-        $file = $core->create_file_from_content($event);
+    /**
+     * Return the event name.
+     *
+     * @return string
+     */
+    public static function get_name() {
+        return plagiarism_unicheck::trans('event:archive_files_unpacked');
+    }
 
-        if (self::is_submition_draft($event)) {
-            return;
-        }
-
-        if ($file instanceof stored_file) {
-            $this->add_after_handle_task($file);
-        }
-
-        $this->after_handle_event($core);
+    /**
+     * Returns description of what happened.
+     *
+     * @return string
+     */
+    public function get_description() {
+        return "User archive '{$this->other['fileid']}' files unpacked in course module '{$this->contextinstanceid}'";
     }
 }

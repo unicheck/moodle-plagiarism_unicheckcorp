@@ -26,7 +26,10 @@
 namespace plagiarism_unicheck\classes;
 
 use plagiarism_unicheck\classes\helpers\unicheck_response;
+use plagiarism_unicheck\classes\services\comments\commentable_interface;
+use plagiarism_unicheck\classes\services\comments\commentable_type;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
+use plagiarism_unicheck\event\file_upload_started;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -41,7 +44,7 @@ if (!defined('MOODLE_INTERNAL')) {
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-abstract class unicheck_plagiarism_entity {
+abstract class unicheck_plagiarism_entity implements commentable_interface {
     /**
      * TYPE_ARCHIVE
      */
@@ -136,6 +139,7 @@ abstract class unicheck_plagiarism_entity {
             return $internalfile;
         }
 
+        file_upload_started::create_from_plagiarismfile($internalfile)->trigger();
         list($content, $name, $ext, $cmid, $owner) = $this->build_upload_data();
         $uploadresponse = unicheck_api::instance()->upload_file($content, $name, $ext, $cmid, $owner, $internalfile);
 
@@ -145,5 +149,23 @@ abstract class unicheck_plagiarism_entity {
         unicheck_response::process_after_upload($uploadresponse, $internalfile);
 
         return $internalfile;
+    }
+
+    /**
+     * Get commentable object id
+     *
+     * @return int
+     */
+    public function get_commentable_id() {
+        return $this->get_internal_file()->id;
+    }
+
+    /**
+     * Get Commentable object type
+     *
+     * @return string
+     */
+    public function get_commentable_type() {
+        return commentable_type::FILE;
     }
 }
