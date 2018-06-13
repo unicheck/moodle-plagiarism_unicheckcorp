@@ -183,12 +183,10 @@ class unicheck_file_provider {
     }
 
     /**
-     * @param int $offset
-     * @param int $limit
      *
      * @return array
      */
-    public static function get_frozen_files($offset = 0, $limit = 1000) {
+    public static function get_frozen_files() {
         global $DB;
 
         $querywhere = "(state <> '"
@@ -199,12 +197,7 @@ class unicheck_file_provider {
 
         return $DB->get_records_select(
             UNICHECK_FILES_TABLE,
-            $querywhere,
-            null,
-            null,
-            '*',
-            $offset,
-            $limit
+            $querywhere
         );
     }
 
