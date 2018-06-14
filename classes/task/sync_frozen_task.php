@@ -48,15 +48,22 @@ require_once($CFG->dirroot . '/plagiarism/unicheck/constants.php');
  */
 class sync_frozen_task extends \core\task\scheduled_task
 {
+    /**
+     * Identify frozen check
+     */
     const CHECK = 'frozen_check';
+
+    /**
+     * Identify frozen file
+     */
     const FILE  = 'frozen_file';
 
     /**
+     * Get name for this task
      * @return string
      * @throws \coding_exception
      */
-    public function get_name()
-    {
+    public function get_name() {
         return get_string('sync_failed', 'plagiarism_unicheck');
     }
 
@@ -64,14 +71,14 @@ class sync_frozen_task extends \core\task\scheduled_task
      * Do the job.
      * Throw exceptions on errors (the job will be retried).
      */
-    public function execute()
-    {
+    public function execute() {
         $files = [
             self::FILE        => [],
             self::CHECK       => []
         ];
 
         $frozenfiles = unicheck_file_provider::get_frozen_files();
+
         if ($frozenfiles) {
             foreach ($frozenfiles as $id => $file) {
                 if (!is_null($file->check_id)) {
@@ -101,7 +108,9 @@ class sync_frozen_task extends \core\task\scheduled_task
     }
 
     /**
-     * @param array $apicheklist
+     * Fix frozen check
+     *
+     * @param array $externalcheklist
      * @param array $dbchecklist
      */
     protected function fix_check($externalcheklist, $dbchecklist) {
@@ -116,6 +125,8 @@ class sync_frozen_task extends \core\task\scheduled_task
     }
 
     /**
+     * Fix frozen file
+     *
      * @param array $externalfiles
      * @param array $dbfiles
      */

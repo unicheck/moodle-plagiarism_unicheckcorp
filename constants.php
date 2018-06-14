@@ -33,7 +33,6 @@ define('UNICHECK_DOMAIN', 'https://unicheck.com/');
 define('UNICHECK_CORP_DOMAIN', 'https://corp.unicheck.com/');
 define('UNICHECK_API_URL', 'https://corpapi.unicheck.com/api/v2/');
 define('UNICHECK_CALLBACK_URL', '/plagiarism/unicheck/callback.php');
-define('UNICHECK_TASK_FREEZE_CHECK_TIME', '5 HOUR');
 
 define('UNICHECK_PROJECT_PATH', dirname(__FILE__) . '/');
 

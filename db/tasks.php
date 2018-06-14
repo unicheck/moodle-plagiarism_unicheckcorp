@@ -16,7 +16,7 @@
 /**
  * tasks.php
  *
- * @package     plagiarism_unplag
+ * @package     plagiarism_unicheck
  * @subpackage  plagiarism
  * @author      Andrew Chirskiy <a.chirskiy@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
