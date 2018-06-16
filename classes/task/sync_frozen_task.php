@@ -83,8 +83,8 @@ class sync_frozen_task extends \core\task\scheduled_task
             foreach ($frozenfiles as $id => $file) {
                 if (!is_null($file->check_id)) {
                     $files[self::CHECK][$file->check_id] = $file;
-                } else if (!is_null($file->external_file_id)) {
-                    $files[self::FILE][$id] = $file;
+                } else if (!is_null($file->external_file_uuid)) {
+                    $files[self::FILE][$file->id] = $file;
                 }
             }
         }
@@ -131,8 +131,8 @@ class sync_frozen_task extends \core\task\scheduled_task
      * @param array $dbfiles
      */
     protected function fix_file($externalfiles, $dbfiles) {
-        if ($externalfiles[unicheck_file_api::FOR_UPDATE]) {
-            foreach ($externalfiles[unicheck_file_api::FOR_UPDATE] as $key => $check) {
+        if ($externalfiles[unicheck_file_api::TO_UPDATE]) {
+            foreach ($externalfiles[unicheck_file_api::TO_UPDATE] as $key => $check) {
                 unicheck_file_provider::update_frozen_check(
                     $dbfiles[$key],
                     $check
@@ -140,9 +140,18 @@ class sync_frozen_task extends \core\task\scheduled_task
             }
         }
 
-        if ($externalfiles[unicheck_file_api::FOR_CREATE]) {
-            foreach ($externalfiles[unicheck_file_api::FOR_CREATE] as $file) {
+        if ($externalfiles[unicheck_file_api::TO_CREATE]) {
+            foreach ($externalfiles[unicheck_file_api::TO_CREATE] as $file) {
                 unicheck_adhoc::check($file);
+            }
+        }
+
+        if ($externalfiles[unicheck_file_api::TO_ERROR]) {
+            foreach ($externalfiles[unicheck_file_api::TO_ERROR] as $file) {
+                unicheck_file_provider::to_error_state(
+                    $file,
+                    get_string('upload_error', 'plagiarism_unicheck')
+                );
             }
         }
     }

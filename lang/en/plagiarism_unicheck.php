@@ -178,3 +178,4 @@ $string['event:file_similarity_check_completed'] = 'Similarity check completed';
 $string['event:file_similarity_check_failed'] = 'Similarity check failed';
 $string['event:file_similarity_check_started'] = 'Similarity check started';
 $string['sync_failed'] = 'Try to synchronize unprocessed files';
+$string['upload_error'] = 'File upload error';

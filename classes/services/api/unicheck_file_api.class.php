@@ -46,12 +46,17 @@ class unicheck_file_api {
     /**
      * Handle documents that need to be updated
      */
-    const FOR_UPDATE = 'check_to_update';
+    const TO_UPDATE = 'check_to_update';
 
     /**
      * Handle documents that need to be created
      */
-    const FOR_CREATE = 'check_to_create';
+    const TO_CREATE = 'check_to_create';
+
+    /**
+     * Handle documents that did not upload throw API
+     */
+    const TO_ERROR = 'file_to_error';
 
     /**
      * File info
@@ -67,19 +72,27 @@ class unicheck_file_api {
      */
     public function get_uploaded_file_by_dbfiles($dbfiles) {
         $fileforupdatelist = [
-            self::FOR_UPDATE => [],
-            self::FOR_CREATE => []
+            self::TO_UPDATE => [],
+            self::TO_CREATE => [],
+            self::TO_ERROR  => []
         ];
         $apirequest = new unicheck_api();
         foreach ($dbfiles as $file) {
             $resultfileprogress = $apirequest->get_file_upload_progress($file->external_file_uuid);
-            if ($resultfileprogress->result && $resultfileprogress->progress->percentage == 100) {
-                $externalfile = $this->get_file_info($file->external_file_id);
+
+            if ($resultfileprogress->result
+                && $resultfileprogress->progress->percentage == 100
+                && $resultfileprogress->progress->file
+            ) {
+                $externalfile = $this->get_file_info($resultfileprogress->progress->file->id);
+
                 if ($externalfile->result && $externalfile->file && $externalfile->file->checks) {
-                    $fileforupdatelist[self::FOR_UPDATE][$file->id] = $externalfile->file->checks[0];
+                    $fileforupdatelist[self::TO_UPDATE][$file->id] = $externalfile->file->checks[0];
                 } else if ($externalfile->result && $externalfile->file) {
-                    $fileforupdatelist[self::FOR_CREATE][$file->id] = $externalfile->file;
+                    $fileforupdatelist[self::TO_CREATE][$file->id] = $externalfile->file;
                 }
+            } else if (!isset($resultfileprogress->progress->file)) {
+                $fileforupdatelist[self::TO_ERROR][] = $file;
             }
         }
 
