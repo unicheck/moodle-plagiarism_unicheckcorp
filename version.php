@@ -33,7 +33,7 @@ $plugin->requires = 2017051501; // Requires Moodle 3.3 .
 $plugin->maturity = MATURITY_STABLE;
 
 $plugin->component = 'plagiarism_unicheck';
-$plugin->release = '2.3.1 (Build: 20180612)'; // Human-friendly version name.
+$plugin->release = '2.3.1 (Build: 20180618)'; // Human-friendly version name.
 $plugin->dependencies = [
     'mod_assign' => ANY_VERSION
 ];
