@@ -192,7 +192,7 @@ class unicheck_file_provider {
             . unicheck_file_state::CHECKED
             . "'AND state <> '"
             . unicheck_file_state::HAS_ERROR
-            . "' OR check_id IS NULL) AND UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 DAY)) > timesubmitted "
+            . "') AND UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 DAY)) > timesubmitted "
             . "AND external_file_uuid IS NOT NULL";
 
         return $DB->get_records_select(
