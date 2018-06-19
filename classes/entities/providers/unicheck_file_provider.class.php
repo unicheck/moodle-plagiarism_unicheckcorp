@@ -27,6 +27,7 @@ namespace plagiarism_unicheck\classes\entities\providers;
 
 use plagiarism_unicheck\classes\helpers\unicheck_check_helper;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
+use plagiarism_unicheck\classes\unicheck_plagiarism_entity;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -194,6 +195,30 @@ class unicheck_file_provider {
             . unicheck_file_state::HAS_ERROR
             . "') AND UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 DAY)) > timesubmitted "
             . "AND external_file_uuid IS NOT NULL";
+
+        return $DB->get_records_select(
+            UNICHECK_FILES_TABLE,
+            $querywhere
+        );
+    }
+
+    /**
+     * Get all frozen archive
+     *
+     * @return array
+     */
+    public static function get_frozen_archive() {
+        global $DB;
+
+        $querywhere = "(state <> '"
+            . unicheck_file_state::CHECKED
+            . "'AND state <> '"
+            . unicheck_file_state::HAS_ERROR
+            . "'
+            ) AND UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 DAY )) > timesubmitted "
+            . "AND type = '"
+            . unicheck_plagiarism_entity::TYPE_ARCHIVE
+            ."'";
 
         return $DB->get_records_select(
             UNICHECK_FILES_TABLE,
