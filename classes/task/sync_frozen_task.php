@@ -39,6 +39,7 @@ global $CFG;
 
 require_once($CFG->dirroot . '/plagiarism/unicheck/autoloader.php');
 require_once($CFG->dirroot . '/plagiarism/unicheck/constants.php');
+require_once($CFG->libdir  . '/filelib.php');
 
 /**
  * Class failed_task
