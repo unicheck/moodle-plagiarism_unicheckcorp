@@ -25,7 +25,9 @@
 
 namespace plagiarism_unicheck\classes\entities\providers;
 
+use plagiarism_unicheck\classes\helpers\unicheck_check_helper;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
+use plagiarism_unicheck\classes\unicheck_plagiarism_entity;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -177,5 +179,66 @@ class unicheck_file_provider {
         $fileobj->metadata = json_encode($metadata);
 
         return self::save($fileobj);
+    }
+
+    /**
+     * Get all frozen documents fron database
+     *
+     * @return array
+     */
+    public static function get_frozen_files() {
+        global $DB;
+
+        $querywhere = "(state <> '"
+            . unicheck_file_state::CHECKED
+            . "'AND state <> '"
+            . unicheck_file_state::HAS_ERROR
+            . "') AND UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 DAY)) > timesubmitted "
+            . "AND external_file_uuid IS NOT NULL";
+
+        return $DB->get_records_select(
+            UNICHECK_FILES_TABLE,
+            $querywhere
+        );
+    }
+
+    /**
+     * Get all frozen archive
+     *
+     * @return array
+     */
+    public static function get_frozen_archive() {
+        global $DB;
+
+        $querywhere = "(state <> '"
+            . unicheck_file_state::CHECKED
+            . "'AND state <> '"
+            . unicheck_file_state::HAS_ERROR
+            . "'
+            ) AND UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 DAY )) > timesubmitted "
+            . "AND type = '"
+            . unicheck_plagiarism_entity::TYPE_ARCHIVE
+            ."'";
+
+        return $DB->get_records_select(
+            UNICHECK_FILES_TABLE,
+            $querywhere
+        );
+    }
+
+    /**
+     * Update frozen documents in database
+     *
+     * @param \stdClass $dbobjectfile
+     * @param \stdClass $apiobjectcheck
+     */
+    public static function update_frozen_check($dbobjectfile, $apiobjectcheck) {
+        if (is_null($dbobjectfile->check_id)) {
+            $dbobjectfile->check_id = $apiobjectcheck->id;
+        }
+        if (is_null($dbobjectfile->external_file_id)) {
+            $dbobjectfile->external_file_id = $apiobjectcheck->file_id;
+        }
+        unicheck_check_helper::check_complete($dbobjectfile, $apiobjectcheck);
     }
 }

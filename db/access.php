@@ -28,7 +28,7 @@ if (!defined('MOODLE_INTERNAL')) {
 $capabilities = [
     'plagiarism/unicheck:enable'                                       => [
         'captype'      => 'write',
-        'contextlevel' => CONTEXT_COURSE,
+        'contextlevel' => CONTEXT_MODULE,
         'archetypes'   => [
             'editingteacher' => CAP_ALLOW,
             'manager'        => CAP_ALLOW,
@@ -38,43 +38,40 @@ $capabilities = [
     'plagiarism/unicheck:viewsimilarity'                               => [
         'riskbitmask'  => RISK_PERSONAL,
         'captype'      => 'write',
-        'contextlevel' => CONTEXT_COURSE,
+        'contextlevel' => CONTEXT_MODULE,
         'archetypes'   => [
             'editingteacher' => CAP_ALLOW,
             'teacher'        => CAP_ALLOW,
             'manager'        => CAP_ALLOW,
-            'coursecreator'  => CAP_ALLOW,
-            'student'        => CAP_PREVENT
+            'coursecreator'  => CAP_ALLOW
         ],
     ],
     'plagiarism/unicheck:viewreport'                                   => [
         'riskbitmask'  => RISK_PERSONAL,
         'captype'      => 'write',
-        'contextlevel' => CONTEXT_COURSE,
+        'contextlevel' => CONTEXT_MODULE,
         'archetypes'   => [
             'editingteacher' => CAP_ALLOW,
             'teacher'        => CAP_ALLOW,
             'manager'        => CAP_ALLOW,
-            'coursecreator'  => CAP_ALLOW,
-            'student'        => CAP_PREVENT
+            'coursecreator'  => CAP_ALLOW
         ],
     ],
     'plagiarism/unicheck:vieweditreport'                               => [
         'riskbitmask'  => RISK_PERSONAL,
         'captype'      => 'write',
-        'contextlevel' => CONTEXT_COURSE,
+        'contextlevel' => CONTEXT_MODULE,
         'archetypes'   => [
             'editingteacher' => CAP_ALLOW,
-            'teacher'        => CAP_PREVENT,
+            'teacher'        => CAP_ALLOW,
             'manager'        => CAP_ALLOW,
-            'coursecreator'  => CAP_ALLOW,
-            'student'        => CAP_PREVENT
+            'coursecreator'  => CAP_ALLOW
         ],
     ],
     'plagiarism/unicheck:resetfile'                                    => [
         'riskbitmask'  => RISK_PERSONAL,
         'captype'      => 'write',
-        'contextlevel' => CONTEXT_COURSE,
+        'contextlevel' => CONTEXT_MODULE,
         'archetypes'   => [
             'editingteacher' => CAP_ALLOW,
             'teacher'        => CAP_ALLOW,
@@ -84,7 +81,7 @@ $capabilities = [
     'plagiarism/unicheck:checkfile'                                    => [
         'riskbitmask'  => RISK_PERSONAL,
         'captype'      => 'write',
-        'contextlevel' => CONTEXT_COURSE,
+        'contextlevel' => CONTEXT_MODULE,
         'archetypes'   => [
             'editingteacher' => CAP_ALLOW,
             'teacher'        => CAP_ALLOW,
@@ -94,133 +91,122 @@ $capabilities = [
     'plagiarism/unicheck:changeenableunichecksetting'                  => [
         'riskbitmask'  => RISK_CONFIG,
         'captype'      => 'write',
-        'contextlevel' => CONTEXT_COURSE,
+        'contextlevel' => CONTEXT_MODULE,
         'archetypes'   => [
             'editingteacher' => CAP_ALLOW,
-            'teacher'        => CAP_PREVENT,
+            'teacher'        => CAP_ALLOW,
             'manager'        => CAP_ALLOW,
-            'coursecreator'  => CAP_ALLOW,
-            'student'        => CAP_PROHIBIT
+            'coursecreator'  => CAP_ALLOW
         ],
     ],
     'plagiarism/unicheck:changecheckalreadysubmittedassignmentsetting' => [
         'riskbitmask'  => RISK_CONFIG | RISK_SPAM,
         'captype'      => 'write',
-        'contextlevel' => CONTEXT_COURSE,
+        'contextlevel' => CONTEXT_MODULE,
         'archetypes'   => [
             'editingteacher' => CAP_ALLOW,
-            'teacher'        => CAP_PREVENT,
+            'teacher'        => CAP_ALLOW,
             'manager'        => CAP_ALLOW,
-            'coursecreator'  => CAP_ALLOW,
-            'student'        => CAP_PROHIBIT
+            'coursecreator'  => CAP_ALLOW
         ],
     ],
     'plagiarism/unicheck:changeaddsubmissiontolibrarysetting'          => [
         'riskbitmask'  => RISK_CONFIG,
         'captype'      => 'write',
-        'contextlevel' => CONTEXT_COURSE,
+        'contextlevel' => CONTEXT_MODULE,
         'archetypes'   => [
             'editingteacher' => CAP_ALLOW,
-            'teacher'        => CAP_PREVENT,
+            'teacher'        => CAP_ALLOW,
             'manager'        => CAP_ALLOW,
-            'coursecreator'  => CAP_ALLOW,
-            'student'        => CAP_PROHIBIT
+            'coursecreator'  => CAP_ALLOW
         ],
     ],
     'plagiarism/unicheck:changesourcesforcomparisonsetting'            => [
         'riskbitmask'  => RISK_CONFIG,
         'captype'      => 'write',
-        'contextlevel' => CONTEXT_COURSE,
+        'contextlevel' => CONTEXT_MODULE,
         'archetypes'   => [
             'editingteacher' => CAP_ALLOW,
-            'teacher'        => CAP_PREVENT,
+            'teacher'        => CAP_ALLOW,
             'manager'        => CAP_ALLOW,
-            'coursecreator'  => CAP_ALLOW,
-            'student'        => CAP_PROHIBIT
+            'coursecreator'  => CAP_ALLOW
         ],
     ],
     'plagiarism/unicheck:changesensitivitypercentagesetting'           => [
         'riskbitmask'  => RISK_CONFIG,
         'captype'      => 'write',
-        'contextlevel' => CONTEXT_COURSE,
+        'contextlevel' => CONTEXT_MODULE,
         'archetypes'   => [
             'editingteacher' => CAP_ALLOW,
-            'teacher'        => CAP_PREVENT,
+            'teacher'        => CAP_ALLOW,
             'manager'        => CAP_ALLOW,
-            'coursecreator'  => CAP_ALLOW,
-            'student'        => CAP_PROHIBIT
+            'coursecreator'  => CAP_ALLOW
         ],
     ],
     'plagiarism/unicheck:changewordsensitivitysetting'                 => [
         'riskbitmask'  => RISK_CONFIG,
         'captype'      => 'write',
-        'contextlevel' => CONTEXT_COURSE,
+        'contextlevel' => CONTEXT_MODULE,
         'archetypes'   => [
             'editingteacher' => CAP_ALLOW,
-            'teacher'        => CAP_PREVENT,
+            'teacher'        => CAP_ALLOW,
             'manager'        => CAP_ALLOW,
-            'coursecreator'  => CAP_ALLOW,
-            'student'        => CAP_PROHIBIT
+            'coursecreator'  => CAP_ALLOW
         ],
     ],
     'plagiarism/unicheck:changeexcludecitationssetting'                => [
         'riskbitmask'  => RISK_CONFIG,
         'captype'      => 'write',
-        'contextlevel' => CONTEXT_COURSE,
+        'contextlevel' => CONTEXT_MODULE,
         'archetypes'   => [
             'editingteacher' => CAP_ALLOW,
-            'teacher'        => CAP_PREVENT,
+            'teacher'        => CAP_ALLOW,
             'manager'        => CAP_ALLOW,
-            'coursecreator'  => CAP_ALLOW,
-            'student'        => CAP_PROHIBIT
+            'coursecreator'  => CAP_ALLOW
         ],
     ],
     'plagiarism/unicheck:changeshowstudentscoresetting'                => [
         'riskbitmask'  => RISK_CONFIG | RISK_SPAM,
         'captype'      => 'write',
-        'contextlevel' => CONTEXT_COURSE,
+        'contextlevel' => CONTEXT_MODULE,
         'archetypes'   => [
             'editingteacher' => CAP_ALLOW,
-            'teacher'        => CAP_PREVENT,
+            'teacher'        => CAP_ALLOW,
             'manager'        => CAP_ALLOW,
-            'coursecreator'  => CAP_ALLOW,
-            'student'        => CAP_PROHIBIT
+            'coursecreator'  => CAP_ALLOW
         ],
     ],
     'plagiarism/unicheck:changeshowstudentreportsetting'               => [
         'riskbitmask'  => RISK_CONFIG | RISK_SPAM,
         'captype'      => 'write',
-        'contextlevel' => CONTEXT_COURSE,
+        'contextlevel' => CONTEXT_MODULE,
         'archetypes'   => [
             'editingteacher' => CAP_ALLOW,
-            'teacher'        => CAP_PREVENT,
+            'teacher'        => CAP_ALLOW,
             'manager'        => CAP_ALLOW,
-            'coursecreator'  => CAP_ALLOW,
-            'student'        => CAP_PROHIBIT
+            'coursecreator'  => CAP_ALLOW
         ],
     ],
     'plagiarism/unicheck:changemaxsupportedarchivefilescountsetting'   => [
         'riskbitmask'  => RISK_CONFIG,
         'captype'      => 'write',
-        'contextlevel' => CONTEXT_COURSE,
+        'contextlevel' => CONTEXT_MODULE,
         'archetypes'   => [
             'editingteacher' => CAP_ALLOW,
-            'teacher'        => CAP_PREVENT,
+            'teacher'        => CAP_ALLOW,
             'manager'        => CAP_ALLOW,
-            'coursecreator'  => CAP_ALLOW,
-            'student'        => CAP_PROHIBIT
+            'coursecreator'  => CAP_ALLOW
         ],
     ],
     'plagiarism/unicheck:changesentstudentreportsetting'               => [
         'riskbitmask'  => RISK_CONFIG | RISK_SPAM,
         'captype'      => 'write',
-        'contextlevel' => CONTEXT_COURSE,
+        'contextlevel' => CONTEXT_MODULE,
         'archetypes'   => [
             'editingteacher' => CAP_ALLOW,
-            'teacher'        => CAP_PREVENT,
+            'teacher'        => CAP_ALLOW,
             'manager'        => CAP_ALLOW,
-            'coursecreator'  => CAP_ALLOW,
-            'student'        => CAP_PROHIBIT
+            'coursecreator'  => CAP_ALLOW
         ],
     ]
 ];

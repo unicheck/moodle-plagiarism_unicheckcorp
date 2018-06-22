@@ -14,26 +14,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * version.php
+ * tasks.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @author      Andrew Chirskiy <a.chirskiy@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
-if (!isset($plugin)) {
-    $plugin = new stdClass();
+if (!defined('MOODLE_INTERNAL')) {
+    die('Direct access to this script is forbidden.');
 }
 
-$plugin->version = 2018021515; // YYYYMMDDVV.
-$plugin->requires = 2017051501; // Requires Moodle 3.3 .
-$plugin->maturity = MATURITY_STABLE;
-
-$plugin->component = 'plagiarism_unicheck';
-$plugin->release = '2.3.1 (Build: 20180618)'; // Human-friendly version name.
-$plugin->dependencies = [
-    'mod_assign' => ANY_VERSION
+$tasks = [
+    [
+        'classname' => '\plagiarism_unicheck\task\sync_frozen_task',
+        'blocking'  => 0,
+        'minute'    => '*',
+        'hour'      => '*/5',
+        'day'       => '*',
+        'dayofweek' => '*',
+        'month'     => '*',
+        'disabled'  => 1
+    ]
 ];
