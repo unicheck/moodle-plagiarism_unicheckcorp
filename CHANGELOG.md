@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.3.1] - 2018-06-18
+### Added
+- Ability to handle files and checks that froze
+
+### Changed
+- Default teacher's capabilities for plugin settings
+
 ## [2.3.0] - 2018-04-16
 ### Added
 - Self-plagiarism excluding
@@ -94,6 +101,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Change validation mode
 - Massive refactoring comparing to Unplag plugin
 
+[2.3.1]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.3.1
 [2.3.0]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.3.0
 [2.2.18]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.2.18
 [2.2.17]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.2.17
