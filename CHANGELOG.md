@@ -4,9 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.3.2] - 2018-08-01
+### Changed
+- Reset plagiarism detection status in workshop when switched from Assessment phase to Submission phase
+
 ## [1.3.1] - 2018-06-29
 ### Fixed
-- Default value for type of check comparison 
+- Default value for type of check comparison
 
 ## [1.3.0] - 2018-04-18
 ### Added
@@ -74,6 +78,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Change validation mode
 - Massive refactoring comparing to Unplag plugin
 
+[1.3.2]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v1.3.2
+[1.3.1]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v1.3.1
 [1.3.0]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v1.3.0
 [1.2.2]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v1.2.2
 [1.2.1]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v1.2.1

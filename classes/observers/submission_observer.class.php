@@ -60,8 +60,6 @@ class submission_observer extends abstract_observer {
      * @return bool
      */
     public function status_updated(unicheck_core $core, base $event) {
-
-        global $DB;
         if (!isset($event->other['newstatus'])) {
             return false;
         }
@@ -85,8 +83,7 @@ class submission_observer extends abstract_observer {
                 $ids[] = $internalfile->id;
             }
 
-            $allrecordssql = implode(',', $ids);
-            $DB->delete_records_select(UNICHECK_FILES_TABLE, "id IN ($allrecordssql) OR parent_id IN ($allrecordssql)");
+            unicheck_file_provider::delete_by_ids($ids);
         }
 
         return true;

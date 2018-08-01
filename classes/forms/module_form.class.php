@@ -50,8 +50,10 @@ require_once($CFG->libdir . '/formslib.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class module_form extends moodleform {
+
     /** @var bool */
     private $internalusage = false;
+
     /** @var string */
     private $modname = '';
 
