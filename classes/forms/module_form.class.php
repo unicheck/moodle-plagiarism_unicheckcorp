@@ -152,6 +152,7 @@ class module_form extends moodleform {
 
         $setting = unicheck_settings::SOURCES_FOR_COMPARISON;
         $elem = $mform->addElement('select', $setting, plagiarism_unicheck::trans($setting), $checktypedata);
+        $defaultsforfield($mform, $setting, UNICHECK_CHECK_TYPE_WEB);
         $mform->addHelpButton($setting, $setting, UNICHECK_PLAGIN_NAME);
         if (!$this->has_change_capability($setting)) {
             $elem->freeze();
