@@ -59,7 +59,6 @@ class unicheck_api {
      * FILE_UPLOAD
      */
     const FILE_UPLOAD = 'file/async_upload';
-
     /**
      * TRACK_UPLOAD
      */
