@@ -55,6 +55,11 @@ class unicheck_adhoc {
      */
     public static function upload(\stored_file $file, unicheck_core $ucore) {
         $plagiarismfile = $ucore->get_plagiarism_entity($file)->get_internal_file();
+        // Check if file already uploaded.
+        if (isset($plagiarismfile->external_file_uuid) && $plagiarismfile->external_file_uuid) {
+            return false;
+        }
+
         $plagiarismfile->state = unicheck_file_state::UPLOADING;
         $plagiarismfile->errorresponse = null;
 
