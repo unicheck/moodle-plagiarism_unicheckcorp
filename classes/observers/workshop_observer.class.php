@@ -27,8 +27,10 @@ namespace plagiarism_unicheck\classes\observers;
 
 use core\event\base;
 use plagiarism_unicheck;
+use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\unicheck_adhoc;
 use plagiarism_unicheck\classes\unicheck_core;
+use plagiarism_unicheck\classes\unicheck_workshop;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -44,29 +46,70 @@ if (!defined('MOODLE_INTERNAL')) {
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class workshop_observer extends abstract_observer {
+
     /**
-     * handle_event
+     * handle event
      *
      * @param unicheck_core $core
      * @param base          $event
      */
     public function phase_switched(unicheck_core $core, base $event) {
+        if (empty($event->other['workshopphase'])) {
+            return;
+        }
 
-        if (!empty($event->other['workshopphase'])
-            && $event->other['workshopphase'] == UNICHECK_WORKSHOP_ASSESSMENT_PHASE
-        ) { // Assessment phase.
-            $ufiles = plagiarism_unicheck::get_area_files($event->contextid, UNICHECK_WORKSHOP_FILES_AREA);
-            $assignfiles = get_file_storage()->get_area_files($event->contextid,
-                'mod_workshop', 'submission_attachment', false, null, false
-            );
+        switch ($event->other['workshopphase']) {
+            case UNICHECK_WORKSHOP_SUBMISSION_PHASE:
+                $this->submission_phase($core, $event);
+                break;
+            case UNICHECK_WORKSHOP_ASSESSMENT_PHASE:
+                $this->assessment_phase($core, $event);
+                break;
+        }
+    }
 
-            $files = array_merge($ufiles, $assignfiles);
+    /**
+     * handle Submission phase
+     *
+     * @param unicheck_core $core
+     * @param base          $event
+     */
+    public function submission_phase(unicheck_core $core, base $event) {
+        if (!$event->relateduserid) {
+            $core->enable_teamsubmission();
+        } else {
+            $core->userid = $event->relateduserid;
+        }
 
-            if (!empty($files)) {
-                foreach ($files as $file) {
-                    $core->userid = $file->get_userid();
-                    unicheck_adhoc::upload($file, $core);
-                }
+        $unplagfiles = plagiarism_unicheck::get_area_files($event->contextid, UNICHECK_WORKSHOP_FILES_AREA);
+        $workshopfiles = unicheck_workshop::get_area_files($event->contextid);
+        $files = array_merge($unplagfiles, $workshopfiles);
+
+        $ids = [];
+        foreach ($files as $file) {
+            $plagiarismentity = $core->get_plagiarism_entity($file);
+            $internalfile = $plagiarismentity->get_internal_file();
+            $ids[] = $internalfile->id;
+        }
+
+        unicheck_file_provider::delete_by_ids($ids);
+    }
+
+    /**
+     * handle Assessment phase
+     *
+     * @param unicheck_core $core
+     * @param base          $event
+     */
+    public function assessment_phase(unicheck_core $core, base $event) {
+        $unplagfiles = plagiarism_unicheck::get_area_files($event->contextid, UNICHECK_WORKSHOP_FILES_AREA);
+        $workshopfiles = unicheck_workshop::get_area_files($event->contextid);
+        $files = array_merge($unplagfiles, $workshopfiles);
+
+        if (!empty($files)) {
+            foreach ($files as $file) {
+                $core->userid = $file->get_userid();
+                unicheck_adhoc::upload($file, $core);
             }
         }
     }
