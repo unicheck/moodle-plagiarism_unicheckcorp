@@ -148,11 +148,11 @@ class unicheck_upload_task extends unicheck_abstract_task {
             foreach ($fileforprocessing as $item) {
                 try {
                     $this->process_archive_item($item);
+                    unicheck_archive::unlink($item['path']);
                 } catch (\Exception $exception) {
                     mtrace("File " . $item['filename'] . " processing error: " . $exception->getMessage());
-                    continue;
-                } finally {
                     unicheck_archive::unlink($item['path']);
+                    continue;
                 }
             }
         } catch (\Exception $exception) {
