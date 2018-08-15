@@ -29,7 +29,6 @@ use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\task\unicheck_check_starter;
 use plagiarism_unicheck\classes\task\unicheck_upload_task;
-use plagiarism_unicheck\event\plagiarism_entity_accepted;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -55,6 +54,17 @@ class unicheck_adhoc {
      */
     public static function upload(\stored_file $file, unicheck_core $ucore) {
         $plagiarismfile = $ucore->get_plagiarism_entity($file)->get_internal_file();
+        // Check if document file already uploaded.
+        if (isset($plagiarismfile->external_file_uuid) && $plagiarismfile->external_file_uuid) {
+            return false;
+        }
+
+        // Check if archive file already uploaded.
+        if ($plagiarismfile->type === unicheck_plagiarism_entity::TYPE_ARCHIVE
+            && $plagiarismfile->state !== unicheck_file_state::CREATED) {
+            return false;
+        }
+
         $plagiarismfile->state = unicheck_file_state::UPLOADING;
         $plagiarismfile->errorresponse = null;
 
