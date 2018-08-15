@@ -146,7 +146,14 @@ class unicheck_upload_task extends unicheck_abstract_task {
             archive_files_unpacked::create_from_plagiarismfile($this->internalfile)->trigger();
 
             foreach ($fileforprocessing as $item) {
-                $this->process_archive_item($item);
+                try {
+                    $this->process_archive_item($item);
+                } catch (\Exception $exception) {
+                    mtrace("File " . $item['filename'] . " processing error: " . $exception->getMessage());
+                    continue;
+                } finally {
+                    unicheck_archive::unlink($item['path']);
+                }
             }
         } catch (\Exception $exception) {
             if ($this->internalfile) {
@@ -187,8 +194,6 @@ class unicheck_upload_task extends unicheck_abstract_task {
         }
 
         unset($plagiarismentity, $content);
-
-        unicheck_archive::unlink($item['path']);
     }
 
     /**

@@ -218,7 +218,7 @@ class unicheck_file_provider {
             ) AND UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 DAY )) > timesubmitted "
             . "AND type = '"
             . unicheck_plagiarism_entity::TYPE_ARCHIVE
-            ."'";
+            . "'";
 
         return $DB->get_records_select(
             UNICHECK_FILES_TABLE,
@@ -240,5 +240,19 @@ class unicheck_file_provider {
             $dbobjectfile->external_file_id = $apiobjectcheck->file_id;
         }
         unicheck_check_helper::check_complete($dbobjectfile, $apiobjectcheck);
+    }
+
+    /**
+     * Delete plagiarism files by id array
+     *
+     * @param array $ids
+     */
+    public static function delete_by_ids($ids) {
+        global $DB;
+        if (empty($ids)) {
+            return;
+        }
+        $allrecordssql = implode(',', $ids);
+        $DB->delete_records_select(UNICHECK_FILES_TABLE, "id IN ($allrecordssql) OR parent_id IN ($allrecordssql)");
     }
 }
