@@ -158,8 +158,8 @@ class module_form extends moodleform {
             $elem->freeze();
         }
 
-        $addtextelem(unicheck_settings::SENSITIVITY_SETTING_NAME, 0);
-        $addtextelem(unicheck_settings::WORDS_SENSITIVITY, 8);
+        $addtextelem(unicheck_settings::SENSITIVITY_SETTING_NAME, unicheck_settings::$defaultsensitivity);
+        $addtextelem(unicheck_settings::WORDS_SENSITIVITY, unicheck_settings::$defaultwordssensitivity);
         $addyesnoelem(unicheck_settings::EXCLUDE_CITATIONS, true, 1);
         $addyesnoelem(unicheck_settings::SHOW_STUDENT_SCORE, true, 0);
         $addyesnoelem(unicheck_settings::SHOW_STUDENT_REPORT, true, 0);
@@ -169,8 +169,12 @@ class module_form extends moodleform {
 
         $mform::registerRule('range', null, new range_rule());
 
-        $mform->addRule(unicheck_settings::WORDS_SENSITIVITY, 'Invalid value range. Allowed 8-999',
-            'range', ['min' => 8, 'max' => 999], 'server'
+        $mform->addRule(
+            unicheck_settings::WORDS_SENSITIVITY,
+            "Invalid value range. Allowed " . unicheck_settings::$defaultwordssensitivity . "-999",
+            'range',
+            ['min' => unicheck_settings::$defaultwordssensitivity, 'max' => 999],
+            'server'
         );
 
         $min = unicheck_archive::MIN_SUPPORTED_FILES_COUNT;
