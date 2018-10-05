@@ -93,6 +93,16 @@ class unicheck_settings {
     const DRAFT_SUBMIT = 'draft_submit';
 
     /**
+     * @var int
+     */
+    public static $defaultsensitivity = 0;
+
+    /**
+     * @var int
+     */
+    public static $defaultwordssensitivity = 8;
+
+    /**
      * @var array
      */
     private static $supportedchecktypes = [
