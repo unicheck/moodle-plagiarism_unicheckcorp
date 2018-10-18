@@ -32,6 +32,7 @@ use plagiarism_unicheck\classes\entities\unicheck_archive;
 use plagiarism_unicheck\classes\exception\unicheck_exception;
 use plagiarism_unicheck\classes\permissions\capability;
 use plagiarism_unicheck\classes\plagiarism\unicheck_file;
+use plagiarism_unicheck\classes\services\storage\interfaces\pluginfile_url_interface;
 use plagiarism_unicheck\event\api_user_created;
 
 if (!defined('MOODLE_INTERNAL')) {
@@ -196,10 +197,11 @@ class unicheck_core {
     /**
      * create_file_from_content
      *
-     * @param base $event
+     * @param base                          $event
+     * @param pluginfile_url_interface|null $pluginfileurl
      * @return null|\stored_file
      */
-    public function create_file_from_content(base $event) {
+    public function create_file_from_content(base $event, pluginfile_url_interface $pluginfileurl = null) {
         global $USER;
 
         if (empty($event->other['content'])) {
@@ -233,7 +235,12 @@ class unicheck_core {
             $this->delete_old_file_from_content($storedfile);
         }
 
-        return get_file_storage()->create_file_from_string($filerecord, $event->other['content']);
+        $content = $event->other['content'];
+        if ($pluginfileurl instanceof pluginfile_url_interface) {
+            $content = $pluginfileurl->rewrite($content, $event->contextid, $event->objectid);
+        }
+
+        return get_file_storage()->create_file_from_string($filerecord, $content);
     }
 
     /**

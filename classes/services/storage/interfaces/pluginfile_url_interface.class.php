@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * online_text_observer.class.php
+ * pluginfile_url_contract.class.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
@@ -23,19 +23,14 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plagiarism_unicheck\classes\observers;
-
-use core\event\base;
-use plagiarism_unicheck\classes\services\storage\interfaces\pluginfile_url_interface;
-use plagiarism_unicheck\classes\unicheck_core;
-use stored_file;
+namespace plagiarism_unicheck\classes\services\storage\interfaces;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
 /**
- * Class online_text_observer
+ * Interface pluginfile_url_interface
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
@@ -43,29 +38,43 @@ if (!defined('MOODLE_INTERNAL')) {
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class online_text_observer extends abstract_observer {
+interface pluginfile_url_interface {
+
     /**
-     * handle_event
+     * Rewrite @@PLUGINFILE@@ URLs in content
      *
-     * @param unicheck_core                 $core
-     * @param base                          $event
-     * @param pluginfile_url_interface|null $pluginfileurl
+     * @param string $content
+     * @param int    $contextid
+     * @param int    $itemid
+     * @return string
      */
-    public function assessable_uploaded(unicheck_core $core, base $event, pluginfile_url_interface $pluginfileurl = null) {
-        if (empty($event->other['content'])) {
-            return;
-        }
+    public function rewrite($content, $contextid, $itemid);
 
-        $file = $core->create_file_from_content($event, $pluginfileurl);
+    /**
+     * Set processor filename
+     *
+     * @param string $processorfilename
+     */
+    public function set_processorfilename(string $processorfilename);
 
-        if (self::is_submition_draft($event)) {
-            return;
-        }
+    /**
+     * Set component type
+     *
+     * @param string $component
+     */
+    public function set_component(string $component);
 
-        if ($file instanceof stored_file) {
-            $this->add_after_handle_task($file);
-        }
+    /**
+     * Set filearea
+     *
+     * @param string $filearea
+     */
+    public function set_filearea(string $filearea);
 
-        $this->after_handle_event($core);
-    }
+    /**
+     * Set result URLs options
+     *
+     * @param array $options
+     */
+    public function set_options(array $options);
 }
