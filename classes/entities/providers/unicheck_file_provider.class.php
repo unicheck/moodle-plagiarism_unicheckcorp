@@ -186,11 +186,9 @@ class unicheck_file_provider {
      */
     public static function delete_by_ids($ids) {
         global $DB;
-
         if (empty($ids)) {
             return;
         }
-
         $allrecordssql = implode(',', $ids);
         $DB->delete_records_select(UNICHECK_FILES_TABLE, "id IN ($allrecordssql) OR parent_id IN ($allrecordssql)");
     }
