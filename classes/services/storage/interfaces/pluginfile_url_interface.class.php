@@ -55,21 +55,21 @@ interface pluginfile_url_interface {
      *
      * @param string $processorfilename
      */
-    public function set_processorfilename(string $processorfilename);
+    public function set_processorfilename($processorfilename);
 
     /**
      * Set component type
      *
      * @param string $component
      */
-    public function set_component(string $component);
+    public function set_component($component);
 
     /**
      * Set filearea
      *
      * @param string $filearea
      */
-    public function set_filearea(string $filearea);
+    public function set_filearea($filearea);
 
     /**
      * Set result URLs options

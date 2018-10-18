@@ -87,7 +87,7 @@ class pluginfile_url implements pluginfile_url_interface {
      *
      * @param string $processorfilename
      */
-    public function set_processorfilename(string $processorfilename) {
+    public function set_processorfilename($processorfilename) {
         $this->processorfilename = $processorfilename;
     }
 
@@ -96,7 +96,7 @@ class pluginfile_url implements pluginfile_url_interface {
      *
      * @param string $component
      */
-    public function set_component(string $component) {
+    public function set_component($component) {
         $this->component = $component;
     }
 
@@ -105,7 +105,7 @@ class pluginfile_url implements pluginfile_url_interface {
      *
      * @param string $filearea
      */
-    public function set_filearea(string $filearea) {
+    public function set_filearea($filearea) {
         $this->filearea = $filearea;
     }
 
