@@ -61,9 +61,9 @@ class module_form extends moodleform {
     /**
      * unicheck_defaults_form constructor.
      *
-     * @param object  $mform - Moodle form
-     * @param string|null  $modname
-     * @param context $context
+     * @param object      $mform - Moodle form
+     * @param string|null $modname
+     * @param context     $context
      */
     public function __construct($mform = null, $modname = null, context $context = null) {
         global $PAGE;
@@ -203,24 +203,24 @@ class module_form extends moodleform {
             if (isset($values[unicheck_settings::SENSITIVITY_SETTING_NAME]) &&
                 $values[unicheck_settings::SENSITIVITY_SETTING_NAME] < 0
             ) {
-                $errors[unicheck_settings::SENSITIVITY_SETTING_NAME] =
-                    plagiarism_unicheck::trans('validation:min_numeric_value', 0);
+                $errors[unicheck_settings::SENSITIVITY_SETTING_NAME]
+                    = plagiarism_unicheck::trans('validation:min_numeric_value', 0);
             }
 
             // Number could not be less than 8.
             if (isset($values[unicheck_settings::WORDS_SENSITIVITY])
                 && $values[unicheck_settings::WORDS_SENSITIVITY] < unicheck_settings::$defaultwordssensitivity
             ) {
-                $errors[unicheck_settings::WORDS_SENSITIVITY] = plagiarism_unicheck::trans('validation:min_numeric_value',
-                    unicheck_settings::$defaultwordssensitivity);
+                $errors[unicheck_settings::WORDS_SENSITIVITY]
+                    = plagiarism_unicheck::trans('validation:min_numeric_value', unicheck_settings::$defaultwordssensitivity);
             }
 
             // Number could not be less than 1.
             if (isset($values[unicheck_settings::MAX_SUPPORTED_ARCHIVE_FILES_COUNT])
                 && $values[unicheck_settings::MAX_SUPPORTED_ARCHIVE_FILES_COUNT] < unicheck_archive::MIN_SUPPORTED_FILES_COUNT
             ) {
-                $errors[unicheck_settings::MAX_SUPPORTED_ARCHIVE_FILES_COUNT] =
-                    plagiarism_unicheck::trans('validation:min_numeric_value', unicheck_archive::MIN_SUPPORTED_FILES_COUNT);
+                $errors[unicheck_settings::MAX_SUPPORTED_ARCHIVE_FILES_COUNT]
+                    = plagiarism_unicheck::trans('validation:min_numeric_value', unicheck_archive::MIN_SUPPORTED_FILES_COUNT);
             }
 
             return !empty($errors) ? $errors : true;
