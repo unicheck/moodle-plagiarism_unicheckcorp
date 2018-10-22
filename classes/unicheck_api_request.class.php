@@ -110,13 +110,16 @@ class unicheck_api_request {
         $this->set_request_data($data);
         $this->set_action($method);
 
-        $domain = [];
-        preg_match('/\/([a-zA-Z0-9-\.]+)\//', new \moodle_url('/'), $domain);
+        try {
+            $domain = (new \moodle_url('/'))->get_host();
+        } catch (\Exception $exception) {
+            $domain = 'undefined';
+        }
 
         $ch = new \curl();
         $ch->setHeader($this->gen_oauth_headers());
         $ch->setHeader('Content-Type: application/json');
-        $ch->setHeader('Plugin-Identifier: ' . $domain[1]);
+        $ch->setHeader('Plugin-Identifier: ' . $domain);
         $ch->setHeader('Plugin-Version: ' . get_config(UNICHECK_PLAGIN_NAME, 'version'));
         $ch->setHeader('Plugin-Type: ' . UNICHECK_PLAGIN_NAME);
         $ch->setopt([

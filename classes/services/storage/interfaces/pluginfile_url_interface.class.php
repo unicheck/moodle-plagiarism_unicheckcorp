@@ -13,9 +13,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
 /**
- * range_rule.class.php
+ * pluginfile_url_contract.class.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
@@ -24,32 +23,58 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plagiarism_unicheck\classes\forms\rules;
+namespace plagiarism_unicheck\classes\services\storage\interfaces;
 
 if (!defined('MOODLE_INTERNAL')) {
-    die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
+    die('Direct access to this script is forbidden.');
 }
 
 /**
- * Class range_rule
+ * Interface pluginfile_url_interface
  *
+ * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class range_rule extends \HTML_QuickForm_Rule {
-    /**
-     * validate
-     *
-     * @param int        $value Value to check
-     * @param array|null $options
-     *
-     * @return bool true if value in valid range
-     */
-    public function validate($value, $options = null) {
-        if ($value < $options['min'] || $value > $options['max']) {
-            return false;
-        }
+interface pluginfile_url_interface {
 
-        return true;
-    }
+    /**
+     * Rewrite @@PLUGINFILE@@ URLs in content
+     *
+     * @param string $content
+     * @param int    $contextid
+     * @param int    $itemid
+     * @return string
+     */
+    public function rewrite($content, $contextid, $itemid);
+
+    /**
+     * Set processor filename
+     *
+     * @param string $processorfilename
+     */
+    public function set_processorfilename($processorfilename);
+
+    /**
+     * Set component type
+     *
+     * @param string $component
+     */
+    public function set_component($component);
+
+    /**
+     * Set filearea
+     *
+     * @param string $filearea
+     */
+    public function set_filearea($filearea);
+
+    /**
+     * Set result URLs options
+     *
+     * @param array $options
+     */
+    public function set_options(array $options);
 }

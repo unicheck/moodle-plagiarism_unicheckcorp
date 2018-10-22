@@ -26,6 +26,7 @@
 namespace plagiarism_unicheck\classes\observers;
 
 use core\event\base;
+use plagiarism_unicheck\classes\services\storage\interfaces\pluginfile_url_interface;
 use plagiarism_unicheck\classes\unicheck_core;
 use stored_file;
 
@@ -46,15 +47,16 @@ class online_text_observer extends abstract_observer {
     /**
      * handle_event
      *
-     * @param unicheck_core $core
-     * @param base          $event
+     * @param unicheck_core            $core
+     * @param base                     $event
+     * @param pluginfile_url_interface $pluginfileurl
      */
-    public function assessable_uploaded(unicheck_core $core, base $event) {
+    public function assessable_uploaded(unicheck_core $core, base $event, pluginfile_url_interface $pluginfileurl = null) {
         if (empty($event->other['content'])) {
             return;
         }
 
-        $file = $core->create_file_from_content($event);
+        $file = $core->create_file_from_content($event, $pluginfileurl);
 
         if (self::is_submition_draft($event)) {
             return;
