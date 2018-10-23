@@ -158,19 +158,26 @@ class module_form extends moodleform {
             $elem->freeze();
         }
 
-        $addtextelem(unicheck_settings::SENSITIVITY_SETTING_NAME, 0);
-        $addtextelem(unicheck_settings::WORDS_SENSITIVITY, 8);
+        $addtextelem(unicheck_settings::SENSITIVITY_SETTING_NAME, unicheck_settings::$defaultsensitivity);
+        $addtextelem(unicheck_settings::WORDS_SENSITIVITY, unicheck_settings::$defaultwordssensitivity);
         $addyesnoelem(unicheck_settings::EXCLUDE_CITATIONS, true, 1);
         $addyesnoelem(unicheck_settings::SHOW_STUDENT_SCORE, true, 0);
         $addyesnoelem(unicheck_settings::SHOW_STUDENT_REPORT, true, 0);
         $addyesnoelem(unicheck_settings::SENT_STUDENT_REPORT, true, 0);
 
-        $addtextelem(unicheck_settings::MAX_SUPPORTED_ARCHIVE_FILES_COUNT, 10);
+        $addtextelem(
+            unicheck_settings::MAX_SUPPORTED_ARCHIVE_FILES_COUNT,
+            unicheck_archive::DEFAULT_SUPPORTED_FILES_COUNT
+        );
 
         $mform::registerRule('range', null, new range_rule());
 
-        $mform->addRule(unicheck_settings::WORDS_SENSITIVITY, 'Invalid value range. Allowed 8-999',
-            'range', ['min' => 8, 'max' => 999], 'server'
+        $mform->addRule(
+            unicheck_settings::WORDS_SENSITIVITY,
+            "Invalid value range. Allowed " . unicheck_settings::$defaultwordssensitivity . "-999",
+            'range',
+            ['min' => unicheck_settings::$defaultwordssensitivity, 'max' => 999],
+            'server'
         );
 
         $min = unicheck_archive::MIN_SUPPORTED_FILES_COUNT;
@@ -183,6 +190,35 @@ class module_form extends moodleform {
             'server',
             true
         );
+
+        $mform->addFormRule(function($values) {
+            // Number could not be less than 0.
+            $errors = [];
+            if (isset($values[unicheck_settings::SENSITIVITY_SETTING_NAME]) &&
+                $values[unicheck_settings::SENSITIVITY_SETTING_NAME] < 0
+            ) {
+                $errors[unicheck_settings::SENSITIVITY_SETTING_NAME] =
+                    plagiarism_unicheck::trans('validation:min_numeric_value', 0);
+            }
+
+            // Number could not be less than 8.
+            if (isset($values[unicheck_settings::WORDS_SENSITIVITY])
+                && $values[unicheck_settings::WORDS_SENSITIVITY] < unicheck_settings::$defaultwordssensitivity
+            ) {
+                $errors[unicheck_settings::WORDS_SENSITIVITY] = plagiarism_unicheck::trans('validation:min_numeric_value',
+                    unicheck_settings::$defaultwordssensitivity);
+            }
+
+            // Number could not be less than 1.
+            if (isset($values[unicheck_settings::MAX_SUPPORTED_ARCHIVE_FILES_COUNT])
+                && $values[unicheck_settings::MAX_SUPPORTED_ARCHIVE_FILES_COUNT] < unicheck_archive::MIN_SUPPORTED_FILES_COUNT
+            ) {
+                $errors[unicheck_settings::MAX_SUPPORTED_ARCHIVE_FILES_COUNT] =
+                    plagiarism_unicheck::trans('validation:min_numeric_value', unicheck_archive::MIN_SUPPORTED_FILES_COUNT);
+            }
+
+            return !empty($errors) ? $errors : true;
+        });
 
         if (!$this->internalusage) {
             $this->add_action_buttons(true);

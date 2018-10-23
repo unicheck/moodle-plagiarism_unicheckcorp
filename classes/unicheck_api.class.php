@@ -289,14 +289,12 @@ class unicheck_api {
         $options['exclude_self_plagiarism'] = 1;
 
         $similaritysensitivity = unicheck_settings::get_activity_settings($cmid, unicheck_settings::SENSITIVITY_SETTING_NAME);
-        if (!empty($similaritysensitivity)) {
-            $options['sensitivity'] = $similaritysensitivity / 100;
-        }
+        $options['sensitivity'] =
+            (is_numeric($similaritysensitivity) ? $similaritysensitivity : unicheck_settings::$defaultsensitivity) / 100;
 
         $wordssensitivity = unicheck_settings::get_activity_settings($cmid, unicheck_settings::WORDS_SENSITIVITY);
-        if (!empty($wordssensitivity)) {
-            $options['words_sensitivity'] = $wordssensitivity;
-        }
+        $options['words_sensitivity'] =
+            is_numeric($wordssensitivity) ? $wordssensitivity : unicheck_settings::$defaultwordssensitivity;
 
         $sendstudentreport = (bool)unicheck_settings::get_activity_settings($cmid, unicheck_settings::SENT_STUDENT_REPORT);
         $showstudentscore = (bool)unicheck_settings::get_activity_settings($cmid, unicheck_settings::SHOW_STUDENT_SCORE);

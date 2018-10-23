@@ -37,6 +37,7 @@ use plagiarism_unicheck\classes\observers\file_observer;
 use plagiarism_unicheck\classes\observers\online_text_observer;
 use plagiarism_unicheck\classes\observers\submission_observer;
 use plagiarism_unicheck\classes\observers\workshop_observer;
+use plagiarism_unicheck\classes\services\storage\pluginfile_url;
 use plagiarism_unicheck\classes\unicheck_core;
 
 /**
@@ -101,7 +102,11 @@ class plagiarism_unicheck_observer {
 
         $core = self::get_core($event);
 
-        online_text_observer::instance()->assessable_uploaded($core, $event);
+        $pluginfileurl = new pluginfile_url();
+        $pluginfileurl->set_component($event->component);
+        $pluginfileurl->set_filearea('post');
+
+        online_text_observer::instance()->assessable_uploaded($core, $event, $pluginfileurl);
         file_observer::instance()->file_submitted($core, $event);
     }
 
