@@ -56,7 +56,6 @@ div.un_report div:first-child {
 .un_link {
     display: flex;
     flex-direction: column;
-    justify-content: stretch;
     width: 100%;
     margin-bottom: 6px;
 }
@@ -104,7 +103,8 @@ div.un_report div:first-child {
     border-radius: 2px;
     font-size: 16px;
 }
-.report_text,.start_scan_text {
+.report_text,
+.start_scan_text {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -116,7 +116,8 @@ div.un_report div:first-child {
     font-size: 14px;
     color: #fff;
 }
-.cheating,.un_processing_error {
+.cheating,
+.un_processing_error {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -135,7 +136,8 @@ div.un_report div:first-child {
     font-family: 'Open Sans', sans-serif;
     transition: all ease-in-out 0.3s;
 }
-.only-xxl-width,.only-xl-width {
+.only-xxl-width,
+.only-xl-width {
     display: none;
 }
 
