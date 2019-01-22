@@ -123,6 +123,7 @@ $string['web_and_my_library'] = 'Internet + Library';
 $string['external_database'] = 'External database';
 $string['web_and_my_lib_and_external_db'] = 'Internet + Library + External database';
 $string['reportready'] = 'Report ready';
+$string['ui:reportlink'] = '<span class="only-xxl-width">Open&nbsp;</span>Report';
 $string['generalinfo'] = 'General information';
 $string['similarity_sensitivity'] = 'Exclude sources with a match less than (%)';
 $string['similarity_sensitivity_help'] = 'Sources which have less than specified similarity % will not be included in the total similarity score.';
@@ -141,6 +142,7 @@ $string['max_100000_words'] = 'File(s) should have no more than 100 000 words an
 $string['max_supported_archive_files_count'] = 'Maximum number of files to be checked in archive';
 $string['max_supported_archive_files_count_help'] = 'Specify maximum number of files to be reviewed by Unicheck. System will pick only file types supported by Unicheck and will process files one by one. Supported formats: ZIP, RAR.';
 $string['uploading'] = 'Uploading';
+$string['ui:possiblecheating'] = 'Possible cheating';
 // Capabilities.
 $string['unicheck:enable'] = 'Allow to enable/disable Unicheck inside an activity';
 $string['unicheck:resetfile'] = 'Allow to resubmit the file to Unicheck after an error occurred';

@@ -26,6 +26,7 @@
 namespace plagiarism_unicheck\classes\helpers;
 
 use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
+use plagiarism_unicheck\classes\services\storage\unicheck_file_metadata;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\unicheck_api;
 use plagiarism_unicheck\classes\unicheck_core;
@@ -57,6 +58,7 @@ class unicheck_check_helper {
      * @param \stdClass $plagiarismfile
      * @param \stdClass $check
      * @param int       $progress
+     *
      * @return bool
      */
     public static function check_complete(\stdClass &$plagiarismfile, \stdClass $check, $progress = 100) {
@@ -88,6 +90,16 @@ class unicheck_check_helper {
                     archive_files_checked::create_from_plagiarismfile($plagiarismfile)->trigger();
                     break;
                 default:
+                    $charreplcount = (int)$check->report->cheating->char_replacement_count;
+                    $charreplwordscount = (int)$check->report->cheating->char_replacement_words_count;
+
+                    unicheck_file_provider::add_metadata($plagiarismfile->id, [
+                        unicheck_file_metadata::CHAR_COUNT                             => (int)$check->report->char_count,
+                        unicheck_file_metadata::CHEATING_CHAR_REPLACEMENTS_COUNT       => $charreplcount,
+                        unicheck_file_metadata::CHEATING_CHAR_REPLACEMENTS_WORDS_COUNT => $charreplwordscount,
+
+                    ]);
+
                     file_similarity_check_completed::create_from_plagiarismfile($plagiarismfile)->trigger();
                     break;
             }
