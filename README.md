@@ -9,7 +9,7 @@
 
 | Moodle | PHP | Unicheck plugin | Branch | Changelog
 | :---: | :---: | :---: | :---: | :---: |
-| 3.3 - 3.5 | 5.6 - 7.1 | 2.x.x | [release/2.x](/unicheck/moodle-plagiarism_unicheckcorp/tree/release/2.x) | [link](/unicheck/moodle-plagiarism_unicheckcorp/blob/release/2.x/CHANGELOG.md)
+| 3.3 - 3.6 | 5.6 - 7.2 | 2.x.x | [release/2.x](/unicheck/moodle-plagiarism_unicheckcorp/tree/release/2.x) | [link](/unicheck/moodle-plagiarism_unicheckcorp/blob/release/2.x/CHANGELOG.md)
 | 2.7 - 3.2 | 5.4 - 7.1 | 1.x.x | [release/1.x](/unicheck/moodle-plagiarism_unicheckcorp/tree/release/1.x) | [link](/unicheck/moodle-plagiarism_unicheckcorp/blob/release/1.x/CHANGELOG.md)
 
 

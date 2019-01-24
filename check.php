@@ -24,18 +24,26 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use plagiarism_unicheck\classes\unicheck_assign;
-use plagiarism_unicheck\classes\permissions\capability;
-
 require_once(dirname(__FILE__) . '/../../config.php');
+
+if (!defined('MOODLE_INTERNAL')) {
+    die('Direct access to this script is forbidden.');
+}
+
+use plagiarism_unicheck\classes\permissions\capability;
+use plagiarism_unicheck\classes\unicheck_assign;
+use plagiarism_unicheck\classes\unicheck_core;
+
+require_once($CFG->dirroot . '/mod/assign/locallib.php');
 require_once(dirname(__FILE__) . '/lib.php');
 
-global $PAGE, $CFG;
-
 $cmid = required_param('cmid', PARAM_INT); // Course Module ID
-$pf = required_param('pf', PARAM_INT); // plagiarism file id.
+$uid = required_param('uid', PARAM_INT); // User ID
+$submissiontype = required_param('submissiontype', PARAM_TEXT); // submission type.
+$pf = optional_param('pf', null, PARAM_INT); // plagiarism file id.
 
 require_sesskey();
+require_login();
 
 $url = new moodle_url(dirname(__FILE__) . '/check.php');
 $cm = get_coursemodule_from_id('', $cmid, 0, false, MUST_EXIST);
@@ -46,17 +54,38 @@ require_login($cm->course, true, $cm);
 $modulecontext = context_module::instance($cmid);
 require_capability(capability::CHECK_FILE, $modulecontext);
 
-unicheck_assign::check_submitted_assignment($pf);
+$ucore = new unicheck_core($cmid, $uid, $cm->modname);
+$fs = get_file_storage();
 
-if ($cm->modname == 'assignment') {
-    $redirect = new moodle_url('/mod/assignment/submissions.php', ['id' => $cmid]);
-} else {
-    if ($cm->modname == UNICHECK_MODNAME_ASSIGN) {
+switch ($cm->modname) {
+    case UNICHECK_MODNAME_ASSIGN:
         $redirect = new moodle_url('/mod/assign/view.php', ['id' => $cmid, 'action' => 'grading']);
-    } else {
-        // TODO: add correct locations for workshop and forum.
+        if ($submissiontype == 'onlinetext' && null == $pf) {
+            $assign = unicheck_assign::get_assign_by_cm($modulecontext);
+            $submission = $assign->get_user_submission($uid, false);
+            $onlinetextsubmission = unicheck_assign::get_onlinetext_submission($submission->id);
+            $user = $DB->get_record("user", ["id" => $uid], '*', MUST_EXIST);
+
+            $storedfile = $ucore->create_file_from_content(
+                trim($onlinetextsubmission->onlinetext),
+                'assign_submission',
+                $modulecontext->id,
+                $submission->id
+            );
+
+            $internalfile = $ucore->get_plagiarism_entity($storedfile)->get_internal_file();
+            $pf = $internalfile->id;
+        }
+        break;
+    case 'assignment':
+        $redirect = new moodle_url('/mod/assignment/submissions.php', ['id' => $cmid]);
+        break;
+    default:
         $redirect = $CFG->wwwroot;
-    }
+}
+
+if ($pf) {
+    unicheck_assign::check_submitted_assignment($pf);
 }
 
 redirect($redirect, plagiarism_unicheck::trans('check_start'));

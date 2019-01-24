@@ -47,4 +47,16 @@ class unicheck_file_metadata {
      * EXTRACTED_SUPPORTED_FILES_FROM_ARCHIVE_COUNT
      */
     const EXTRACTED_SUPPORTED_FILES_FROM_ARCHIVE_COUNT = 'extracted_supported_files_from_archive_count';
+    /**
+     * CHAR_COUNT
+     */
+    const CHAR_COUNT = 'char_count';
+    /**
+     * CHEATING_CHAR_REPLACEMENTS_COUNT
+     */
+    const CHEATING_CHAR_REPLACEMENTS_COUNT = 'cheating_char_replacements_count';
+    /**
+     * CHEATING_CHAR_REPLACEMENTS_WORDS_COUNT
+     */
+    const CHEATING_CHAR_REPLACEMENTS_WORDS_COUNT = 'cheating_char_replacements_words_count';
 }

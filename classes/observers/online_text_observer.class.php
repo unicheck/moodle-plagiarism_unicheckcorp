@@ -56,7 +56,7 @@ class online_text_observer extends abstract_observer {
             return;
         }
 
-        $file = $core->create_file_from_content($event, $pluginfileurl);
+        $file = $core->create_file_from_onlinetext_event($event, $pluginfileurl);
 
         if (self::is_submition_draft($event)) {
             return;
