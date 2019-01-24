@@ -29,7 +29,7 @@ M.plagiarismUnicheck = {
 
 M.plagiarismUnicheck.init = function(Y, contextid) {
     var handleRecord = function(record) {
-        var existing = Y.one('.un_report.fid-' + record.file_id);
+        var existing = Y.one('.un_detect_result.fid-' + record.file_id);
         if (!existing) {
             return;
         }
@@ -81,7 +81,7 @@ M.plagiarismUnicheck.init = function(Y, contextid) {
     };
 
     var collectItems = function() {
-        Y.all('.un_report .un_data').each(function(row) {
+        Y.all('.un_detect_result .un_data').each(function(row) {
             var jsondata = Y.JSON.parse(row.getHTML());
             M.plagiarismUnicheck.items.push(jsondata.fid);
         });

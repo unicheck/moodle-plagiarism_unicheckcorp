@@ -183,3 +183,45 @@ $string['sync_failed'] = 'Try to synchronize unprocessed files';
 $string['upload_error'] = 'File upload error';
 // Validation rules.
 $string['validation:min_numeric_value'] = 'Number could not be less than {$a}';
+// Privacy.
+$string['privacy:metadata:core_files'] = 'Unicheck plugin stores files which have been uploaded by the user to form of activity with Unicheck similarity detecting.';
+
+$string['privacy:metadata:plagiarism_unicheck_files'] = 'Stores submission files information';
+$string['privacy:metadata:plagiarism_unicheck_files:cm'] = 'cm';
+$string['privacy:metadata:plagiarism_unicheck_files:userid'] = 'userid';
+$string['privacy:metadata:plagiarism_unicheck_files:identifier'] = 'identifier';
+$string['privacy:metadata:plagiarism_unicheck_files:check_id'] = 'check_id';
+$string['privacy:metadata:plagiarism_unicheck_files:filename'] = 'filename';
+$string['privacy:metadata:plagiarism_unicheck_files:type'] = 'type';
+$string['privacy:metadata:plagiarism_unicheck_files:reporturl'] = 'reporturl';
+$string['privacy:metadata:plagiarism_unicheck_files:progress'] = 'progress';
+$string['privacy:metadata:plagiarism_unicheck_files:similarityscore'] = 'similarityscore';
+$string['privacy:metadata:plagiarism_unicheck_files:attempt'] = 'attempt';
+$string['privacy:metadata:plagiarism_unicheck_files:errorresponse'] = 'errorresponse';
+$string['privacy:metadata:plagiarism_unicheck_files:timesubmitted'] = 'timesubmitted';
+$string['privacy:metadata:plagiarism_unicheck_files:external_file_id'] = 'external_file_id';
+$string['privacy:metadata:plagiarism_unicheck_files:reportediturl'] = 'reportediturl';
+$string['privacy:metadata:plagiarism_unicheck_files:state'] = 'state';
+$string['privacy:metadata:plagiarism_unicheck_files:external_file_uuid'] = 'external_file_uuid';
+$string['privacy:metadata:plagiarism_unicheck_files:metadata'] = 'metadata';
+
+$string['privacy:metadata:plagiarism_unicheck_users'] = 'Stores submission users information';
+$string['privacy:metadata:plagiarism_unicheck_users:user_id'] = 'user_id';
+$string['privacy:metadata:plagiarism_unicheck_users:external_user_id'] = 'external_user_id';
+$string['privacy:metadata:plagiarism_unicheck_users:external_token'] = 'external_token';
+
+$string['privacy:metadata:plagiarism_external_unicheck_api'] = 'Unicheck API';
+$string['privacy:metadata:plagiarism_external_unicheck_api:domain'] = 'domain';
+$string['privacy:metadata:plagiarism_external_unicheck_api:userid'] = 'User ID';
+$string['privacy:metadata:plagiarism_external_unicheck_api:useremail'] = 'User email';
+$string['privacy:metadata:plagiarism_external_unicheck_api:userfirstname'] = 'User Firstname';
+$string['privacy:metadata:plagiarism_external_unicheck_api:userlastname'] = 'User Lastname';
+$string['privacy:metadata:plagiarism_external_unicheck_api:userscope'] = 'User scope';
+$string['privacy:metadata:plagiarism_external_unicheck_api:fileformat'] = 'Extension of uploaded file';
+$string['privacy:metadata:plagiarism_external_unicheck_api:filedata'] = 'Content of uploaded file';
+$string['privacy:metadata:plagiarism_external_unicheck_api:filename'] = 'Filename of uploaded file';
+$string['privacy:metadata:plagiarism_external_unicheck_api:submissionid'] = 'ID of context in which file will be uploaded. Ignored if incorrect or not exist';
+
+$string['privacy:export:plagiarism_unicheck:plagiarismpath'] = 'Plagiarism detecting';
+$string['privacy:export:plagiarism_unicheck:reportfiledescription'] = 'Unicheck similarity detection result for submitted file with pathnamehash {$a}';
+$string['privacy:export:plagiarism_unicheck:reportcontentdescription'] = 'Unicheck similarity detection result for online text';

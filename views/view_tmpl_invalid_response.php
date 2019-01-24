@@ -33,7 +33,7 @@ if (AJAX_SCRIPT) {
     $PAGE->set_context(null);
 }
 
-$htmlparts[] = '<span class="un_report">';
+$htmlparts[] = '<span class="un_detect_result">';
 $htmlparts[] = sprintf(
     '<a href="%s" class="un_link" target="_blank">' .
     '<img width="69" src="%s" title="%s">' .
