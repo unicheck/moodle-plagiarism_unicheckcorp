@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added 
 - Show cheating indicator
 - The ability to run scans on online text submissions in an assign that was already submitted before unicheck plugin was turned on
+- Privacy API
 
 ### Changed
 - Plugin design
