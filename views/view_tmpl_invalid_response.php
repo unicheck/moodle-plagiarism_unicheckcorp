@@ -33,7 +33,7 @@ if (AJAX_SCRIPT) {
     $PAGE->set_context(null);
 }
 
-$htmlparts[] = '<span class="un_detect_result">';
+$htmlparts[] = '<div class="un_detect_result">';
 $htmlparts[] = sprintf(
     '<a href="%s" class="un_link" target="_blank">' .
     '<img width="69" src="%s" title="%s">' .
@@ -42,7 +42,7 @@ $htmlparts[] = sprintf(
     $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME),
     plagiarism_unicheck::trans('pluginname')
 );
-$htmlparts[] = '</span>';
+$htmlparts[] = '</div>';
 
 $erroresponse = plagiarism_unicheck::error_resp_handler($fileobj->errorresponse);
 $htmlparts[] = sprintf(

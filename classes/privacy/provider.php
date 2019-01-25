@@ -37,6 +37,7 @@ if (interface_exists('\core_plagiarism\privacy\plagiarism_user_provider')) {
     }
 } else {
     //@codingStandardsIgnoreStart
+
     /**
      * This interface exists to provide backwards compatibility with moodle 3.3
      */
@@ -57,8 +58,6 @@ class provider implements
     \core_privacy\local\metadata\provider,
     // This is a plagiarism plugin. It interacts with the plagiarism subsystem rather than with core.
     \core_plagiarism\privacy\plagiarism_provider,
-    // This plugin need to export other data that is not related to one activity module.
-    \core_privacy\local\request\plugin\provider,
     // The Plagiarism subsystem will be called by other components and will forward
     // requests to each plagiarism plugin implementing its APIs.
     user_provider {
@@ -165,13 +164,17 @@ class provider implements
             return;
         }
 
+        if (isset($linkarray['forum'])) {
+            $subcontext = [];
+        }
+
         array_push($subcontext, get_string('privacy:export:plagiarism_unicheck:plagiarismpath', 'plagiarism_unicheck'));
 
         if (isset($linkarray['file'])) {
             self::export_plagiarism_file_report($userid, $context, $subcontext, $linkarray);
         }
 
-        if (isset($linkarray['content'])) {
+        if (isset($linkarray['content']) || isset($linkarray['forum'])) {
             self::export_plagiarism_content_report($userid, $context, $subcontext, $linkarray);
         }
 
@@ -248,12 +251,14 @@ class provider implements
                 FROM {plagiarism_unicheck_files}
                 WHERE userid = :userid and cm = :cmid and identifier = :identifier";
 
-        $report = $DB->get_record_sql($sql, $params);
-        if (!$report) {
+        $reports = $DB->get_records_sql($sql, $params);
+        if (!$reports) {
             return;
         }
 
-        self::export_plagiarism_metadata($report, $context, $subcontext);
+        foreach ($reports as $report) {
+            self::export_plagiarism_metadata($report, $context, $subcontext);
+        }
     }
 
     /**
@@ -294,24 +299,26 @@ class provider implements
                   INNER JOIN {files} f on f.pathnamehash = puf.identifier
                   WHERE puf.userid = :userid AND puf.cm = :cmid AND f.component = :component  AND f.contextid = :contextid";
 
-        $report = $DB->get_record_sql($sql, $params);
-        if (!$report) {
+        $reports = $DB->get_records_sql($sql, $params);
+        if (!$reports) {
             return;
         }
 
-        self::export_plagiarism_metadata($report, $context, $subcontext);
+        foreach ($reports as $report) {
+            self::export_plagiarism_metadata($report, $context, $subcontext);
 
-        if (!$report->identifier) {
-            return;
+            if (!$report->identifier) {
+                return;
+            }
+
+            // Get storage file by report file identifier.
+            $report = get_file_storage()->get_file_by_hash($report->identifier);
+            if (!$report) {
+                return;
+            }
+
+            writer::with_context($context)->export_file($subcontext, $report);
         }
-
-        // Get storage file by report file identifier.
-        $report = get_file_storage()->get_file_by_hash($report->identifier);
-        if (!$report) {
-            return;
-        }
-
-        writer::with_context($context)->export_file($subcontext, $report);
     }
 
     /**

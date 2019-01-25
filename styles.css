@@ -1,38 +1,38 @@
-span.un_detect_result {
+div.un_detect_result {
     display: flex;
     flex-direction: column;
     width: 69px;
 }
-span.un_detect_result span.rank1 {
+div.un_detect_result span.rank1 {
     color: white;
     padding: 2px;
 }
 
-span.un_detect_result span.rankBlue {
+div.un_detect_result span.rankBlue {
     color: #4193ff;
 }
 
-span.un_detect_result span.rankGreen {
+div.un_detect_result span.rankGreen {
     color: #84be32;
 }
 
-span.un_detect_result span.rankYellow {
+div.un_detect_result span.rankYellow {
     color: #fbd41c;
 }
 
-span.un_detect_result span.rankOrange {
+div.un_detect_result span.rankOrange {
     color: #f79d62;
 }
 
-span.un_detect_result span.rankRed {
+div.un_detect_result span.rankRed {
     color: #f76262;
 }
 
-span.un_detect_result a {
+div.un_detect_result a {
     text-decoration: none;
 }
 
-span.un_detect_result img,
+div.un_detect_result img,
 div.un_detect_result img {
     position: relative;
     vertical-align: middle;
@@ -67,6 +67,7 @@ div.un_detect_result div:first-child {
     margin-top: 4px;
 }
 .un-report {
+    justify-content: center;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -142,11 +143,12 @@ div.un_detect_result div:first-child {
 }
 
 @media screen and (min-width: 1600px) {
-    span.un_detect_result {
+    div.un_detect_result {
         width: 135px;
     }
     .un-report {
         width: 135px;
+        justify-content: space-between;
         flex-direction: row;
         padding: 2px;
     }
@@ -155,7 +157,7 @@ div.un_detect_result div:first-child {
         width: max-content;
     }
 
-    .un_report_text {
+    .un-report-link {
         width: calc(100% - 65px);
         padding: 0;
     }
@@ -171,7 +173,7 @@ div.un_detect_result div:first-child {
 }
 
 @media screen and (min-width: 2200px) {
-    span.un_detect_result {
+    div.un_detect_result {
         width: 176px;
     }
     .un-report {

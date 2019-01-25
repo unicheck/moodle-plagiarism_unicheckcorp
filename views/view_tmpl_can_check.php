@@ -71,7 +71,7 @@ if (isset($linkarray['content'])) {
 
 $params['submissiontype'] = $submissiontype;
 
-$htmlparts[] = '<span class="un_detect_result">';
+$htmlparts[] = '<div class="un_detect_result">';
 $htmlparts[] = sprintf(
     '<a href="%s" class="un_link" target="_blank">' .
     '<img width="69" src="%s" alt="%s">' .
@@ -93,6 +93,6 @@ $htmlparts[] = sprintf(
     $content
 );
 
-$htmlparts[] = '</span>';
+$htmlparts[] = '</div>';
 
 return implode('', $htmlparts);

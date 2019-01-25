@@ -106,7 +106,7 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
 
     $canvieweditreport = capability::user_can(capability::VIEW_EDIT_REPORT, $cid, $USER->id);
 
-    $htmlparts[] = '<span class="un_detect_result">';
+    $htmlparts[] = '<div class="un_detect_result">';
     $htmlparts[] = sprintf(
         '<a href="%s" class="un_link" target="_blank">' .
         '<img width="69" src="%s" title="%s">',
@@ -135,12 +135,6 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
             }
 
             if ($reporturl) {
-                $htmlparts[] = sprintf(
-                    '<a title="%s" href="%s" class="un-report-link" target="_blank">',
-                    plagiarism_unicheck::trans('report'),
-                    $reporturl
-                );
-
                 $htmlparts[] = '<div class="un-report">';
                 $htmlparts[] = sprintf(
                     '<span class="un_report_percentage rank1 %s">%s%%</span>',
@@ -148,12 +142,18 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
                     $fileobj->similarityscore
                 );
                 $htmlparts[] = sprintf(
+                    '<a title="%s" href="%s" class="un-report-link" target="_blank">',
+                    plagiarism_unicheck::trans('report'),
+                    $reporturl
+                );
+                $htmlparts[] = sprintf(
                     '<span class="un_report_text">%s</span>',
                     plagiarism_unicheck::trans('ui:reportlink')
                 );
+                $htmlparts[] = '</a>';
                 $htmlparts[] = '</div>';
                 $htmlparts[] = $getcheatingblock();
-                $htmlparts[] = '</a>';
+
 
             } else {
                 $htmlparts[] = '<div class="un-report un_report_without_link">';
@@ -187,7 +187,7 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
         }
     }
 
-    $htmlparts[] = '</span>';
+    $htmlparts[] = '</div>';
 }
 
 return implode('', $htmlparts);
