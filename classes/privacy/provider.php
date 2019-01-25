@@ -36,11 +36,9 @@ if (interface_exists('\core_plagiarism\privacy\plagiarism_user_provider')) {
     interface user_provider extends plagiarism_user_provider {
     }
 } else {
+    //@codingStandardsIgnoreStart
     /**
-     *
      * This interface exists to provide backwards compatibility with moodle 3.3
-     *
-     * @codingStandardsIgnoreStart
      */
     interface user_provider {
     };
@@ -319,9 +317,9 @@ class provider implements
     /**
      * export_plagiarism_metadata
      *
-     * @param          $report
-     * @param \context $context
-     * @param array    $subcontext
+     * @param \stdClass $report
+     * @param \context  $context
+     * @param array     $subcontext
      */
     protected static function export_plagiarism_metadata($report, \context $context, array $subcontext) {
 
