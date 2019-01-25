@@ -173,6 +173,45 @@ class provider implements
     }
 
     /**
+     * Delete all data for all users in the specified context.
+     *
+     * @param \context $context the context to delete in.
+     */
+    public static function _delete_plagiarism_for_context(\context $context) {
+        global $DB;
+
+        $DB->delete_records('plagiarism_unicheck_files', ['cm' => $context->instanceid]);
+    }
+
+    /**
+     * Delete all user information for the provided user and context.
+     *
+     * @param  int      $userid  The user to delete
+     * @param  \context $context The context to refine the deletion.
+     */
+    public static function _delete_plagiarism_for_user($userid, \context $context) {
+        global $DB;
+
+        $DB->delete_records('plagiarism_unicheck_files', ['userid' => $userid, 'cm' => $context->instanceid]);
+    }
+
+    /**
+     * Delete all user information for the provided users and context.
+     *
+     * @param  array    $userids The users to delete
+     * @param  \context $context The context to refine the deletion.
+     */
+    public static function delete_plagiarism_for_users(array $userids, \context $context) {
+        global $DB;
+
+        list($userinsql, $userinparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
+        $params = array_merge(['cmid' => $context->instanceid], $userinparams);
+        $sql = "cm = :cmid AND userid {$userinsql}";
+
+        $DB->delete_records_select('plagiarism_unicheck_files', $sql, $params);
+    }
+
+    /**
      * Export all plagiarism data from each plagiarism plugin for the specified userid and context.
      *
      * @param   int      $userid     The user to export.
@@ -306,44 +345,5 @@ class provider implements
         }
 
         writer::with_context($context)->export_file($subcontext, $report);
-    }
-
-    /**
-     * Delete all data for all users in the specified context.
-     *
-     * @param \context $context the context to delete in.
-     */
-    public static function _delete_plagiarism_for_context(\context $context) {
-        global $DB;
-
-        $DB->delete_records('plagiarism_unicheck_files', ['cm' => $context->instanceid]);
-    }
-
-    /**
-     * Delete all user information for the provided user and context.
-     *
-     * @param  int      $userid  The user to delete
-     * @param  \context $context The context to refine the deletion.
-     */
-    public static function _delete_plagiarism_for_user($userid, \context $context) {
-        global $DB;
-
-        $DB->delete_records('plagiarism_unicheck_files', ['userid' => $userid, 'cm' => $context->instanceid]);
-    }
-
-    /**
-     * Delete all user information for the provided users and context.
-     *
-     * @param  array    $userids The users to delete
-     * @param  \context $context The context to refine the deletion.
-     */
-    public static function delete_plagiarism_for_users(array $userids, \context $context) {
-        global $DB;
-
-        list($userinsql, $userinparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
-        $params = array_merge(['cmid' => $context->instanceid], $userinparams);
-        $sql = "cm = :cmid AND userid {$userinsql}";
-
-        $DB->delete_records_select('plagiarism_unicheck_files', $sql, $params);
     }
 }
