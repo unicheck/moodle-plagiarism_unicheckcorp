@@ -52,15 +52,19 @@ class plagiarism_unicheck_privacy_provider_testcase extends provider_testcase {
         $newcollection = provider::get_metadata($collection);
         $itemcollection = $newcollection->get_collection();
 
-        $this->assertCount(4, $itemcollection);
+        $this->assertCount(5, $itemcollection);
+
+        // Verify core_plagiarism data is returned.
+        $this->assertEquals('core_plagiarism', $itemcollection[0]->get_name());
+        $this->assertEquals('privacy:metadata:core_plagiarism', $itemcollection[0]->get_summary());
 
         // Verify core_files data is returned.
-        $this->assertEquals('core_files', $itemcollection[0]->get_name());
-        $this->assertEquals('privacy:metadata:core_files', $itemcollection[0]->get_summary());
+        $this->assertEquals('core_files', $itemcollection[1]->get_name());
+        $this->assertEquals('privacy:metadata:core_files', $itemcollection[1]->get_summary());
 
         // Verify plagiarism_unicheck_files data is returned.
-        $this->assertEquals('plagiarism_unicheck_files', $itemcollection[1]->get_name());
-        $privacyfields = $itemcollection[1]->get_privacy_fields();
+        $this->assertEquals('plagiarism_unicheck_files', $itemcollection[2]->get_name());
+        $privacyfields = $itemcollection[2]->get_privacy_fields();
         $this->assertArrayHasKey('userid', $privacyfields);
         $this->assertArrayHasKey('identifier', $privacyfields);
         $this->assertArrayHasKey('check_id', $privacyfields);
@@ -75,15 +79,15 @@ class plagiarism_unicheck_privacy_provider_testcase extends provider_testcase {
         $this->assertArrayHasKey('metadata', $privacyfields);
 
         // Verify plagiarism_unicheck_users data is returned.
-        $this->assertEquals('plagiarism_unicheck_users', $itemcollection[2]->get_name());
-        $privacyfields = $itemcollection[2]->get_privacy_fields();
+        $this->assertEquals('plagiarism_unicheck_users', $itemcollection[3]->get_name());
+        $privacyfields = $itemcollection[3]->get_privacy_fields();
         $this->assertArrayHasKey('user_id', $privacyfields);
         $this->assertArrayHasKey('external_user_id', $privacyfields);
         $this->assertArrayHasKey('external_token', $privacyfields);
 
         // Verify plagiarism_external_unicheck_api data is returned.
-        $this->assertEquals('External Unicheck API', $itemcollection[3]->get_name());
-        $privacyfields = $itemcollection[3]->get_privacy_fields();
+        $this->assertEquals('External Unicheck API', $itemcollection[4]->get_name());
+        $privacyfields = $itemcollection[4]->get_privacy_fields();
         $this->assertArrayHasKey('domain', $privacyfields);
         $this->assertArrayHasKey('userid', $privacyfields);
         $this->assertArrayHasKey('useremail', $privacyfields);
