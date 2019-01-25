@@ -19,14 +19,12 @@ addons:
       - openjdk-8-jre-headless
 
 php:
- - 7.0
- - 7.1
- - 7.2
+  - 7.0
+  - 7.1
+  - 7.2
 
 env:
   matrix:
-    - DB=pgsql MOODLE_BRANCH=MOODLE_33_STABLE
-    - DB=mysqli MOODLE_BRANCH=MOODLE_33_STABLE
     - DB=pgsql MOODLE_BRANCH=MOODLE_34_STABLE
     - DB=mysqli MOODLE_BRANCH=MOODLE_34_STABLE
     - DB=pgsql MOODLE_BRANCH=MOODLE_35_STABLE
@@ -35,10 +33,14 @@ env:
     - DB=mysqli MOODLE_BRANCH=MOODLE_36_STABLE
 
 matrix:
-  include:  # Moodle 3.3 minimum PHP 5.6.5
+  include:  # Moodle 3.3 minimum PHP 5.6.5 maximum 7.1
     - php: 5.6
       env: DB=pgsql MOODLE_BRANCH=MOODLE_33_STABLE
     - php: 5.6
+      env: DB=mysqli MOODLE_BRANCH=MOODLE_33_STABLE
+    - php: 7.1
+      env: DB=pgsql MOODLE_BRANCH=MOODLE_33_STABLE
+    - php: 7.1
       env: DB=mysqli MOODLE_BRANCH=MOODLE_33_STABLE
 
 before_install:

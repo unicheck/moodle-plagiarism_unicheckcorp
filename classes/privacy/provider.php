@@ -26,7 +26,6 @@ namespace plagiarism_unicheck\privacy;
 
 defined('MOODLE_INTERNAL') || die();
 
-use core_plagiarism\privacy\plagiarism_provider;
 use core_plagiarism\privacy\plagiarism_user_provider;
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\contextlist;
@@ -37,8 +36,15 @@ if (interface_exists('\core_plagiarism\privacy\plagiarism_user_provider')) {
     interface user_provider extends plagiarism_user_provider {
     }
 } else {
+    /**
+     *
+     * This interface exists to provide backwards compatibility with moodle 3.3
+     *
+     * @codingStandardsIgnoreStart
+     */
     interface user_provider {
     };
+    // @codingStandardsIgnoreEnd
 }
 
 /**
@@ -52,10 +58,13 @@ class provider implements
     // This plugin has data and must therefore define the metadata provider in order to describe it.
     \core_privacy\local\metadata\provider,
     // This is a plagiarism plugin. It interacts with the plagiarism subsystem rather than with core.
-    plagiarism_provider,
+    \core_plagiarism\privacy\plagiarism_provider,
+    // This plugin need to export other data that is not related to one activity module.
+    \core_privacy\local\request\plugin\provider,
     // The Plagiarism subsystem will be called by other components and will forward
     // requests to each plagiarism plugin implementing its APIs.
     user_provider {
+
     // This trait must be included to provide the relevant polyfill for the metadata provider.
     use \core_privacy\local\legacy_polyfill;
     // This trait must be included to provide the relevant polyfill for the plagirism provider.
@@ -69,11 +78,9 @@ class provider implements
      * @return  collection     A listing of user data stored through this system.
      */
     public static function _get_metadata(collection $collection) {
-
-        $collection->link_subsystem(
-            'core_files',
-            'privacy:metadata:core_files'
-        );
+        // Moodle core components.
+        $collection->link_subsystem('core_plagiarism', 'privacy:metadata:core_plagiarism');
+        $collection->link_subsystem('core_files', 'privacy:metadata:core_files');
 
         $collection->add_database_table(
             'plagiarism_unicheck_files',
@@ -105,6 +112,7 @@ class provider implements
             'privacy:metadata:plagiarism_unicheck_users'
         );
 
+        // External Services.
         $collection->link_external_location('External Unicheck API', [
             'domain'        => 'privacy:metadata:plagiarism_external_unicheck_api:domain',
             'userid'        => 'privacy:metadata:plagiarism_external_unicheck_api:userid',
@@ -162,11 +170,11 @@ class provider implements
         array_push($subcontext, get_string('privacy:export:plagiarism_unicheck:plagiarismpath', 'plagiarism_unicheck'));
 
         if (isset($linkarray['file'])) {
-            self::_export_plagiarism_file_report($userid, $context, $subcontext, $linkarray);
+            self::export_plagiarism_file_report($userid, $context, $subcontext, $linkarray);
         }
 
         if (isset($linkarray['content'])) {
-            self::_export_plagiarism_content_report($userid, $context, $subcontext, $linkarray);
+            self::export_plagiarism_content_report($userid, $context, $subcontext, $linkarray);
         }
 
         return;
@@ -219,7 +227,7 @@ class provider implements
      * @param   array    $subcontext The subcontext within the context to export this information to.
      * @param   array    $linkarray  The weird and wonderful link array used to display information for a specific item
      */
-    protected static function _export_plagiarism_file_report($userid, \context $context, array $subcontext, array $linkarray) {
+    protected static function export_plagiarism_file_report($userid, \context $context, array $subcontext, array $linkarray) {
         global $DB;
 
         /** @var \stored_file $storedfile */
@@ -246,27 +254,8 @@ class provider implements
         if (!$report) {
             return;
         }
-        writer::with_context($context)
-            ->export_metadata(
-                $subcontext,
-                'plagiarism_unicheck_report_' . $report->id,
-                (object)[
-                    'cm'                 => $report->cm,
-                    'identifier'         => $report->identifier,
-                    'check_id'           => $report->check_id,
-                    'filename'           => $report->filename,
-                    'type'               => $report->type,
-                    'similarityscore'    => $report->similarityscore . '%',
-                    'attempt'            => $report->attempt,
-                    'errorresponse'      => json_decode($report->errorresponse, true),
-                    'timesubmitted'      => transform::datetime($report->timesubmitted),
-                    'external_file_id'   => $report->external_file_id,
-                    'state'              => $report->state,
-                    'external_file_uuid' => $report->external_file_uuid,
-                    'metadata'           => json_decode($report->metadata, true),
-                ],
-                get_string('privacy:export:plagiarism_unicheck:reportfiledescription', 'plagiarism_unicheck', $report->identifier)
-            );
+
+        self::export_plagiarism_metadata($report, $context, $subcontext);
     }
 
     /**
@@ -277,7 +266,7 @@ class provider implements
      * @param   array    $subcontext The subcontext within the context to export this information to.
      * @param   array    $linkarray  The weird and wonderful link array used to display information for a specific item
      */
-    protected static function _export_plagiarism_content_report($userid, \context $context, array $subcontext, array $linkarray) {
+    protected static function export_plagiarism_content_report($userid, \context $context, array $subcontext, array $linkarray) {
         global $DB;
 
         $params = [
@@ -312,27 +301,7 @@ class provider implements
             return;
         }
 
-        writer::with_context($context)
-            ->export_metadata(
-                $subcontext,
-                'plagiarism_unicheck_report_' . $report->id,
-                (object)[
-                    'cm'                 => $report->cm,
-                    'identifier'         => $report->identifier,
-                    'check_id'           => $report->check_id,
-                    'filename'           => $report->filename,
-                    'type'               => $report->type,
-                    'similarityscore'    => $report->similarityscore . '%',
-                    'attempt'            => $report->attempt,
-                    'errorresponse'      => json_decode($report->errorresponse, true),
-                    'timesubmitted'      => transform::datetime($report->timesubmitted),
-                    'external_file_id'   => $report->external_file_id,
-                    'state'              => $report->state,
-                    'external_file_uuid' => $report->external_file_uuid,
-                    'metadata'           => json_decode($report->metadata, true),
-                ],
-                get_string('privacy:export:plagiarism_unicheck:reportcontentdescription', 'plagiarism_unicheck')
-            );
+        self::export_plagiarism_metadata($report, $context, $subcontext);
 
         if (!$report->identifier) {
             return;
@@ -345,5 +314,38 @@ class provider implements
         }
 
         writer::with_context($context)->export_file($subcontext, $report);
+    }
+
+    /**
+     * export_plagiarism_metadata
+     *
+     * @param          $report
+     * @param \context $context
+     * @param array    $subcontext
+     */
+    protected static function export_plagiarism_metadata($report, \context $context, array $subcontext) {
+
+        $value = (object)[
+            'cm'                 => $report->cm,
+            'identifier'         => $report->identifier,
+            'check_id'           => $report->check_id,
+            'filename'           => $report->filename,
+            'type'               => $report->type,
+            'similarityscore'    => $report->similarityscore . '%',
+            'attempt'            => $report->attempt,
+            'errorresponse'      => json_decode($report->errorresponse, true),
+            'timesubmitted'      => transform::datetime($report->timesubmitted),
+            'external_file_id'   => $report->external_file_id,
+            'state'              => $report->state,
+            'external_file_uuid' => $report->external_file_uuid,
+            'metadata'           => json_decode($report->metadata, true),
+        ];
+
+        writer::with_context($context)->export_metadata(
+            $subcontext,
+            'plagiarism_unicheck_report_' . $report->id,
+            $value,
+            get_string('privacy:export:plagiarism_unicheck:reportcontentdescription', 'plagiarism_unicheck')
+        );
     }
 }

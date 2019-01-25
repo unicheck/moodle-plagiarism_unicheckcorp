@@ -184,6 +184,7 @@ $string['upload_error'] = 'File upload error';
 // Validation rules.
 $string['validation:min_numeric_value'] = 'Number could not be less than {$a}';
 // Privacy.
+$string['privacy:metadata:core_plagiarism'] = 'Unicheck plugin stores files which have been uploaded by the user to form of activity with Unicheck similarity detecting.';
 $string['privacy:metadata:core_files'] = 'Unicheck plugin stores files which have been uploaded by the user to form of activity with Unicheck similarity detecting.';
 
 $string['privacy:metadata:plagiarism_unicheck_files'] = 'Stores submission files information';
