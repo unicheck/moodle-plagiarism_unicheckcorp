@@ -67,7 +67,6 @@ div.un_detect_result div:first-child {
     margin-top: 4px;
 }
 .un-report {
-    justify-content: center;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
