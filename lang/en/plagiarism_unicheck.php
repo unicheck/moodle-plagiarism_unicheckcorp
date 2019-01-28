@@ -183,3 +183,42 @@ $string['sync_failed'] = 'Try to synchronize unprocessed files';
 $string['upload_error'] = 'File upload error';
 // Validation rules.
 $string['validation:min_numeric_value'] = 'Number could not be less than {$a}';
+// Privacy.
+$string['privacy:metadata:core_plagiarism'] = 'This plugin is called by Moodle plagiarism subsystem.';
+$string['privacy:metadata:core_files'] = 'Files or online text that are attached to forms of activity modules where the Unicheck plugin is enabled.';
+
+$string['privacy:metadata:plagiarism_unicheck_files'] = 'Stores plagiarism files information.';
+$string['privacy:metadata:plagiarism_unicheck_files:userid'] = 'The ID of the student.';
+$string['privacy:metadata:plagiarism_unicheck_files:identifier'] = 'The pathnamehash of stored file.';
+$string['privacy:metadata:plagiarism_unicheck_files:check_id'] = 'Unicheck similarity check ID.';
+$string['privacy:metadata:plagiarism_unicheck_files:filename'] = 'The filename of stored file.';
+$string['privacy:metadata:plagiarism_unicheck_files:type'] = 'The type of stored file: archive or document.';
+$string['privacy:metadata:plagiarism_unicheck_files:similarityscore'] = 'Unicheck similarity score for submitted file.';
+$string['privacy:metadata:plagiarism_unicheck_files:attempt'] = 'Number of file checks for similarity';
+$string['privacy:metadata:plagiarism_unicheck_files:errorresponse'] = 'Information about errors that occurred during checking for similarity or uploading a file to the Unicheck service';
+$string['privacy:metadata:plagiarism_unicheck_files:timesubmitted'] = 'Time when the file was submitted.';
+$string['privacy:metadata:plagiarism_unicheck_files:external_file_id'] = 'File ID in Unicheck service.';
+$string['privacy:metadata:plagiarism_unicheck_files:state'] = 'File similarity detection state.';
+$string['privacy:metadata:plagiarism_unicheck_files:external_file_uuid'] = 'File token in Unicheck service.';
+$string['privacy:metadata:plagiarism_unicheck_files:metadata'] = 'Additional information, such as the number of cheat symbols or the number of files in the archive that were skipped';
+
+$string['privacy:metadata:plagiarism_unicheck_users'] = 'Stores users information';
+$string['privacy:metadata:plagiarism_unicheck_users:user_id'] = 'The ID of the student or teacher';
+$string['privacy:metadata:plagiarism_unicheck_users:external_user_id'] = 'User ID in Unicheck service';
+$string['privacy:metadata:plagiarism_unicheck_users:external_token'] = 'User token in Unicheck service';
+
+$string['privacy:metadata:plagiarism_external_unicheck_api'] = 'Unicheck API';
+$string['privacy:metadata:plagiarism_external_unicheck_api:domain'] = 'Moodle server domain';
+$string['privacy:metadata:plagiarism_external_unicheck_api:userid'] = 'User ID';
+$string['privacy:metadata:plagiarism_external_unicheck_api:useremail'] = 'User email';
+$string['privacy:metadata:plagiarism_external_unicheck_api:userfirstname'] = 'User Firstname';
+$string['privacy:metadata:plagiarism_external_unicheck_api:userlastname'] = 'User Lastname';
+$string['privacy:metadata:plagiarism_external_unicheck_api:userscope'] = 'User permission scope: student or teacher';
+$string['privacy:metadata:plagiarism_external_unicheck_api:fileformat'] = 'Extension of uploaded file';
+$string['privacy:metadata:plagiarism_external_unicheck_api:filedata'] = 'Content of uploaded file';
+$string['privacy:metadata:plagiarism_external_unicheck_api:filename'] = 'Filename of uploaded file';
+$string['privacy:metadata:plagiarism_external_unicheck_api:submissionid'] = 'ID of context in which file will be uploaded';
+
+$string['privacy:export:plagiarism_unicheck:plagiarismpath'] = 'Plagiarism detecting';
+$string['privacy:export:plagiarism_unicheck:reportfiledescription'] = 'Unicheck similarity detection result for submitted file with pathnamehash {$a}';
+$string['privacy:export:plagiarism_unicheck:reportcontentdescription'] = 'Unicheck similarity detection result for online text';

@@ -56,7 +56,7 @@ if (has_capability(capability::RESET_FILE, $modulecontext) && !empty($fileobj->e
     );
 }
 
-$htmlparts = ['<span class="un_report">'];
+$htmlparts = ['<span class="un_detect_result">'];
 $htmlparts[] = sprintf('<img width="16" class="un_tooltip" src="%1$s" alt="%2$s" title="%3$s" />%4$s',
     $OUTPUT->image_url('error', UNICHECK_PLAGIN_NAME),
     plagiarism_unicheck::trans('unknownwarning'), $title, $reset

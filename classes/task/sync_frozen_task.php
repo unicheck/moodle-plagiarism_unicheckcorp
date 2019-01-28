@@ -39,7 +39,7 @@ global $CFG;
 
 require_once($CFG->dirroot . '/plagiarism/unicheck/autoloader.php');
 require_once($CFG->dirroot . '/plagiarism/unicheck/constants.php');
-require_once($CFG->libdir  . '/filelib.php');
+require_once($CFG->libdir . '/filelib.php');
 
 /**
  * Class failed_task
@@ -48,8 +48,7 @@ require_once($CFG->libdir  . '/filelib.php');
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class sync_frozen_task extends \core\task\scheduled_task
-{
+class sync_frozen_task extends \core\task\scheduled_task {
     /**
      * Identify frozen check
      */
@@ -58,10 +57,11 @@ class sync_frozen_task extends \core\task\scheduled_task
     /**
      * Identify frozen file
      */
-    const FILE  = 'frozen_file';
+    const FILE = 'frozen_file';
 
     /**
      * Get name for this task
+     *
      * @return string
      * @throws \coding_exception
      */
@@ -75,18 +75,20 @@ class sync_frozen_task extends \core\task\scheduled_task
      */
     public function execute() {
         $files = [
-            self::FILE        => [],
-            self::CHECK       => []
+            self::FILE  => [],
+            self::CHECK => []
         ];
 
         $frozenfiles = unicheck_file_provider::get_frozen_files();
 
         if ($frozenfiles) {
-            foreach ($frozenfiles as $id => $file) {
+            foreach ($frozenfiles as $file) {
                 if (!is_null($file->check_id)) {
                     $files[self::CHECK][$file->check_id] = $file;
-                } else if (!is_null($file->external_file_uuid)) {
-                    $files[self::FILE][$file->id] = $file;
+                } else {
+                    if (!is_null($file->external_file_uuid)) {
+                        $files[self::FILE][$file->id] = $file;
+                    }
                 }
             }
         }
@@ -176,8 +178,10 @@ class sync_frozen_task extends \core\task\scheduled_task
                     if ($file->state == unicheck_file_state::CHECKED) {
                         $checkedcount++;
                         $similarity += $file->similarityscore;
-                    } else if ($file->state == unicheck_file_state::HAS_ERROR) {
-                        $haserrorcount++;
+                    } else {
+                        if ($file->state == unicheck_file_state::HAS_ERROR) {
+                            $haserrorcount++;
+                        }
                     }
                 }
                 if (($checkedcount == count($trackedfiles))
@@ -193,9 +197,11 @@ class sync_frozen_task extends \core\task\scheduled_task
                     $archive->similarityscore = $archivesimilarity;
                     $archive->state = unicheck_file_state::CHECKED;
                     unicheck_file_provider::save($archive);
-                } else if ($haserrorcount == count($trackedfiles)) {
-                    $archive->state = unicheck_file_state::HAS_ERROR;
-                    unicheck_file_provider::save($archive);
+                } else {
+                    if ($haserrorcount == count($trackedfiles)) {
+                        $archive->state = unicheck_file_state::HAS_ERROR;
+                        unicheck_file_provider::save($archive);
+                    }
                 }
             }
         }
