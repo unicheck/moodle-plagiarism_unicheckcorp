@@ -1,3 +1,5 @@
+@import url(https://fonts.googleapis.com/css?family=Open+Sans);
+
 div.un_detect_result {
     display: flex;
     flex-direction: column;
@@ -78,12 +80,25 @@ div.un_detect_result div:first-child {
     padding: 2px 4px;
     transition: background-color ease-in-out 0.3s;
 }
-.un-report-link:hover .un-report {
+.un-report .un-start-scan-link,
+.un-report .un-report-without-score-link {
+    width: inherit;
+}
+.un-report .un-report-link:hover,
+.un-report .un-start-scan-link:hover,
+.un-report .un-report-without-score-link:hover {
     background-color: #67768a;
 }
 .un-cheating:hover {
     color: #fff;
     background-color: #ff495c;
+}
+.un-cheating .un-cheating-link {
+    text-decoration: none;
+    color: #ff495c;
+}
+.un-cheating .un-cheating-link:hover {
+    color: #fff;
 }
 .un-report {
     display: flex;
@@ -104,7 +119,8 @@ div.un_detect_result div:first-child {
     font-size: 16px;
 }
 .un_report_text,
-.un_start_scan_text {
+.un_start_scan_text,
+.un-report-without-score-text {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -151,11 +167,10 @@ div.un_detect_result div:first-child {
         flex-direction: row;
         padding: 2px;
     }
-
     .un-report.un_report_without_link {
         width: max-content;
+        width: -moz-max-content; /* stylelint-disable-line */
     }
-
     .un-report-link {
         width: calc(100% - 65px);
         padding: 0;
@@ -163,10 +178,14 @@ div.un_detect_result div:first-child {
     .only-xl-width {
         display: inline;
     }
+    .un-report-without-score-text .only-xxl-width {
+        display: inline;
+    }
 }
 
 @media screen and (max-width: 1600px) {
-    .un_start_scan_text {
+    .un_start_scan_text,
+    .un-report-without-score-text {
         height: 40px;
     }
 }
@@ -180,11 +199,9 @@ div.un_detect_result div:first-child {
         flex-direction: row;
         padding: 2px;
     }
-
     .un-report.un_report_without_link {
         width: max-content;
     }
-
     .un_link {
         flex-direction: row;
         height: 14px;
