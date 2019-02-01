@@ -84,7 +84,7 @@ $htmlparts[] = sprintf(
 $url = new moodle_url('/plagiarism/unicheck/check.php', $params);
 $htmlparts[] = sprintf(
     '<div class="un-report">' .
-    '<a href="%1$s" class="un-report-link" title="%2$s">' .
+    '<a href="%1$s" class="un-start-scan-link" title="%2$s">' .
     '<span class="un_start_scan_text">%2$s</span>' .
     '</a>' .
     '</div>',

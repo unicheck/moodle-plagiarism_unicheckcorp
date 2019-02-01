@@ -80,19 +80,27 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
         $canviewsimilarity = $activitycfg[unicheck_settings::SHOW_STUDENT_SCORE];
     }
 
-    $getcheatingblock = function () use ($fileobj, $metadata, $canviewsimilarity) {
+    $getcheatingblock = function ($reporturl = null) use ($fileobj, $metadata) {
         $htmlparts = [];
-        if (!$canviewsimilarity || $fileobj->type === unicheck_plagiarism_entity::TYPE_ARCHIVE) {
+        if ($fileobj->type === unicheck_plagiarism_entity::TYPE_ARCHIVE) {
             return '';
         }
 
         if (isset($metadata[unicheck_file_metadata::CHEATING_CHAR_REPLACEMENTS_COUNT])) {
             $cheatingchars = (int)$metadata[unicheck_file_metadata::CHEATING_CHAR_REPLACEMENTS_COUNT];
             if ($cheatingchars > 0) {
+                $htmlparts[] = ($reporturl) ? sprintf(
+                    '<a title="%s" href="%s" target="_blank" class="un-cheating">',
+                    plagiarism_unicheck::trans('report'),
+                    $reporturl
+                ) : '<div class="un-cheating">';
+
                 $htmlparts[] = sprintf(
-                    '<div class="un-cheating"><span>%s</span></div>',
+                    '<span>%s</span>',
                     plagiarism_unicheck::trans('ui:possiblecheating')
                 );
+
+                $htmlparts[] = ($reporturl) ? '</a>' : '</div>';
             }
         }
 
@@ -114,13 +122,13 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
         $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME),
         plagiarism_unicheck::trans('pluginname')
     );
-    if ($canviewsimilarity) {
+    if (in_array(true, [$canviewsimilarity, $canviewreport, $canvieweditreport]) && !empty($fileobj->check_id)) {
         $htmlparts[] = sprintf('<span class="un_report_id">ID:%s</span>', $fileobj->check_id);
     }
     $htmlparts[] = '</a>';
 
     if (isset($fileobj->similarityscore)) {
-        if ($canviewsimilarity) {
+        if (in_array(true, [$canviewsimilarity, $canviewreport, $canvieweditreport])) {
             $rankclass = $getrankclass($fileobj);
             $reporturl = null;
             if (!empty($fileobj->reporturl)) {
@@ -134,7 +142,7 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
                 }
             }
 
-            if ($reporturl) {
+            if ($canviewsimilarity && $reporturl) {
                 $htmlparts[] = '<div class="un-report">';
                 $htmlparts[] = sprintf(
                     '<span class="un_report_percentage rank1 %s">%s%%</span>',
@@ -152,10 +160,20 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
                 );
                 $htmlparts[] = '</a>';
                 $htmlparts[] = '</div>';
-                $htmlparts[] = $getcheatingblock();
-
-
-            } else {
+            } else if ($reporturl) {
+                $htmlparts[] = '<div class="un-report">';
+                $htmlparts[] = sprintf(
+                    '<a title="%s" href="%s" class="un-report-without-score-link" target="_blank">',
+                    plagiarism_unicheck::trans('report'),
+                    $reporturl
+                );
+                $htmlparts[] = sprintf(
+                    '<span class="un-report-without-score-text">%s</span>',
+                    plagiarism_unicheck::trans('ui:reportlink')
+                );
+                $htmlparts[] = '</a>';
+                $htmlparts[] = '</div>';
+            } else if ($canviewsimilarity) {
                 $htmlparts[] = '<div class="un-report un_report_without_link">';
                 // User is allowed to view only the score.
                 $htmlparts[] = sprintf(
@@ -164,8 +182,8 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
                     $fileobj->similarityscore
                 );
                 $htmlparts[] = '</div>';
-                $htmlparts[] = $getcheatingblock();
             }
+            $htmlparts[] = $getcheatingblock($reporturl);
         }
     }
 
