@@ -31,37 +31,68 @@ use plagiarism_unicheck\classes\permissions\capability;
 
 global $PAGE, $OUTPUT;
 
-if (AJAX_SCRIPT) {
-    $PAGE->set_context(null);
-}
-
 $check = '';
 $modulecontext = context_module::instance($linkarray['cmid']);
 // This is a teacher viewing the responses.
 
-if (has_capability(capability::CHECK_FILE, $modulecontext) && empty($fileobj->check_id) && !empty($fileobj->id)) {
-
-    $url = new moodle_url('/plagiarism/unicheck/check.php', [
-        'cmid'    => $linkarray['cmid'],
-        'pf'      => $fileobj->id,
-        'sesskey' => sesskey(),
-    ]);
-
-    $check = sprintf('<a href="%1$s" class="un-check">%4$s</a>',
-        $url,
-        $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME),
-        plagiarism_unicheck::trans('check_file'),
-        plagiarism_unicheck::trans('check_file')
-    );
+if (!has_capability(capability::CHECK_FILE, $modulecontext)) {
+    return '';
 }
 
-$htmlparts = ['<span class="un_report">'];
-$htmlparts[] = sprintf('<a href="%s" target="_blank"><img src="%s" title="%s"></a> ',
+if (!empty($fileobj->check_id)) {
+    return '';
+}
+
+$htmlparts = [];
+$modname = $PAGE->cm->modname;
+
+if (!in_array($modname, [UNICHECK_MODNAME_ASSIGN])) {
+    return '';
+}
+
+$params = [
+    'cmid'    => $linkarray['cmid'],
+    'modname' => $modname,
+    'sesskey' => sesskey(),
+    'uid'     => $linkarray['userid']
+];
+
+if (!empty($fileobj->id)) {
+    $params['pf'] = $fileobj->id;
+}
+
+$submissiontype = 'file';
+$content = '';
+
+if (isset($linkarray['content'])) {
+    $submissiontype = 'onlinetext';
+    $content = $linkarray['content'];
+}
+
+$params['submissiontype'] = $submissiontype;
+
+$htmlparts[] = '<div class="un_detect_result">';
+$htmlparts[] = sprintf(
+    '<a href="%s" class="un_link" target="_blank">' .
+    '<img width="69" src="%s" alt="%s">' .
+    '</a>',
     new moodle_url(UNICHECK_DOMAIN),
     $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME),
     plagiarism_unicheck::trans('pluginname')
 );
-$htmlparts[] = sprintf('%1$s', $check);
-$htmlparts[] = '</span>';
+
+$url = new moodle_url('/plagiarism/unicheck/check.php', $params);
+$htmlparts[] = sprintf(
+    '<div class="un-report">' .
+    '<a href="%1$s" class="un-start-scan-link" title="%2$s">' .
+    '<span class="un_start_scan_text">%2$s</span>' .
+    '</a>' .
+    '</div>',
+    $url,
+    plagiarism_unicheck::trans('check_file'),
+    $content
+);
+
+$htmlparts[] = '</div>';
 
 return implode('', $htmlparts);

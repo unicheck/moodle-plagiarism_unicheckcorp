@@ -47,7 +47,7 @@ if (!$iterator) {
     $PAGE->requires->js_init_call('M.plagiarismUnicheck.init', [$linkarray['cmid']], true, $jsmodule);
 }
 
-$htmlparts = [sprintf('<div class="un_report fid-%1$s"><div class="un_data">{"fid":"%1$s"}</div>', $fileobj->id)];
+$htmlparts = [sprintf('<div class="un_detect_result fid-%1$s"><div class="un_data">{"fid":"%1$s"}</div>', $fileobj->id)];
 $htmlparts[] = sprintf('<img  class="un_progress un_tooltip" src="%1$s" alt="%2$s" title="%2$s" />',
     $OUTPUT->image_url('loader', UNICHECK_PLAGIN_NAME),
     plagiarism_unicheck::trans('processing')

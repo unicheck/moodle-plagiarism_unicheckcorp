@@ -102,6 +102,7 @@ class unicheck_core {
      * resubmit_file
      *
      * @param int $id
+     *
      * @return bool
      */
     public static function resubmit_file($id) {
@@ -146,6 +147,7 @@ class unicheck_core {
      * get_plagiarism_entity
      *
      * @param \stored_file $file
+     *
      * @return unicheck_file|unicheck_plagiarism_entity
      * @throws unicheck_exception
      */
@@ -197,29 +199,34 @@ class unicheck_core {
     /**
      * create_file_from_content
      *
-     * @param base                          $event
+     * @param string                        $content
+     * @param string                        $filearea
+     * @param int                           $contexid
+     * @param int                           $itemid
      * @param pluginfile_url_interface|null $pluginfileurl
-     * @return null|\stored_file
+     *
+     * @return \stored_file
      */
-    public function create_file_from_content(base $event, pluginfile_url_interface $pluginfileurl = null) {
-        global $USER;
-
-        if (empty($event->other['content'])) {
-            return null;
-        }
-
+    public function create_file_from_content(
+        $content,
+        $filearea,
+        $contexid,
+        $itemid,
+        pluginfile_url_interface $pluginfileurl = null
+    ) {
+        $author = self::get_user($this->userid);
         $filerecord = [
             'component' => UNICHECK_PLAGIN_NAME,
-            'filearea'  => $event->objecttable,
-            'contextid' => $event->contextid,
-            'itemid'    => $event->objectid,
+            'filearea'  => $filearea,
+            'contextid' => $contexid,
+            'itemid'    => $itemid,
             'filename'  => sprintf("%s-content-%d-%d-%d.html",
-                str_replace('_', '-', $event->objecttable), $event->contextid, $this->cmid, $event->objectid
+                str_replace('_', '-', $filearea), $contexid, $this->cmid, $itemid
             ),
             'filepath'  => '/',
-            'userid'    => $USER->id,
+            'userid'    => $author->id,
             'license'   => 'allrightsreserved',
-            'author'    => $USER->firstname . ' ' . $USER->lastname,
+            'author'    => $author->firstname . ' ' . $author->lastname,
         ];
 
         /** @var \stored_file $storedfile */
@@ -229,18 +236,39 @@ class unicheck_core {
         );
 
         if ($storedfile) {
-            if ($storedfile->get_contenthash() == self::content_hash($event->other['content'])) {
+            if ($storedfile->get_contenthash() == self::content_hash($content)) {
                 return $storedfile;
             }
             $this->delete_old_file_from_content($storedfile);
         }
 
-        $content = $event->other['content'];
         if ($pluginfileurl instanceof pluginfile_url_interface) {
-            $content = $pluginfileurl->rewrite($content, $event->contextid, $event->objectid);
+            $content = $pluginfileurl->rewrite($content, $contexid, $itemid);
         }
 
         return get_file_storage()->create_file_from_string($filerecord, $content);
+    }
+
+    /**
+     * create_file_from_onlinetext_event
+     *
+     * @param base                          $event
+     * @param pluginfile_url_interface|null $pluginfileurl
+     *
+     * @return \stored_file|null
+     */
+    public function create_file_from_onlinetext_event(base $event, pluginfile_url_interface $pluginfileurl = null) {
+        if (empty($event->other['content'])) {
+            return null;
+        }
+
+        return $this->create_file_from_content(
+            $event->other['content'],
+            $event->objecttable,
+            $event->contextid,
+            $event->objectid,
+            $pluginfileurl
+        );
     }
 
     /**

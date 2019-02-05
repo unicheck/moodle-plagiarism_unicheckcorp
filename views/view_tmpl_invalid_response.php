@@ -33,15 +33,21 @@ if (AJAX_SCRIPT) {
     $PAGE->set_context(null);
 }
 
-$htmlparts = ['<span class="un_report">'];
-$htmlparts[] = sprintf('<a href="%s" target="_blank"><img src="%s" title="%s"></a> ',
+$htmlparts[] = '<div class="un_detect_result">';
+$htmlparts[] = sprintf(
+    '<a href="%s" class="un_link" target="_blank">' .
+    '<img width="69" src="%s" title="%s">' .
+    '</a>',
     new moodle_url(UNICHECK_DOMAIN),
     $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME),
     plagiarism_unicheck::trans('pluginname')
 );
+$htmlparts[] = '</div>';
 
 $erroresponse = plagiarism_unicheck::error_resp_handler($fileobj->errorresponse);
-$htmlparts[] = $erroresponse;
-$htmlparts[] = '</span>';
+$htmlparts[] = sprintf(
+    '<div class="un_processing_error"><span>%s</span></div>',
+    $erroresponse
+);
 
 return implode('', $htmlparts);

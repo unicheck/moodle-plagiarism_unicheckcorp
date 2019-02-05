@@ -63,7 +63,10 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
      */
     public static function default_plugin_options() {
         return [
-            'unicheck_use', 'unicheck_enable_mod_assign', 'unicheck_enable_mod_forum', 'unicheck_enable_mod_workshop',
+            'unicheck_use',
+            'unicheck_enable_mod_assign',
+            'unicheck_enable_mod_forum',
+            'unicheck_enable_mod_workshop',
         ];
     }
 
@@ -98,6 +101,10 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
                 $fileobj = $ucore->get_plagiarism_entity($file)->get_internal_file();
                 if (!empty($fileobj) && is_object($fileobj)) {
                     $output = unicheck_linkarray::get_output_for_linkarray($fileobj, $cm, $linkarray);
+                }
+            } else {
+                if (isset($linkarray['content'])) {
+                    $output = require(dirname(__FILE__) . '/views/' . 'view_tmpl_can_check.php');
                 }
             }
         }
@@ -222,11 +229,12 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
             $defaultsettings = $activitysettings = unicheck_settings::get_activity_settings($defaultcmid, null, true);
             if ($defaultcmid !== $cmid) {
                 $activitysettings = unicheck_settings::get_activity_settings($cmid, null, true);
-                foreach ($activitysettings as $setting => $value) {
-                    $capability = unicheck_settings::get_capability($setting);
-                    if ($capability && !has_capability(unicheck_settings::get_capability($setting), $context)) {
-                        $activitysettings[$setting] = isset($defaultsettings[$setting]) ? $defaultsettings[$setting] : null;
+                foreach ($defaultsettings as $setting => $value) {
+                    if (isset($activitysettings[$setting])) {
+                        continue;
                     }
+
+                    $activitysettings[$setting] = $defaultsettings[$setting];
                 }
             }
 

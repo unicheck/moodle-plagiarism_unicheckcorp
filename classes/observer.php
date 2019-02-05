@@ -120,7 +120,7 @@ class plagiarism_unicheck_observer {
             return;
         }
 
-        self::get_core($event)->create_file_from_content($event);
+        self::get_core($event)->create_file_from_onlinetext_event($event);
     }
 
     /**
