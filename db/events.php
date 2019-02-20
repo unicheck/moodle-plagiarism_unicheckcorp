@@ -64,5 +64,9 @@ $observers = [
     [
         'eventname' => '\mod_assign\event\submission_status_viewed',
         'callback'  => 'plagiarism_unicheck_observer::mod_assign_submission_status_viewed',
+    ],
+    [
+        'eventname' => '\core\event\user_updated',
+        'callback'  => 'plagiarism_unicheck_observer::core_event_user_updated',
     ]
 ];

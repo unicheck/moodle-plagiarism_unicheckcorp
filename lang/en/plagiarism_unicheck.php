@@ -168,6 +168,7 @@ $string['archive:limitreachedfulldescription'] = 'There are more documents in th
 // Plugin events.
 $string['event:api_called'] = 'API request';
 $string['event:api_user_created'] = 'User created';
+$string['event:api_user_updated'] = 'User updated';
 $string['event:archive_files_unpacked'] = 'Archive files unpacked and ready for similarity checking';
 $string['event:archive_files_uploaded'] = 'Archive files uploaded';
 $string['event:archive_files_checked'] = 'Archive files checked';
