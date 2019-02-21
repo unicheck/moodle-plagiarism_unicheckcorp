@@ -122,5 +122,26 @@ function xmldb_plagiarism_unicheck_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2018020700, 'plagiarism', 'unicheck');
     }
 
+    if ($oldversion < 2018021528) {
+
+        // Define field api_key to be added to plagiarism_unicheck_users.
+        $table = new xmldb_table('plagiarism_unicheck_users');
+        $field = new xmldb_field('api_key', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'external_token');
+        $index = new xmldb_index('user_id_api_key_idx', XMLDB_INDEX_NOTUNIQUE, ['user_id', 'api_key']);
+
+        // Conditionally launch add field api_key.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Conditionally launch add index user_id_api_key_idx.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Unicheck savepoint reached.
+        upgrade_plugin_savepoint(true, 2018021528, 'plagiarism', 'unicheck');
+    }
+
     return true;
 }

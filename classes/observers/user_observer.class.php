@@ -30,6 +30,7 @@ use core\event\user_updated;
 use plagiarism_unicheck\classes\entities\providers\user_provider;
 use plagiarism_unicheck\classes\unicheck_api;
 use plagiarism_unicheck\classes\unicheck_core;
+use plagiarism_unicheck\classes\unicheck_settings;
 use plagiarism_unicheck\event\api_user_updated;
 use plagiarism_unicheck\event\error_handled;
 
@@ -65,7 +66,8 @@ class user_observer extends abstract_observer {
                 return;
             }
 
-            $plagiarismuser = user_provider::find_by_moodleuser_id($event->objectid);
+            $apikey = unicheck_settings::get_settings('client_id');
+            $plagiarismuser = user_provider::find_by_user_id_and_api_key($event->objectid, $apikey);
             if (!$plagiarismuser || empty($plagiarismuser->external_token)) {
                 return;
             }

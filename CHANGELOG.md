@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [2.4.1] - 2019-02-20
 ### Fixed
-- The similarity report is sent to athe correct email ddress after the student has changed his email address.
+- Using the correct access rights when viewing the similarity report after changing API keys
+- The similarity report is sent to at the correct email address after the student has changed his email address.
 
 ## [2.4.0] - 2019-01-22
 ### Added 

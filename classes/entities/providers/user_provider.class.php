@@ -54,15 +54,29 @@ class user_provider {
     }
 
     /**
-     * Find plagiarism user by moodle user id
+     * Find plagiarism user by moodle user id and current Unicheck API key
      *
-     * @param int $userid
+     * @param int    $userid
+     * @param string $apikey
      *
      * @return mixed
      */
-    public static function find_by_moodleuser_id($userid) {
+    public static function find_by_user_id_and_api_key($userid, $apikey) {
         global $DB;
 
-        return $DB->get_record(UNICHECK_USER_DATA_TABLE, ['user_id' => $userid]);
+        return $DB->get_record(UNICHECK_USER_DATA_TABLE, ['user_id' => $userid, 'api_key' => $apikey]);
+    }
+
+    /**
+     * Create plagiarism user
+     *
+     * @param object $user
+     *
+     * @return bool|int
+     */
+    public static function create($user) {
+        global $DB;
+
+        return $DB->insert_record(UNICHECK_USER_DATA_TABLE, $user);
     }
 }

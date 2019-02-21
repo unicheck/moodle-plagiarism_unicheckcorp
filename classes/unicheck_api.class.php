@@ -290,7 +290,7 @@ class unicheck_api {
      *
      * @return \stdClass
      */
-    public function user_update(string $externaltoken, $moodleuser) {
+    public function user_update($externaltoken, $moodleuser) {
         $postdata = [
             'email'     => $moodleuser->email,
             'firstname' => $moodleuser->firstname,
