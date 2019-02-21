@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * user_provider.class.php
+ * callback_provider.class.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
@@ -30,7 +30,7 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 /**
- * Class user_provider
+ * Class callback_provider
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
@@ -38,45 +38,49 @@ if (!defined('MOODLE_INTERNAL')) {
  * @copyright   2019 UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class user_provider {
+class callback_provider {
 
     /**
-     * Find plagiarism user by id
+     * Find callback by event id
      *
-     * @param int $id
+     * @param int $eventid
      *
      * @return mixed
      */
-    public static function find_by_id($id) {
+    public static function find_by_event_id($eventid) {
         global $DB;
 
-        return $DB->get_record(UNICHECK_USER_DATA_TABLE, ['id' => $id]);
+        return $DB->get_record(UNICHECK_CALLBACK_TABLE, ['event_id' => $eventid]);
     }
 
     /**
-     * Find plagiarism user by moodle user id and current Unicheck API key
+     * Create plagiarism callback
      *
-     * @param int    $userid
-     * @param string $apikey
-     *
-     * @return mixed
-     */
-    public static function find_by_user_id_and_api_key($userid, $apikey) {
-        global $DB;
-
-        return $DB->get_record(UNICHECK_USER_DATA_TABLE, ['user_id' => $userid, 'api_key' => $apikey]);
-    }
-
-    /**
-     * Create plagiarism user
-     *
-     * @param object $user
+     * @param \stdClass $callback
      *
      * @return bool|int
      */
-    public static function create($user) {
+    public static function create(\stdClass $callback) {
         global $DB;
 
-        return $DB->insert_record(UNICHECK_USER_DATA_TABLE, $user);
+        $callback->timecreated = time();
+        $callback->timemodified = time();
+
+        return $DB->insert_record(UNICHECK_CALLBACK_TABLE, $callback);
+    }
+
+    /**
+     * Update plagiarism callback
+     *
+     * @param \stdClass $callback
+     *
+     * @return bool
+     */
+    public static function save(\stdClass $callback) {
+        global $DB;
+
+        $callback->timemodified = time();
+
+        return $DB->update_record(UNICHECK_CALLBACK_TABLE, $callback);
     }
 }

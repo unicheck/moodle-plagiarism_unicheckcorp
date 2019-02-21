@@ -19,7 +19,7 @@
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
  * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
- * @copyright   2018 UKU Group, LTD, https://www.unicheck.com
+ * @copyright   2019 UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -41,7 +41,7 @@ require_once(dirname(__FILE__) . '/../../locallib.php');
  * @subpackage  plagiarism
  *
  * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
- * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @copyright   2019 UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class api_user_updated extends base {

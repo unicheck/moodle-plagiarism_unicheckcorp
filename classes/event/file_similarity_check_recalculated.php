@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * user_provider.class.php
+ * file_similarity_check_recalculated.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
@@ -23,60 +23,54 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plagiarism_unicheck\classes\entities\providers;
+namespace plagiarism_unicheck\event;
+
+use plagiarism_unicheck;
+use plagiarism_unicheck\classes\event\abstract_file_event;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
+require_once(dirname(__FILE__) . '/../../locallib.php');
+
 /**
- * Class user_provider
+ * Class file_similarity_check_recalculated
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
+ *
  * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   2019 UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class user_provider {
-
+class file_similarity_check_recalculated extends abstract_file_event {
     /**
-     * Find plagiarism user by id
+     * Init method.
      *
-     * @param int $id
-     *
-     * @return mixed
+     * @return void
      */
-    public static function find_by_id($id) {
-        global $DB;
-
-        return $DB->get_record(UNICHECK_USER_DATA_TABLE, ['id' => $id]);
+    protected function init() {
+        $this->data['crud'] = 'u';
+        $this->data['edulevel'] = self::LEVEL_OTHER;
+        $this->data['objecttable'] = UNICHECK_FILES_TABLE;
     }
 
     /**
-     * Find plagiarism user by moodle user id and current Unicheck API key
+     * Return the event name.
      *
-     * @param int    $userid
-     * @param string $apikey
-     *
-     * @return mixed
+     * @return string
      */
-    public static function find_by_user_id_and_api_key($userid, $apikey) {
-        global $DB;
-
-        return $DB->get_record(UNICHECK_USER_DATA_TABLE, ['user_id' => $userid, 'api_key' => $apikey]);
+    public static function get_name() {
+        return plagiarism_unicheck::trans('event:file_similarity_check_recalculated');
     }
 
     /**
-     * Create plagiarism user
+     * Returns description of what happened.
      *
-     * @param object $user
-     *
-     * @return bool|int
+     * @return string
      */
-    public static function create($user) {
-        global $DB;
-
-        return $DB->insert_record(UNICHECK_USER_DATA_TABLE, $user);
+    public function get_description() {
+        return "User file '{$this->other['fileid']}' similarity check recalculated in course module '{$this->contextinstanceid}'";
     }
 }

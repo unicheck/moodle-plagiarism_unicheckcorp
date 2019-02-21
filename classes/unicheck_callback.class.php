@@ -25,6 +25,7 @@
 
 namespace plagiarism_unicheck\classes;
 
+use plagiarism_unicheck\classes\entities\providers\callback_provider;
 use plagiarism_unicheck\classes\helpers\unicheck_check_helper;
 use plagiarism_unicheck\classes\helpers\unicheck_response;
 use plagiarism_unicheck\classes\helpers\unicheck_stored_file;
@@ -54,10 +55,15 @@ class unicheck_callback {
      * @uses file_upload_success
      * @uses file_upload_error
      * @uses similarity_check_finish
+     * @uses similarity_check_recalculated
      */
     public function handle(\stdClass $body, $token) {
         if (!isset($body->event_type)) {
             throw new \InvalidArgumentException("Event type does't exist");
+        }
+
+        if (!isset($body->resource_type)) {
+            throw new \InvalidArgumentException("Event resource type does't exist");
         }
 
         $methodname = str_replace('.', '_', strtolower($body->event_type));
@@ -65,7 +71,30 @@ class unicheck_callback {
             throw new \LogicException('Invalid callback event type');
         }
 
+        $apikey = unicheck_settings::get_settings('client_id');
+        if (!$apikey) {
+            throw new \InvalidArgumentException("Unicheck API key not set. Can't handle callback");
+        }
+
+        try {
+            $callback = new \stdClass();
+            $callback->api_key = $apikey;
+            $callback->event_type = $body->event_type;
+            $callback->event_id = $body->event_id;
+            $callback->resource_type = $body->resource_type;
+            $callback->resource_id = $body->{$body->resource_type}->id;
+            $callback->request_body = json_encode($body, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+            $callbackid = callback_provider::create($callback);
+            $callback->id = $callbackid;
+        } catch (\Exception $exception) {
+            throw new \InvalidArgumentException($exception->getMessage());
+        }
+
         $this->{$methodname}($body, $token);
+
+        $callback->processed = 1;
+        callback_provider::save($callback);
     }
 
     /**
@@ -73,6 +102,7 @@ class unicheck_callback {
      *
      * @param \stdClass $body
      * @param  string   $identifier
+     *
      * @throws \InvalidArgumentException
      */
     private function file_upload_success(\stdClass $body, $identifier) {
@@ -103,6 +133,7 @@ class unicheck_callback {
      *
      * @param \stdClass $body
      * @param string    $identifier
+     *
      * @throws \InvalidArgumentException
      */
     private function similarity_check_finish(\stdClass $body, $identifier) {
@@ -113,5 +144,22 @@ class unicheck_callback {
         $internalfile = unicheck_stored_file::get_plagiarism_file_by_identifier($identifier);
         $progress = 100 * $body->check->progress;
         unicheck_check_helper::check_complete($internalfile, $body->check, $progress);
+    }
+
+    /**
+     * similarity_check_recalculated
+     *
+     * @param \stdClass $body
+     * @param string    $identifier
+     *
+     * @throws \InvalidArgumentException
+     */
+    private function similarity_check_recalculated(\stdClass $body, $identifier) {
+        if (!isset($body->check)) {
+            throw new \InvalidArgumentException('Check data does not exist');
+        }
+
+        $internalfile = unicheck_stored_file::get_plagiarism_file_by_identifier($identifier);
+        unicheck_check_helper::check_recalculated($internalfile, $body->check);
     }
 }
