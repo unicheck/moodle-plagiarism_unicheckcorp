@@ -28,6 +28,7 @@ namespace plagiarism_unicheck\classes;
 use core\event\base;
 use plagiarism_unicheck;
 use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
+use plagiarism_unicheck\classes\entities\providers\user_provider;
 use plagiarism_unicheck\classes\entities\unicheck_archive;
 use plagiarism_unicheck\classes\exception\unicheck_exception;
 use plagiarism_unicheck\classes\permissions\capability;
@@ -102,6 +103,7 @@ class unicheck_core {
      * resubmit_file
      *
      * @param int $id
+     *
      * @return bool
      */
     public static function resubmit_file($id) {
@@ -146,6 +148,7 @@ class unicheck_core {
      * get_plagiarism_entity
      *
      * @param \stored_file $file
+     *
      * @return unicheck_file|unicheck_plagiarism_entity
      * @throws unicheck_exception
      */
@@ -273,11 +276,9 @@ class unicheck_core {
      * @return mixed
      */
     public static function get_external_token($cmid, $user = null) {
-        global $DB;
-
         $user = $user ? $user : self::get_user();
-
-        $storeduser = $DB->get_record(UNICHECK_USER_DATA_TABLE, ['user_id' => $user->id]);
+        $apikey = unicheck_settings::get_settings('client_id');
+        $storeduser = user_provider::find_by_user_id_and_api_key($user->id, $apikey);
 
         if ($storeduser) {
             return $storeduser->external_token;
@@ -289,8 +290,9 @@ class unicheck_core {
                 $externaluserdata->user_id = $user->id;
                 $externaluserdata->external_user_id = $resp->user->id;
                 $externaluserdata->external_token = $resp->user->token;
+                $externaluserdata->api_key = $apikey;
 
-                $apiuserid = $DB->insert_record(UNICHECK_USER_DATA_TABLE, $externaluserdata);
+                $apiuserid = user_provider::create($externaluserdata);
                 $externaluserdata->id = $apiuserid;
 
                 api_user_created::create_from_apiuser($externaluserdata)->trigger();

@@ -14,49 +14,73 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * unicheck_file_state.class.php
+ * callback_provider.class.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
  * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
- * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @copyright   2019 UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plagiarism_unicheck\classes\services\storage;
+namespace plagiarism_unicheck\classes\entities\providers;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
 /**
- * Class unicheck_file_metadata
+ * Class callback_provider
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
  * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
- * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @copyright   2019 UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class unicheck_file_metadata {
+class callback_provider {
+
     /**
-     * ARCHIVE_SUPPORTED_FILES_COUNT
+     * Find callback by event id
+     *
+     * @param int $eventid
+     *
+     * @return mixed
      */
-    const ARCHIVE_SUPPORTED_FILES_COUNT = 'archive_supported_files_count';
+    public static function find_by_event_id($eventid) {
+        global $DB;
+
+        return $DB->get_record(UNICHECK_CALLBACK_TABLE, ['event_id' => $eventid]);
+    }
+
     /**
-     * EXTRACTED_SUPPORTED_FILES_FROM_ARCHIVE_COUNT
+     * Create plagiarism callback
+     *
+     * @param \stdClass $callback
+     *
+     * @return bool|int
      */
-    const EXTRACTED_SUPPORTED_FILES_FROM_ARCHIVE_COUNT = 'extracted_supported_files_from_archive_count';
+    public static function create(\stdClass $callback) {
+        global $DB;
+
+        $callback->timecreated = time();
+        $callback->timemodified = time();
+
+        return $DB->insert_record(UNICHECK_CALLBACK_TABLE, $callback);
+    }
+
     /**
-     * CHAR_COUNT
+     * Update plagiarism callback
+     *
+     * @param \stdClass $callback
+     *
+     * @return bool
      */
-    const CHAR_COUNT = 'char_count';
-    /**
-     * CHEATING_CHAR_REPLACEMENTS_COUNT
-     */
-    const CHEATING_CHAR_REPLACEMENTS_COUNT = 'cheating_char_replacements_count';
-    /**
-     * CHEATING_CHAR_REPLACEMENTS_WORDS_COUNT
-     */
-    const CHEATING_CHAR_REPLACEMENTS_WORDS_COUNT = 'cheating_char_replacements_words_count';
+    public static function save(\stdClass $callback) {
+        global $DB;
+
+        $callback->timemodified = time();
+
+        return $DB->update_record(UNICHECK_CALLBACK_TABLE, $callback);
+    }
 }

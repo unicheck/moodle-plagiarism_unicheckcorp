@@ -39,6 +39,7 @@ use plagiarism_unicheck\classes\observers\submission_observer;
 use plagiarism_unicheck\classes\observers\workshop_observer;
 use plagiarism_unicheck\classes\services\storage\pluginfile_url;
 use plagiarism_unicheck\classes\unicheck_core;
+use plagiarism_unicheck\classes\observers\user_observer;
 
 /**
  * Class plagiarism_unicheck_observer
@@ -173,6 +174,15 @@ class plagiarism_unicheck_observer {
         }
 
         submission_observer::instance()->status_viewed(self::get_core($event), $event);
+    }
+
+    /**
+     * core_event_user_updated
+     *
+     * @param base $event
+     */
+    public static function core_event_user_updated(base $event) {
+        user_observer::instance()->user_updated($event);
     }
 
     /**

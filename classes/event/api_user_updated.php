@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * api_user_created.php
+ * api_user_updated.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
  * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
- * @copyright   2018 UKU Group, LTD, https://www.unicheck.com
+ * @copyright   2019 UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,17 +35,16 @@ if (!defined('MOODLE_INTERNAL')) {
 require_once(dirname(__FILE__) . '/../../locallib.php');
 
 /**
- * Class api_user_created
+ * Class api_user_updated
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
  *
  * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
- * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @copyright   2019 UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @since       Moodle 2.7
  */
-class api_user_created extends base {
+class api_user_updated extends base {
     /**
      * Init method.
      *
@@ -64,7 +63,7 @@ class api_user_created extends base {
      * @return string
      */
     public static function get_name() {
-        return plagiarism_unicheck::trans('event:api_user_created');
+        return plagiarism_unicheck::trans('event:api_user_updated');
     }
 
     /**
@@ -73,7 +72,7 @@ class api_user_created extends base {
      * @return string
      */
     public function get_description() {
-        return "API user with external ID '{$this->other['external_user_id']}'";
+        return "API user with token '{$this->other['external_token']}' updated";
     }
 
     /**
@@ -88,7 +87,8 @@ class api_user_created extends base {
             'relateduserid' => $apiuser->user_id,
             'objectid'      => $apiuser->id,
             'other'         => [
-                'external_user_id' => $apiuser->external_user_id
+                'external_user_id' => $apiuser->external_user_id,
+                'external_token'   => $apiuser->external_token
             ]
         ]);
     }
