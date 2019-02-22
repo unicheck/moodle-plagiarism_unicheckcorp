@@ -168,6 +168,7 @@ $string['archive:limitreachedfulldescription'] = 'There are more documents in th
 // Plugin events.
 $string['event:api_called'] = 'API request';
 $string['event:api_user_created'] = 'User created';
+$string['event:api_user_updated'] = 'User updated';
 $string['event:archive_files_unpacked'] = 'Archive files unpacked and ready for similarity checking';
 $string['event:archive_files_uploaded'] = 'Archive files uploaded';
 $string['event:archive_files_checked'] = 'Archive files checked';
@@ -177,6 +178,7 @@ $string['event:file_upload_completed'] = 'File upload completed';
 $string['event:file_upload_failed'] = 'File upload failed';
 $string['event:file_upload_started'] = 'File upload started';
 $string['event:file_similarity_check_completed'] = 'Similarity check completed';
+$string['event:file_similarity_check_recalculated'] = 'Similarity check recalculated';
 $string['event:file_similarity_check_failed'] = 'Similarity check failed';
 $string['event:file_similarity_check_started'] = 'Similarity check started';
 $string['sync_failed'] = 'Try to synchronize unprocessed files';
@@ -206,6 +208,13 @@ $string['privacy:metadata:plagiarism_unicheck_users'] = 'Stores users informatio
 $string['privacy:metadata:plagiarism_unicheck_users:user_id'] = 'The ID of the student or teacher';
 $string['privacy:metadata:plagiarism_unicheck_users:external_user_id'] = 'User ID in Unicheck service';
 $string['privacy:metadata:plagiarism_unicheck_users:external_token'] = 'User token in Unicheck service';
+
+$string['privacy:metadata:plagiarism_unicheck_callback'] = 'Table with incoming callbacks from the Unicheck service';
+$string['privacy:metadata:plagiarism_unicheck_callback:event_type'] = 'Unicheck event type';
+$string['privacy:metadata:plagiarism_unicheck_callback:event_id'] = 'Unicheck event ID';
+$string['privacy:metadata:plagiarism_unicheck_callback:resource_type'] = 'Unicheck resource type: file or check';
+$string['privacy:metadata:plagiarism_unicheck_callback:resource_id'] = 'Unicheck resource ID';
+$string['privacy:metadata:plagiarism_unicheck_callback:request_body'] = 'The request body contains all the information about the event in which there is information about the user resource.';
 
 $string['privacy:metadata:plagiarism_external_unicheck_api'] = 'Unicheck API';
 $string['privacy:metadata:plagiarism_external_unicheck_api:domain'] = 'Moodle server domain';

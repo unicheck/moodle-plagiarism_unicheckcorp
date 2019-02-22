@@ -109,6 +109,18 @@ class provider implements
             'privacy:metadata:plagiarism_unicheck_users'
         );
 
+        $collection->add_database_table(
+            'plagiarism_unicheck_callback',
+            [
+                'event_type'    => 'privacy:metadata:plagiarism_unicheck_callback:event_type',
+                'event_id'      => 'privacy:metadata:plagiarism_unicheck_callback:event_id',
+                'resource_type' => 'privacy:metadata:plagiarism_unicheck_callback:resource_type',
+                'resource_id'   => 'privacy:metadata:plagiarism_unicheck_callback:resource_id',
+                'request_body'  => 'privacy:metadata:plagiarism_unicheck_callback:request_body'
+            ],
+            'privacy:metadata:plagiarism_unicheck_callback'
+        );
+
         // External Services.
         $collection->link_external_location('External Unicheck API', [
             'domain'        => 'privacy:metadata:plagiarism_external_unicheck_api:domain',

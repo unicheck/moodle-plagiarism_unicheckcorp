@@ -36,6 +36,7 @@ use plagiarism_unicheck\classes\unicheck_settings;
 use plagiarism_unicheck\event\archive_files_checked;
 use plagiarism_unicheck\event\file_similarity_check_completed;
 use plagiarism_unicheck\event\file_similarity_check_failed;
+use plagiarism_unicheck\event\file_similarity_check_recalculated;
 use plagiarism_unicheck\event\file_similarity_check_started;
 
 if (!defined('MOODLE_INTERNAL')) {
@@ -137,6 +138,55 @@ class unicheck_check_helper {
 
             $parentcheck = json_decode(json_encode($parentcheck));
             self::check_complete($parentrecord, $parentcheck, $parentprogress);
+        }
+
+        return true;
+    }
+
+    /**
+     * check_recalculated
+     *
+     * @param \stdClass $plagiarismfile
+     * @param \stdClass $check
+     *
+     * @return bool
+     */
+    public static function check_recalculated(\stdClass &$plagiarismfile, \stdClass $check) {
+        global $DB;
+
+        $plagiarismfile->similarityscore = (float)$check->report->similarity;
+
+        $updated = unicheck_file_provider::save($plagiarismfile);
+        if (!$updated) {
+            file_similarity_check_failed::create_from_failed_plagiarismfile(
+                $plagiarismfile,
+                "Can't update DB row"
+            )->trigger();
+
+            return false;
+        }
+
+        file_similarity_check_recalculated::create_from_plagiarismfile($plagiarismfile)->trigger();
+
+        if ($plagiarismfile->parent_id !== null) {
+            $parentrecord = $DB->get_record(UNICHECK_FILES_TABLE, ['id' => $plagiarismfile->parent_id]);
+            $childs = $DB->get_records_select(UNICHECK_FILES_TABLE, "parent_id = ? AND state not in (?)",
+                [$plagiarismfile->parent_id, unicheck_file_state::HAS_ERROR]);
+
+            $similarity = 0;
+
+            foreach ($childs as $child) {
+                $similarity += $child->similarityscore;
+            }
+
+            $parentcheck = [
+                'report' => [
+                    'similarity' => round($similarity / count($childs), 2, PHP_ROUND_HALF_DOWN),
+                ]
+            ];
+
+            $parentcheck = json_decode(json_encode($parentcheck));
+            self::check_recalculated($parentrecord, $parentcheck);
         }
 
         return true;

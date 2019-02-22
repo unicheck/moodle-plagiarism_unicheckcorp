@@ -52,7 +52,7 @@ class plagiarism_unicheck_privacy_provider_testcase extends provider_testcase {
         $newcollection = provider::get_metadata($collection);
         $itemcollection = $newcollection->get_collection();
 
-        $this->assertCount(5, $itemcollection);
+        $this->assertCount(6, $itemcollection);
 
         // Verify core_plagiarism data is returned.
         $this->assertEquals('core_plagiarism', $itemcollection[0]->get_name());
@@ -85,9 +85,18 @@ class plagiarism_unicheck_privacy_provider_testcase extends provider_testcase {
         $this->assertArrayHasKey('external_user_id', $privacyfields);
         $this->assertArrayHasKey('external_token', $privacyfields);
 
-        // Verify plagiarism_external_unicheck_api data is returned.
-        $this->assertEquals('External Unicheck API', $itemcollection[4]->get_name());
+        // Verify plagiarism_unicheck_users data is returned.
+        $this->assertEquals('plagiarism_unicheck_callback', $itemcollection[4]->get_name());
         $privacyfields = $itemcollection[4]->get_privacy_fields();
+        $this->assertArrayHasKey('event_type', $privacyfields);
+        $this->assertArrayHasKey('event_id', $privacyfields);
+        $this->assertArrayHasKey('resource_type', $privacyfields);
+        $this->assertArrayHasKey('resource_id', $privacyfields);
+        $this->assertArrayHasKey('request_body', $privacyfields);
+
+        // Verify plagiarism_external_unicheck_api data is returned.
+        $this->assertEquals('External Unicheck API', $itemcollection[5]->get_name());
+        $privacyfields = $itemcollection[5]->get_privacy_fields();
         $this->assertArrayHasKey('domain', $privacyfields);
         $this->assertArrayHasKey('userid', $privacyfields);
         $this->assertArrayHasKey('useremail', $privacyfields);
