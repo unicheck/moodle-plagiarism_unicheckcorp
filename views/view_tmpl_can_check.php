@@ -31,10 +31,6 @@ use plagiarism_unicheck\classes\permissions\capability;
 
 global $PAGE, $OUTPUT;
 
-if (AJAX_SCRIPT) {
-    $PAGE->set_context(null);
-}
-
 $check = '';
 $modulecontext = context_module::instance($linkarray['cmid']);
 // This is a teacher viewing the responses.

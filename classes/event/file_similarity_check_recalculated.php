@@ -14,19 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * api_user_created.php
+ * file_similarity_check_recalculated.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
  * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
- * @copyright   2018 UKU Group, LTD, https://www.unicheck.com
+ * @copyright   2019 UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace plagiarism_unicheck\event;
 
-use core\event\base;
 use plagiarism_unicheck;
+use plagiarism_unicheck\classes\event\abstract_file_event;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -35,27 +35,25 @@ if (!defined('MOODLE_INTERNAL')) {
 require_once(dirname(__FILE__) . '/../../locallib.php');
 
 /**
- * Class api_user_created
+ * Class file_similarity_check_recalculated
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
  *
  * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
- * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @copyright   2019 UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @since       Moodle 2.7
  */
-class api_user_created extends base {
+class file_similarity_check_recalculated extends abstract_file_event {
     /**
      * Init method.
      *
      * @return void
      */
     protected function init() {
-        $this->data['crud'] = 'c';
+        $this->data['crud'] = 'u';
         $this->data['edulevel'] = self::LEVEL_OTHER;
-        $this->context = \context_system::instance();
-        $this->data['objecttable'] = UNICHECK_USER_DATA_TABLE;
+        $this->data['objecttable'] = UNICHECK_FILES_TABLE;
     }
 
     /**
@@ -64,7 +62,7 @@ class api_user_created extends base {
      * @return string
      */
     public static function get_name() {
-        return plagiarism_unicheck::trans('event:api_user_created');
+        return plagiarism_unicheck::trans('event:file_similarity_check_recalculated');
     }
 
     /**
@@ -73,23 +71,6 @@ class api_user_created extends base {
      * @return string
      */
     public function get_description() {
-        return "API user with external ID '{$this->other['external_user_id']}'";
-    }
-
-    /**
-     * Create from api user
-     *
-     * @param object $apiuser
-     *
-     * @return base
-     */
-    public static function create_from_apiuser($apiuser) {
-        return self::create([
-            'relateduserid' => $apiuser->user_id,
-            'objectid'      => $apiuser->id,
-            'other'         => [
-                'external_user_id' => $apiuser->external_user_id
-            ]
-        ]);
+        return "User file '{$this->other['fileid']}' similarity check recalculated in course module '{$this->contextinstanceid}'";
     }
 }

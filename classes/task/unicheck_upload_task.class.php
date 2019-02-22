@@ -200,6 +200,7 @@ class unicheck_upload_task extends unicheck_abstract_task {
      * Process single stored file
      *
      * @param \stored_file $file
+     *
      * @throws unicheck_exception
      */
     protected function process_single_file(\stored_file $file) {

@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * online_text_observer.class.php
+ * user_observer.class.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
@@ -26,16 +26,20 @@
 namespace plagiarism_unicheck\classes\observers;
 
 use core\event\base;
-use plagiarism_unicheck\classes\services\storage\interfaces\pluginfile_url_interface;
+use core\event\user_updated;
+use plagiarism_unicheck\classes\entities\providers\user_provider;
+use plagiarism_unicheck\classes\unicheck_api;
 use plagiarism_unicheck\classes\unicheck_core;
-use stored_file;
+use plagiarism_unicheck\classes\unicheck_settings;
+use plagiarism_unicheck\event\api_user_updated;
+use plagiarism_unicheck\event\error_handled;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
 /**
- * Class online_text_observer
+ * Class user_observer
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
@@ -43,29 +47,37 @@ if (!defined('MOODLE_INTERNAL')) {
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class online_text_observer extends abstract_observer {
+class user_observer extends abstract_observer {
     /**
-     * handle_event
+     * Handle user updated event
      *
-     * @param unicheck_core                 $core
-     * @param base                          $event
-     * @param pluginfile_url_interface|null $pluginfileurl
+     * @param base $event
+     *
+     * @return void
      */
-    public function assessable_uploaded(unicheck_core $core, base $event, pluginfile_url_interface $pluginfileurl = null) {
-        if (empty($event->other['content'])) {
+    public function user_updated(base $event) {
+        if (!$event instanceof user_updated) {
             return;
         }
 
-        $file = $core->create_file_from_content($event, $pluginfileurl);
+        try {
+            $moodleuser = $fileowner = unicheck_core::get_user($event->objectid);
+            if (!$moodleuser) {
+                return;
+            }
 
-        if (self::is_submition_draft($event)) {
-            return;
+            $apikey = unicheck_settings::get_settings('client_id');
+            $plagiarismuser = user_provider::find_by_user_id_and_api_key($event->objectid, $apikey);
+            if (!$plagiarismuser || empty($plagiarismuser->external_token)) {
+                return;
+            }
+
+            $response = unicheck_api::instance()->user_update($plagiarismuser->external_token, $moodleuser);
+            if ($response && $response->result) {
+                api_user_updated::create_from_apiuser($plagiarismuser)->trigger();
+            }
+        } catch (\Exception $exception) {
+            error_handled::create_from_exception($exception)->trigger();
         }
-
-        if ($file instanceof stored_file) {
-            $this->add_after_handle_task($file);
-        }
-
-        $this->after_handle_event($core);
     }
 }

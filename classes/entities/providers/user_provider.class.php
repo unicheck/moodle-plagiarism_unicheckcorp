@@ -14,49 +14,69 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * unicheck_file_state.class.php
+ * user_provider.class.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
  * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
- * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @copyright   2019 UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plagiarism_unicheck\classes\services\storage;
+namespace plagiarism_unicheck\classes\entities\providers;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
 /**
- * Class unicheck_file_metadata
+ * Class user_provider
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
  * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
- * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @copyright   2019 UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class unicheck_file_metadata {
+class user_provider {
+
     /**
-     * ARCHIVE_SUPPORTED_FILES_COUNT
+     * Find plagiarism user by id
+     *
+     * @param int $id
+     *
+     * @return mixed
      */
-    const ARCHIVE_SUPPORTED_FILES_COUNT = 'archive_supported_files_count';
+    public static function find_by_id($id) {
+        global $DB;
+
+        return $DB->get_record(UNICHECK_USER_DATA_TABLE, ['id' => $id]);
+    }
+
     /**
-     * EXTRACTED_SUPPORTED_FILES_FROM_ARCHIVE_COUNT
+     * Find plagiarism user by moodle user id and current Unicheck API key
+     *
+     * @param int    $userid
+     * @param string $apikey
+     *
+     * @return mixed
      */
-    const EXTRACTED_SUPPORTED_FILES_FROM_ARCHIVE_COUNT = 'extracted_supported_files_from_archive_count';
+    public static function find_by_user_id_and_api_key($userid, $apikey) {
+        global $DB;
+
+        return $DB->get_record(UNICHECK_USER_DATA_TABLE, ['user_id' => $userid, 'api_key' => $apikey]);
+    }
+
     /**
-     * CHAR_COUNT
+     * Create plagiarism user
+     *
+     * @param object $user
+     *
+     * @return bool|int
      */
-    const CHAR_COUNT = 'char_count';
-    /**
-     * CHEATING_CHAR_REPLACEMENTS_COUNT
-     */
-    const CHEATING_CHAR_REPLACEMENTS_COUNT = 'cheating_char_replacements_count';
-    /**
-     * CHEATING_CHAR_REPLACEMENTS_WORDS_COUNT
-     */
-    const CHEATING_CHAR_REPLACEMENTS_WORDS_COUNT = 'cheating_char_replacements_words_count';
+    public static function create($user) {
+        global $DB;
+
+        return $DB->insert_record(UNICHECK_USER_DATA_TABLE, $user);
+    }
 }

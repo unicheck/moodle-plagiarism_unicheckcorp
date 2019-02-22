@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.3.6] - 2019-02-21
+### Added 
+- Handle SIMILARITY.CHECK.RECALCULATED event for live recalculating in moodle plugin from Unicheck service
+- Saving all Unicheck callbacks in the database
+
+### Fixed
+- Incorrect check type display for teachers
+- Using the correct access rights when viewing the similarity report after changing API keys
+- The similarity report is sent to at the correct email address after the student has changed his email address.
+
 ## [1.3.5] - 2018-10-18
 ### Changed
 - Handle zero value of sensitivity settings
@@ -86,6 +96,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Change validation mode
 - Massive refactoring comparing to Unplag plugin
 
+[1.3.6]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v1.3.6
 [1.3.5]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v1.3.5
 [1.3.2]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v1.3.2
 [1.3.1]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v1.3.1
