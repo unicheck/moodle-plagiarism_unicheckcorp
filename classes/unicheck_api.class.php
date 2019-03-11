@@ -77,6 +77,10 @@ class unicheck_api {
      */
     const USER_CREATE = 'user/create';
     /**
+     * USER_CREATE
+     */
+    const USER_UPDATE = 'user/update/{utoken}';
+    /**
      * Get supported similarity check source types API url
      */
     const GET_SUPPORTED_SEARCH_TYPES = 'check/get_supported_search_types';
@@ -264,7 +268,7 @@ class unicheck_api {
      * @param object $user
      * @param bool   $cancomment
      *
-     * @return mixed
+     * @return \stdClass
      */
     public function user_create($user, $cancomment = false) {
         $postdata = [
@@ -276,6 +280,27 @@ class unicheck_api {
         ];
 
         return unicheck_api_request::instance()->http_post()->request(self::USER_CREATE, $postdata);
+    }
+
+    /**
+     * Update API user by external token and moodle user data
+     *
+     * @param string $externaltoken
+     * @param object $moodleuser
+     *
+     * @return \stdClass
+     */
+    public function user_update($externaltoken, $moodleuser) {
+        $postdata = [
+            'email'     => $moodleuser->email,
+            'firstname' => $moodleuser->firstname,
+            'lastname'  => $moodleuser->lastname
+        ];
+
+        return unicheck_api_request::instance()->http_post()->request(
+            str_replace('{utoken}', $externaltoken, self::USER_UPDATE),
+            $postdata
+        );
     }
 
     /**

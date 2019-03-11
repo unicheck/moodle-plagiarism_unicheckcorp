@@ -45,6 +45,7 @@ define('UNICHECK_FILES_TABLE', 'plagiarism_unicheck_files');
 define('UNICHECK_COMMENTS_TABLE', 'plagiarism_unicheck_comments');
 define('UNICHECK_USER_DATA_TABLE', 'plagiarism_unicheck_users');
 define('UNICHECK_CONFIG_TABLE', 'plagiarism_unicheck_config');
+define('UNICHECK_CALLBACK_TABLE', 'plagiarism_unicheck_callback');
 
 define('UNICHECK_CHECK_TYPE_WEB', 'web');
 define('UNICHECK_CHECK_TYPE_MY_LIBRARY', 'my_library');
