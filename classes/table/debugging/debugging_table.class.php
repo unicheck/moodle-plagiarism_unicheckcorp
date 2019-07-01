@@ -158,6 +158,7 @@ class debugging_table extends table_sql {
         $this->no_sorting('select');
         $this->no_sorting('identifier');
         $this->no_sorting('error_code');
+        $this->no_sorting('error_message');
         $this->no_sorting('select');
         $this->no_sorting('action');
 
