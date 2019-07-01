@@ -14,26 +14,24 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * version.php
+ * File access.php
  *
  * @package     plagiarism_unicheck
- * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @author      2019 Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
-
-if (!isset($plugin)) {
-    $plugin = new stdClass();
+if (!defined('MOODLE_INTERNAL')) {
+    die('Direct access to this script is forbidden.');
 }
 
-$plugin->version = 2018021531; // YYYYMMDDVV.
-$plugin->requires = 2017051501; // Requires Moodle 3.3 .
-$plugin->maturity = MATURITY_STABLE;
-
-$plugin->component = 'plagiarism_unicheck';
-$plugin->release = '2.4.2 (Build: 20190701)'; // Human-friendly version name.
-$plugin->dependencies = [
-    'mod_assign' => ANY_VERSION
+$definitions = [
+    'debugging' => [
+        'mode'                   => cache_store::MODE_APPLICATION,
+        'simplekeys'             => false,
+        'simpledata'             => false,
+        'staticacceleration'     => false,
+        'staticaccelerationsize' => null,
+        'ttl'                    => 0,
+    ],
 ];

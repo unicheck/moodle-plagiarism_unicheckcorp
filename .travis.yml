@@ -31,6 +31,8 @@ env:
     - DB=mysqli MOODLE_BRANCH=MOODLE_35_STABLE
     - DB=pgsql MOODLE_BRANCH=MOODLE_36_STABLE
     - DB=mysqli MOODLE_BRANCH=MOODLE_36_STABLE
+    - DB=pgsql MOODLE_BRANCH=MOODLE_37_STABLE
+    - DB=mysqli MOODLE_BRANCH=MOODLE_37_STABLE
 
 matrix:
   include:  # Moodle 3.3 minimum PHP 5.6.5 maximum 7.1

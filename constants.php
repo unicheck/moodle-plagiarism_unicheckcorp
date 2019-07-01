@@ -31,7 +31,9 @@ define('UNICHECK_PLAGIN_NAME', 'plagiarism_unicheck');
 
 define('UNICHECK_DOMAIN', 'https://unicheck.com/');
 define('UNICHECK_CORP_DOMAIN', 'https://corp.unicheck.com/');
-define('UNICHECK_API_URL', 'https://corpapi.unicheck.com/api/v2/');
+define('UNICHECK_CORP_EU_DOMAIN', 'https://corp.eu.unicheck.com/');
+define('UNICHECK_API_URL', 'https://corpapi.013.p1k.site/api/v2/');
+define('UNICHECK_EU_API_URL', 'https://corpapi.eu.unicheck.com/api/v2/');
 define('UNICHECK_CALLBACK_URL', '/plagiarism/unicheck/callback.php');
 
 define('UNICHECK_PROJECT_PATH', dirname(__FILE__) . '/');
@@ -62,4 +64,4 @@ define('UNICHECK_MODNAME_WORKSHOP', 'workshop');
 define('UNICHECK_MODNAME_FORUM', 'forum');
 define('UNICHECK_MODNAME_ASSIGN', 'assign');
 
-define('UNICHECK_DEBUG_MODE', false);
+define('UNICHECK_DEBUG_MODE', true);

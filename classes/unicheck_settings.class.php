@@ -27,6 +27,7 @@
 namespace plagiarism_unicheck\classes;
 
 use plagiarism_unicheck\classes\permissions\capability;
+use plagiarism_unicheck\classes\services\api\api_regions;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -170,7 +171,7 @@ class unicheck_settings {
         }
 
         $data = $DB->get_records(UNICHECK_CONFIG_TABLE, $condition, '', 'name,value');
-        $data = array_map(function($item) {
+        $data = array_map(function ($item) {
             return $item->value;
         }, $data);
 
@@ -189,6 +190,7 @@ class unicheck_settings {
      * This function should be used to initialise settings and check if plagiarism is enabled.
      *
      * @param null $key
+     *
      * @return bool|null
      * @throws \coding_exception
      */
@@ -236,6 +238,7 @@ class unicheck_settings {
      * Get setting capability
      *
      * @param string $setting
+     *
      * @return mixed|null
      */
     public static function get_capability($setting) {
@@ -265,7 +268,7 @@ class unicheck_settings {
     public static function get_supported_check_source_types() {
         $supportedchecktypes = [];
         $checktypes = unicheck_api::instance()->get_supported_search_types();
-        if (!$checktypes->result) {
+        if (!$checktypes || !$checktypes->result) {
             return [UNICHECK_CHECK_TYPE_WEB];
         }
 
@@ -279,9 +282,24 @@ class unicheck_settings {
     }
 
     /**
+     * Get current region
+     *
+     * @return string
+     */
+    public static function get_current_region() {
+        $apiregion = self::get_settings('api_region');
+        if (!$apiregion) {
+            $apiregion = api_regions::US_EAST_1;
+        }
+
+        return $apiregion;
+    }
+
+    /**
      * Get setting type
      *
      * @param string $setting
+     *
      * @return string
      */
     public static function get_setting_type($setting) {

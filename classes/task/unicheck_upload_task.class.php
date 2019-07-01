@@ -93,9 +93,16 @@ class unicheck_upload_task extends unicheck_abstract_task {
                 $this->ucore->enable_teamsubmission();
             }
 
-            $file = get_file_storage()->get_file_by_hash($data->pathnamehash);
+            $storage = get_file_storage();
+            $fs = $storage->get_file_system();
+
+            $file = $storage->get_file_by_hash($data->pathnamehash);
             $plagiarismentity = $this->ucore->get_plagiarism_entity($file);
             $this->internalfile = $plagiarismentity->get_internal_file();
+
+            if (!$fs->is_file_readable_remotely_by_storedfile($file)) {
+                throw new unicheck_exception(unicheck_exception::CAN_NOT_READ_FILE);
+            }
 
             if (!\plagiarism_unicheck::is_archive($file)) {
                 $this->process_single_file($file);
