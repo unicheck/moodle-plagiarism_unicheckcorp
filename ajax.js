@@ -100,6 +100,7 @@ M.plagiarismUnicheck.init = function(Y, contextid) {
 
     runPlugin();
 };
+/* jshint ignore:start */
 
 /**
  * Javascript helper function for plugin
@@ -176,9 +177,7 @@ M.plagiarismUnicheck.init_debugging_table = function(Y) {
                     alert(M.util.get_string('debugging:batchoperations:nofilesselected', 'plagiarism_unicheck'));
                     e.preventDefault();
                 } else {
-                    var action = operation.get('value');
                     var confirmmessage = M.util.get_string('debugging:batchoperations:confirm' + operation.get('value'), 'plagiarism_unicheck');
-
                     if (!confirm(confirmmessage)) {
                         e.preventDefault();
                     }
