@@ -189,10 +189,19 @@ class unicheck_status_table extends \html_table {
             plagiarism_unicheck::trans('debugging:statustable:check' . $currenttest) .
             "<br>Region: $apiregion<br>API Base URL: $apiurl<br>"
         );
-        if ($lastcurl->get_info()['http_code'] >= 500) {
+
+        $httpcode = $lastcurl->get_info()['http_code'];
+        if ($httpcode < 200 || $httpcode >= 500) {
             $unicheckhosttest->set_status(false);
-            $unicheckhosttest->set_restrictstr(json_encode($lastcurl->getResponse(),
-                JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+            if ($lastcurl->get_errno()) {
+                $unicheckhosttest->set_restrictstr($lastcurl->error);
+            }
+
+            if ($lastcurl->getResponse()) {
+                $unicheckhosttest->set_bypassstr(json_encode($lastcurl->getResponse(),
+                    JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+            }
+
             $unicheckhosttest->set_errorcode(availability_check_results::FAILED);
             $stoptestingby = $currenttest;
         } else {
@@ -209,7 +218,7 @@ class unicheck_status_table extends \html_table {
         );
 
         if (!$stoptestingby) {
-            if (in_array($lastcurl->get_info()['http_code'], [401, 403, 404])) {
+            if (in_array($httpcode, [401, 403, 404])) {
                 $unicheckapikeytest->set_status(false);
                 $unicheckapikeytest->set_errorcode(availability_check_results::FAILED);
                 $unicheckapikeytest->set_restrictstr(json_encode($lastcurl->getResponse(),
