@@ -141,7 +141,10 @@ if (!$filestable->is_downloading()) {
 
 $filestable->out(get_user_preferences(preferences::DEBUGGING_PER_PAGE, 20), true);
 
-if (!$filestable->is_downloading()) {
+if (!$filestable->is_downloading() && $filestable->totalrows > 0) {
     $batchoperationsform->display();
+}
+
+if (!$filestable->is_downloading()) {
     echo $OUTPUT->footer();
 }
