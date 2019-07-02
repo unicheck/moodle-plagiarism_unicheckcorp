@@ -84,10 +84,6 @@ class unicheck_api {
      * Get supported similarity check source types API url
      */
     const GET_SUPPORTED_SEARCH_TYPES = 'check/get_supported_search_types';
-    /**
-     * Integration test
-     */
-    const INTEGRATION_TEST = 'integration/test';
 
     /**
      * @var null|unicheck_api
@@ -360,27 +356,5 @@ class unicheck_api {
      */
     public function get_supported_search_types() {
         return unicheck_api_request::instance()->http_get()->request(self::GET_SUPPORTED_SEARCH_TYPES, []);
-    }
-
-    /**
-     * Integration test
-     *
-     * @return \stdClass
-     */
-    public function integration_test() {
-        global $CFG;
-        $postdata = [
-            'integration_type' => 'PLUGIN',
-            'callback_url'     => sprintf(
-                '%1$s%2$s?token=%3$s&tests=%4$s',
-                $CFG->wwwroot,
-                UNICHECK_CALLBACK_URL,
-                time(),
-                implode(',', ['callback_sent', 'has_license']
-                )
-            )
-        ];
-
-        return unicheck_api_request::instance()->http_post()->request(self::INTEGRATION_TEST, $postdata);
     }
 }
