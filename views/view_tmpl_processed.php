@@ -40,6 +40,10 @@ if (AJAX_SCRIPT) {
     $PAGE->set_context(null);
 }
 
+if (!isset($fileobj)) {
+    return null;
+}
+
 // Normal situation - Unicheck has successfully analyzed the file.
 $htmlparts = ['<span class="un_report">'];
 
@@ -62,7 +66,7 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
 
     if (isset($fileobj->similarityscore)) {
         if ($canviewsimilarity || $activitycfg[unicheck_settings::SHOW_STUDENT_SCORE]) {
-            $score = (float)$fileobj->similarityscore;
+            $score = (float) $fileobj->similarityscore;
             $rankclass = 'rankBlue';
             switch (true) {
                 case ($score >= 1 && $score < 25):

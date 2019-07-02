@@ -40,7 +40,7 @@ class restore_plagiarism_unicheck_plugin extends restore_plagiarism_plugin {
      * @param mixed $data
      */
     public function process_unicheckconfig($data) {
-        $data = (object)$data;
+        $data = (object) $data;
 
         set_config($this->task->get_courseid(), $data->value, $data->plugin);
     }
@@ -53,7 +53,7 @@ class restore_plagiarism_unicheck_plugin extends restore_plagiarism_plugin {
     public function process_unicheckconfigmod($data) {
         global $DB;
 
-        $data = (object)$data;
+        $data = (object) $data;
         $data->cm = $this->task->get_moduleid();
 
         $DB->insert_record(UNICHECK_CONFIG_TABLE, $data);
@@ -67,7 +67,7 @@ class restore_plagiarism_unicheck_plugin extends restore_plagiarism_plugin {
     public function process_unicheckfiles($data) {
         global $DB;
 
-        $data = (object)$data;
+        $data = (object) $data;
         $data->cm = $this->task->get_moduleid();
         $data->userid = $this->get_mappingid('user', $data->userid);
 

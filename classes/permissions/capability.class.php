@@ -27,6 +27,7 @@
 namespace plagiarism_unicheck\classes\permissions;
 
 use context_module;
+use plagiarism_unicheck\classes\unicheck_settings;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
@@ -123,5 +124,28 @@ class capability {
      */
     public static function user_can($capability, $cmid, $userid) {
         return has_capability($capability, context_module::instance($cmid), $userid);
+    }
+
+    /**
+     *  Check if user can view similarity check result
+     *
+     * @param int $cmid
+     * @param int $userid
+     *
+     * @return bool
+     */
+    public static function can_view_similarity_check_result($cmid, $userid) {
+        $activitycfg = unicheck_settings::get_activity_settings($cmid, null, true);
+        $canviewsimilarity = self::user_can(self::VIEW_SIMILARITY, $cmid, $userid);
+        if (!$canviewsimilarity) {
+            $canviewsimilarity = $activitycfg[unicheck_settings::SHOW_STUDENT_SCORE];
+        }
+
+        $canviewreport = self::user_can(self::VIEW_REPORT, $cmid, $userid);
+        if (!$canviewreport) {
+            $canviewreport = $activitycfg[unicheck_settings::SHOW_STUDENT_REPORT];
+        }
+
+        return in_array(true, [$canviewsimilarity, $canviewreport]);
     }
 }

@@ -53,7 +53,9 @@ class plagiarism_unicheck {
      * @var array
      */
     private static $supportedplagiarismmods = [
-        UNICHECK_MODNAME_ASSIGN, UNICHECK_MODNAME_WORKSHOP, UNICHECK_MODNAME_FORUM,
+        UNICHECK_MODNAME_ASSIGN,
+        UNICHECK_MODNAME_WORKSHOP,
+        UNICHECK_MODNAME_FORUM,
     ];
     /**
      * @var array
@@ -151,7 +153,7 @@ class plagiarism_unicheck {
      */
     public static function object_to_array($obj) {
         if (is_object($obj)) {
-            $obj = (array)$obj;
+            $obj = (array) $obj;
         }
         if (is_array($obj)) {
             $new = [];

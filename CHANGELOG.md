@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.3.7] - 2019-06-20
+### Added 
+- Unicheck Availability Status in debugging tab
+- Pagination and filter in debugging table
+- Unicheck API Region select in plugin settings tab
+
+### Changed 
+- The students do not see any mention about the service Unicheck when both settings 
+`Show similarity scores to student` and `Show similarity reports to student` within the meaning of **NO**
+- resource_id in Unicheck callbacks can be NULL
+
+### Fixed
+- `Please use file_data parameter` when the file cannot be read from the file system
+
 ## [1.3.6] - 2019-02-21
 ### Added 
 - Handle SIMILARITY.CHECK.RECALCULATED event for live recalculating in moodle plugin from Unicheck service
@@ -96,6 +110,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Change validation mode
 - Massive refactoring comparing to Unplag plugin
 
+[1.3.7]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v1.3.7
 [1.3.6]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v1.3.6
 [1.3.5]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v1.3.5
 [1.3.2]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v1.3.2

@@ -47,6 +47,7 @@ class plagiarism_unicheck_generator extends testing_data_generator {
      *
      * @param int $cmid
      * @param int $userid
+     *
      * @return unicheck_core
      */
     public function create_ucore($cmid, $userid) {
@@ -60,6 +61,7 @@ class plagiarism_unicheck_generator extends testing_data_generator {
      *
      * @param string $filepath
      * @param object $owner
+     *
      * @return stored_file
      */
     public function create_file_from_pathname($filepath, $owner) {
