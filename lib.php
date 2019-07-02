@@ -101,7 +101,7 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
             if ($file && plagiarism_unicheck::is_support_filearea($file->get_filearea())) {
                 $ucore = new unicheck_core($linkarray['cmid'], $file->get_userid(), $cm->modname);
 
-                if ($cm->modname == UNICHECK_MODNAME_ASSIGN && (bool)unicheck_assign::get($cm->instance)->teamsubmission) {
+                if ($cm->modname == UNICHECK_MODNAME_ASSIGN && (bool) unicheck_assign::get($cm->instance)->teamsubmission) {
                     $ucore->enable_teamsubmission();
                 }
 

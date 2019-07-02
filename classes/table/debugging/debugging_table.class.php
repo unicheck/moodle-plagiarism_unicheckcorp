@@ -106,6 +106,7 @@ class debugging_table extends table_sql {
             'module',
             'identifier',
             'timesubmitted',
+            'type',
             'error_message',
             'error_code',
             'action'
@@ -118,6 +119,7 @@ class debugging_table extends table_sql {
             plagiarism_unicheck::trans('debugging:table:module'),
             plagiarism_unicheck::trans('debugging:table:identifier'),
             plagiarism_unicheck::trans('debugging:table:timesubmitted'),
+            plagiarism_unicheck::trans('debugging:table:isarchive'),
             plagiarism_unicheck::trans('debugging:table:errormessage'),
             plagiarism_unicheck::trans('debugging:table:errorcode'),
             plagiarism_unicheck::trans('debugging:table:possibleoperations'),
@@ -133,9 +135,8 @@ class debugging_table extends table_sql {
             . 'JOIN {course_modules} cm ON cm.id = puf.cm '
             . 'JOIN {modules} m ON  m.id=cm.module';
 
-        $where = 'puf.parent_id IS NULL AND puf.type = :type AND (puf.errorresponse IS NOT NULL OR puf.state = :state)';
+        $where = 'puf.parent_id IS NULL AND (puf.errorresponse IS NOT NULL OR puf.state = :state)';
         $params = [
-            'type'  => unicheck_plagiarism_entity::TYPE_DOCUMENT,
             'state' => unicheck_file_state::HAS_ERROR
         ];
 
@@ -233,6 +234,19 @@ class debugging_table extends table_sql {
     }
 
     /**
+     * This function is called for each data row to allow processing of the type value.
+     *
+     * @param stdClass $row
+     *
+     * @return int
+     */
+    public function col_type(stdClass $row) {
+        return $row->type == unicheck_plagiarism_entity::TYPE_ARCHIVE
+            ? get_string('yes')
+            : get_string('no');
+    }
+
+    /**
      * This function is called for each data row to allow processing of the error_message value.
      *
      * @param stdClass $row
@@ -290,14 +304,14 @@ class debugging_table extends table_sql {
 
         if ($this->is_downloading()) {
             $operations = ['delete'];
-            if (!file_error_code::is_consider_file_issue($errorcode)) {
+            if ($row->type == unicheck_plagiarism_entity::TYPE_DOCUMENT && !file_error_code::is_consider_file_issue($errorcode)) {
                 $operations[] = $operations['resubmit'];
             }
 
             return implode(',', $operations);
         }
 
-        $builddebuglink = function ($row, $action) {
+        $builddebuglink = function($row, $action) {
             $actionurl = new moodle_url('/plagiarism/unicheck/debugging.php', [
                 'action'  => $action,
                 'id'      => $row->id,
@@ -311,7 +325,7 @@ class debugging_table extends table_sql {
         };
 
         $operations = [$builddebuglink($row, 'delete')];
-        if (!file_error_code::is_consider_file_issue($errorcode)) {
+        if ($row->type == unicheck_plagiarism_entity::TYPE_DOCUMENT && !file_error_code::is_consider_file_issue($errorcode)) {
             $operations[] = $builddebuglink($row, 'resubmit');
         }
 

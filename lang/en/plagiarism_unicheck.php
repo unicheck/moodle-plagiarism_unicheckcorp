@@ -261,6 +261,7 @@ $string['debugging:filter:button:reset'] = 'Reset filters';
 $string['debugging:table:module'] = 'Module';
 $string['debugging:table:identifier'] = 'Identifier';
 $string['debugging:table:timesubmitted'] = 'Submitted time';
+$string['debugging:table:isarchive'] = 'Is archive';
 $string['debugging:table:attempts'] = 'Attempts made';
 $string['debugging:table:errormessage'] = 'Error message';
 $string['debugging:table:errorcode'] = 'Error code';

@@ -192,8 +192,8 @@ class sync_frozen_task extends \core\task\scheduled_task {
                     ]);
                     $archivesimilarity = round($similarity / $checkedcount, 2, PHP_ROUND_HALF_DOWN);
                     $archive->progress = 100;
-                    $archive->reporturl = (string)$reporturl->out_as_local_url();
-                    $archive->reportediturl = (string)$reporturl->out_as_local_url();
+                    $archive->reporturl = (string) $reporturl->out_as_local_url();
+                    $archive->reportediturl = (string) $reporturl->out_as_local_url();
                     $archive->similarityscore = $archivesimilarity;
                     $archive->state = unicheck_file_state::CHECKED;
                     unicheck_file_provider::save($archive);

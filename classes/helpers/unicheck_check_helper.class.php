@@ -69,7 +69,7 @@ class unicheck_check_helper {
             $plagiarismfile->state = unicheck_file_state::CHECKED;
         }
 
-        $plagiarismfile->similarityscore = (float)$check->report->similarity;
+        $plagiarismfile->similarityscore = (float) $check->report->similarity;
         $plagiarismfile->reporturl = $check->report->view_url;
         $plagiarismfile->reportediturl = $check->report->view_edit_url;
         $plagiarismfile->progress = round($progress, 0, PHP_ROUND_HALF_DOWN);
@@ -91,11 +91,11 @@ class unicheck_check_helper {
                     archive_files_checked::create_from_plagiarismfile($plagiarismfile)->trigger();
                     break;
                 default:
-                    $charreplcount = (int)$check->report->cheating->char_replacement_count;
-                    $charreplwordscount = (int)$check->report->cheating->char_replacement_words_count;
+                    $charreplcount = (int) $check->report->cheating->char_replacement_count;
+                    $charreplwordscount = (int) $check->report->cheating->char_replacement_words_count;
 
                     unicheck_file_provider::add_metadata($plagiarismfile->id, [
-                        unicheck_file_metadata::CHAR_COUNT                             => (int)$check->report->char_count,
+                        unicheck_file_metadata::CHAR_COUNT                             => (int) $check->report->char_count,
                         unicheck_file_metadata::CHEATING_CHAR_REPLACEMENTS_COUNT       => $charreplcount,
                         unicheck_file_metadata::CHEATING_CHAR_REPLACEMENTS_WORDS_COUNT => $charreplwordscount,
 
@@ -131,8 +131,8 @@ class unicheck_check_helper {
             $parentcheck = [
                 'report' => [
                     'similarity'    => round($similarity / count($childs), 2, PHP_ROUND_HALF_DOWN),
-                    'view_url'      => (string)$reporturl->out_as_local_url(),
-                    'view_edit_url' => (string)$reporturl->out_as_local_url(),
+                    'view_url'      => (string) $reporturl->out_as_local_url(),
+                    'view_edit_url' => (string) $reporturl->out_as_local_url(),
                 ],
             ];
 
@@ -154,7 +154,7 @@ class unicheck_check_helper {
     public static function check_recalculated(\stdClass &$plagiarismfile, \stdClass $check) {
         global $DB;
 
-        $plagiarismfile->similarityscore = (float)$check->report->similarity;
+        $plagiarismfile->similarityscore = (float) $check->report->similarity;
 
         $updated = unicheck_file_provider::save($plagiarismfile);
         if (!$updated) {

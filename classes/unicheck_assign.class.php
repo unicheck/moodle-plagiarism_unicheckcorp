@@ -130,7 +130,7 @@ class unicheck_assign {
 
         $sql = 'SELECT COUNT(id) FROM {assign_submission} WHERE id = ? AND status = ?';
 
-        return (bool)$DB->count_records_sql($sql, [$id, 'draft']);
+        return (bool) $DB->count_records_sql($sql, [$id, 'draft']);
     }
 
     /**
@@ -177,7 +177,7 @@ class unicheck_assign {
     /**
      * Get onlinetext submission information from the database
      *
-     * @param  int $submissionid
+     * @param int $submissionid
      *
      * @return mixed
      */

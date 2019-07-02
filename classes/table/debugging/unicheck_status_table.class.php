@@ -267,7 +267,7 @@ class unicheck_status_table extends \html_table {
         $crontest = new availability_check_results($currenttest);
 
         $adhoctaskscount = $DB->count_records('task_adhoc', ['component' => UNICHECK_PLAGIN_NAME]);
-        $lastexecution = (int)$DB->get_field_sql("SELECT MIN(nextruntime) FROM {task_adhoc}");
+        $lastexecution = (int) $DB->get_field_sql("SELECT MIN(nextruntime) FROM {task_adhoc}");
 
         $infotext = plagiarism_unicheck::trans('debugging:statustable:check' . $currenttest)
             . "<br>Tasks count: $adhoctaskscount";

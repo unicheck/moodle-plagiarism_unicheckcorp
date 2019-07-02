@@ -56,7 +56,7 @@ class setup_form extends moodleform {
     public function definition() {
         $mform = &$this->_form;
 
-        $addyesnoelem = function ($setting, $transkey, $defaultvalue = null) use (&$mform) {
+        $addyesnoelem = function($setting, $transkey, $defaultvalue = null) use (&$mform) {
             $ynoptions = [get_string('no'), get_string('yes')];
             $mform->addElement('select', $setting, plagiarism_unicheck::trans($transkey), $ynoptions);
             $mform->addHelpButton($setting, $transkey, UNICHECK_PLAGIN_NAME);

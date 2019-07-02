@@ -51,8 +51,8 @@ if (empty($cid) && !empty($linkarray['cmid'])) {
     $cid = $linkarray['cmid'];
 }
 
-$getrankclass = function ($fileobj) {
-    $score = (float)$fileobj->similarityscore;
+$getrankclass = function($fileobj) {
+    $score = (float) $fileobj->similarityscore;
     $rankclass = 'rankBlue';
     switch (true) {
         case ($score >= 1 && $score < 25):
@@ -72,14 +72,14 @@ $getrankclass = function ($fileobj) {
     return $rankclass;
 };
 
-$getcheatingblock = function ($reporturl = null) use ($fileobj, $metadata) {
+$getcheatingblock = function($reporturl = null) use ($fileobj, $metadata) {
     $htmlparts = [];
     if ($fileobj->type === unicheck_plagiarism_entity::TYPE_ARCHIVE) {
         return '';
     }
 
     if (isset($metadata[unicheck_file_metadata::CHEATING_CHAR_REPLACEMENTS_COUNT])) {
-        $cheatingchars = (int)$metadata[unicheck_file_metadata::CHEATING_CHAR_REPLACEMENTS_COUNT];
+        $cheatingchars = (int) $metadata[unicheck_file_metadata::CHEATING_CHAR_REPLACEMENTS_COUNT];
         if ($cheatingchars > 0) {
             $htmlparts[] = ($reporturl) ? sprintf(
                 '<a title="%s" href="%s" target="_blank" class="un-cheating">',

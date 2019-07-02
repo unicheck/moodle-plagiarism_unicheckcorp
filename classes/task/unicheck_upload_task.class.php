@@ -89,7 +89,7 @@ class unicheck_upload_task extends unicheck_abstract_task {
             $modname = $this->get_modname($data->ucore);
             $this->ucore = new unicheck_core($data->ucore->cmid, $data->ucore->userid, $modname);
             if ($modname == UNICHECK_MODNAME_ASSIGN
-                && (bool)unicheck_assign::get_by_cmid($this->ucore->cmid)->teamsubmission) {
+                && (bool) unicheck_assign::get_by_cmid($this->ucore->cmid)->teamsubmission) {
                 $this->ucore->enable_teamsubmission();
             }
 
