@@ -92,10 +92,16 @@ class unicheck_status_table extends \html_table {
     }
 
     /**
-     * reset_cache
+     * reset table cache
+     *
+     * @param \moodle_url|null $redirecturl
      */
-    public function reset_cache() {
+    public function reset_cache(\moodle_url $redirecturl = null) {
         $this->cache->purge();
+
+        if ($redirecturl) {
+            redirect($redirecturl);
+        }
     }
 
     /**

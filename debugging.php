@@ -63,6 +63,27 @@ $filestable = new debugging_table('files', [
     debugging_table::TIMESUBMITTED_TO_CONDITION   => get_user_preferences(preferences::DEBUGGING_TIME_SUBMITTED_TO)
 ], $exportfilename, $downloadformat);
 
+// Apply forms actions.
+if (!$filestable->is_downloading()) {
+    $unicheckstatustable = new unicheck_status_table();
+    $resetcacheform = new unicheck_status_recheck_form();
+    $batchoperationsform = new batch_operations_form(
+        null,
+        [],
+        'post',
+        '',
+        ['class' => 'debuggingbatchoperationsform']
+    );
+    $filterform = new filter_options_form();
+
+    if ($resetcacheform->is_submitted()) {
+        $unicheckstatustable->reset_cache(new moodle_url("debugging.php"));
+    }
+
+    $filterform->apply_filters(new moodle_url("debugging.php"));
+    $batchoperationsform->apply_operation();
+}
+
 if (!$filestable->is_downloading()) {
     $PAGE->set_title(plagiarism_unicheck::trans('unicheckdebug'));
     $PAGE->set_heading(plagiarism_unicheck::trans('unicheckdebug'));
@@ -88,37 +109,14 @@ if (!$filestable->is_downloading()) {
 
     $currenttab = 'unicheckdebug';
     require_once(dirname(__FILE__) . '/views/view_tabs.php');
-}
 
-// Unicheck status table.
-if (!$filestable->is_downloading()) {
+    // Unicheck status table.
     echo $OUTPUT->heading(plagiarism_unicheck::trans('debugging:statustable:header'));
-
-    $unicheckstatustable = new unicheck_status_table();
-    $resetcacheform = new unicheck_status_recheck_form();
-
-    if ($resetcacheform->is_submitted()) {
-        $unicheckstatustable->reset_cache();
-        redirect(new moodle_url("debugging.php"));
-    }
 
     $unicheckstatustable->display();
     $resetcacheform->display();
-}
-// Data table.
-if (!$filestable->is_downloading()) {
-    $batchoperationsform = new batch_operations_form(
-        null,
-        [],
-        'post',
-        '',
-        ['class' => 'debuggingbatchoperationsform']
-    );
-    $filterform = new filter_options_form();
 
-    $batchoperationsform->apply_operation();
-    $filterform->apply_filters(new moodle_url("debugging.php"));
-
+    // Files table.
     if ($id && confirm_sesskey()) {
         switch ($action) {
             case 'resubmit':
@@ -145,8 +143,5 @@ $filestable->out(get_user_preferences(preferences::DEBUGGING_PER_PAGE, 20), true
 
 if (!$filestable->is_downloading()) {
     $batchoperationsform->display();
-}
-
-if (!$filestable->is_downloading()) {
     echo $OUTPUT->footer();
 }

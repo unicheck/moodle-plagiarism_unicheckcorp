@@ -68,10 +68,12 @@ class filter_options_form extends moodleform {
         ];
         $mform->addElement('select', 'perpage', plagiarism_unicheck::trans('debugging:filter:perpage'), $options);
         $mform->addElement('text', 'errormessage', plagiarism_unicheck::trans('debugging:filter:errormessage'));
+        $mform->setType('errormessage', PARAM_TEXT);
 
         $dateoptions = [
             'startyear' => date('Y', $this->get_min_timesubmitted()),
-            'stopyear'  => date('Y')
+            'stopyear'  => date('Y'),
+            'optional' => false
         ];
 
         $mform->addElement(
