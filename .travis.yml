@@ -47,6 +47,8 @@ matrix:
   exclude:   # Moodle 3.7 minimum PHP 7.1
     - php: "7.0"
       env: DB=pgsql MOODLE_BRANCH=MOODLE_37_STABLE
+    - php: "7.0"
+      env: DB=mysqli MOODLE_BRANCH=MOODLE_37_STABLE
 
 before_install:
   - phpenv config-rm xdebug.ini
