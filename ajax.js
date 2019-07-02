@@ -100,7 +100,6 @@ M.plagiarismUnicheck.init = function(Y, contextid) {
 
     runPlugin();
 };
-/* jshint ignore:start */
 
 /**
  * Javascript helper function for plugin
