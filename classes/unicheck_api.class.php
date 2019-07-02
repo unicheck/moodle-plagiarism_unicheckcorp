@@ -144,12 +144,12 @@ class unicheck_api {
 
         $content = null;
 
-        $mustindex = (bool)unicheck_settings::get_activity_settings($cmid, unicheck_settings::ADD_TO_INSTITUTIONAL_LIBRARY);
+        $mustindex = (bool) unicheck_settings::get_activity_settings($cmid, unicheck_settings::ADD_TO_INSTITUTIONAL_LIBRARY);
         $postdata['options']['no_index'] = !$mustindex;
 
         $response = unicheck_api_request::instance()->http_post()->request(self::FILE_UPLOAD, $postdata);
         if (!is_object($response)) {
-            $response = (object)[
+            $response = (object) [
                 "result" => false,
                 "errors" => [
                     [
@@ -325,11 +325,11 @@ class unicheck_api {
             $options['words_sensitivity'] = $wordssensitivity;
         }
 
-        $sendstudentreport = (bool)unicheck_settings::get_activity_settings($cmid, unicheck_settings::SENT_STUDENT_REPORT);
-        $showstudentscore = (bool)unicheck_settings::get_activity_settings($cmid, unicheck_settings::SHOW_STUDENT_SCORE);
+        $sendstudentreport = (bool) unicheck_settings::get_activity_settings($cmid, unicheck_settings::SENT_STUDENT_REPORT);
+        $showstudentscore = (bool) unicheck_settings::get_activity_settings($cmid, unicheck_settings::SHOW_STUDENT_SCORE);
 
         if (null !== $fileowner && $sendstudentreport && $showstudentscore) {
-            $showstudentreport = (bool)unicheck_settings::get_activity_settings(
+            $showstudentreport = (bool) unicheck_settings::get_activity_settings(
                 $cmid,
                 unicheck_settings::SHOW_STUDENT_REPORT
             );

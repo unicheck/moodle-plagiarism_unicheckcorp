@@ -70,7 +70,7 @@ class provider implements
     /**
      * Returns meta data about this system.
      *
-     * @param   collection $collection The initialised collection to add items to.
+     * @param collection $collection The initialised collection to add items to.
      *
      * @return  collection     A listing of user data stored through this system.
      */
@@ -166,10 +166,10 @@ class provider implements
     /**
      * Export all plagiarism data from each plagiarism plugin for the specified userid and context.
      *
-     * @param   int      $userid     The user to export.
-     * @param   \context $context    The context to export.
-     * @param   array    $subcontext The subcontext within the context to export this information to.
-     * @param   array    $linkarray  The weird and wonderful link array used to display information for a specific item
+     * @param int      $userid     The user to export.
+     * @param \context $context    The context to export.
+     * @param array    $subcontext The subcontext within the context to export this information to.
+     * @param array    $linkarray  The weird and wonderful link array used to display information for a specific item
      */
     public static function _export_plagiarism_user_data($userid, \context $context, array $subcontext, array $linkarray) {
         if (!$userid) {
@@ -207,8 +207,8 @@ class provider implements
     /**
      * Delete all user information for the provided user and context.
      *
-     * @param  int      $userid  The user to delete
-     * @param  \context $context The context to refine the deletion.
+     * @param int      $userid  The user to delete
+     * @param \context $context The context to refine the deletion.
      */
     public static function _delete_plagiarism_for_user($userid, \context $context) {
         global $DB;
@@ -219,8 +219,8 @@ class provider implements
     /**
      * Delete all user information for the provided users and context.
      *
-     * @param  array    $userids The users to delete
-     * @param  \context $context The context to refine the deletion.
+     * @param array    $userids The users to delete
+     * @param \context $context The context to refine the deletion.
      */
     public static function delete_plagiarism_for_users(array $userids, \context $context) {
         global $DB;
@@ -235,10 +235,10 @@ class provider implements
     /**
      * Export all plagiarism data from each plagiarism plugin for the specified userid and context.
      *
-     * @param   int      $userid     The user to export.
-     * @param   \context $context    The context to export.
-     * @param   array    $subcontext The subcontext within the context to export this information to.
-     * @param   array    $linkarray  The weird and wonderful link array used to display information for a specific item
+     * @param int      $userid     The user to export.
+     * @param \context $context    The context to export.
+     * @param array    $subcontext The subcontext within the context to export this information to.
+     * @param array    $linkarray  The weird and wonderful link array used to display information for a specific item
      */
     protected static function export_plagiarism_file_report($userid, \context $context, array $subcontext, array $linkarray) {
         global $DB;
@@ -276,10 +276,10 @@ class provider implements
     /**
      * Export all plagiarism data from each plagiarism plugin for the specified userid and context.
      *
-     * @param   int      $userid     The user to export.
-     * @param   \context $context    The context to export.
-     * @param   array    $subcontext The subcontext within the context to export this information to.
-     * @param   array    $linkarray  The weird and wonderful link array used to display information for a specific item
+     * @param int      $userid     The user to export.
+     * @param \context $context    The context to export.
+     * @param array    $subcontext The subcontext within the context to export this information to.
+     * @param array    $linkarray  The weird and wonderful link array used to display information for a specific item
      */
     protected static function export_plagiarism_content_report($userid, \context $context, array $subcontext, array $linkarray) {
         global $DB;
@@ -342,7 +342,7 @@ class provider implements
      */
     protected static function export_plagiarism_metadata($report, \context $context, array $subcontext) {
 
-        $value = (object)[
+        $value = (object) [
             'cm'                 => $report->cm,
             'identifier'         => $report->identifier,
             'check_id'           => $report->check_id,

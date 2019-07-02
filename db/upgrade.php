@@ -166,5 +166,18 @@ function xmldb_plagiarism_unicheck_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2018021529, 'plagiarism', 'unicheck');
     }
 
+    if ($oldversion < 2018021531) {
+        $table = new xmldb_table('plagiarism_unicheck_callback');
+
+        // Changing nullability of field resource_id on table plagiarism_unicheck_callback to null.
+        $field = new xmldb_field('resource_id', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'resource_type');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_notnull($table, $field);
+        }
+
+        // Unicheck savepoint reached.
+        upgrade_plugin_savepoint(true, 2018021531, 'plagiarism', 'unicheck');
+    }
+
     return true;
 }
