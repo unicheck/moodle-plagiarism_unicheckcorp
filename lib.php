@@ -28,6 +28,7 @@ use plagiarism_unicheck\classes\entities\unicheck_archive;
 use plagiarism_unicheck\classes\forms\module_form;
 use plagiarism_unicheck\classes\helpers\unicheck_linkarray;
 use plagiarism_unicheck\classes\permissions\capability;
+use plagiarism_unicheck\classes\services\storage\filesize_checker;
 use plagiarism_unicheck\classes\task\unicheck_bulk_check_assign_files;
 use plagiarism_unicheck\classes\unicheck_assign;
 use plagiarism_unicheck\classes\unicheck_core;
@@ -78,6 +79,7 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
      * @return string
      */
     public function get_links($linkarray) {
+        global $USER;
         if (!plagiarism_unicheck::is_plugin_enabled() || !unicheck_settings::get_activity_settings(
                 $linkarray['cmid'], unicheck_settings::ENABLE_UNICHECK
             )
@@ -90,11 +92,16 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
 
         $output = '';
         if (self::is_enabled_module('mod_' . $cm->modname)) {
+            // Not allowed to view similarity check result.
+            if (!capability::can_view_similarity_check_result($linkarray['cmid'], $USER->id)) {
+                return null;
+            }
+
             $file = unicheck_linkarray::get_file_from_linkarray($cm, $linkarray);
             if ($file && plagiarism_unicheck::is_support_filearea($file->get_filearea())) {
                 $ucore = new unicheck_core($linkarray['cmid'], $file->get_userid(), $cm->modname);
 
-                if ($cm->modname == UNICHECK_MODNAME_ASSIGN && (bool)unicheck_assign::get($cm->instance)->teamsubmission) {
+                if ($cm->modname == UNICHECK_MODNAME_ASSIGN && (bool) unicheck_assign::get($cm->instance)->teamsubmission) {
                     $ucore->enable_teamsubmission();
                 }
 
@@ -103,7 +110,7 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
                     $output = unicheck_linkarray::get_output_for_linkarray($fileobj, $cm, $linkarray);
                 }
             } else {
-                if (isset($linkarray['content'])) {
+                if (isset($linkarray['content']) && filesize_checker::is_valid_content($linkarray['content'])) {
                     $output = require(dirname(__FILE__) . '/views/' . 'view_tmpl_can_check.php');
                 }
             }

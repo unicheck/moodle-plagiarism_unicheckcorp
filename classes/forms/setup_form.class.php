@@ -30,6 +30,8 @@ use coding_exception;
 use core_component;
 use moodleform;
 use plagiarism_unicheck;
+use plagiarism_unicheck\classes\services\api\api_regions;
+use plagiarism_unicheck\classes\unicheck_settings;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
@@ -66,16 +68,29 @@ class setup_form extends moodleform {
             }
         };
 
+        $currentregion = unicheck_settings::get_current_region();
+        $currentcorpdomain = api_regions::get_base_url_by_region($currentregion);
         $addyesnoelem('unicheck_use', 'enable_plugin', false);
 
         $settingstext = '<div id="fitem_id_settings_link" class="fitem fitem_ftext ">
                             <div class="felement ftext">
-                                <a href="' . UNICHECK_CORP_DOMAIN . 'profile/apisettings" target="_blank"> '
+                                <a href="' . $currentcorpdomain . 'profile/apisettings" target="_blank"> '
             . plagiarism_unicheck::trans('unicheck_settings_url_text') . '
                                 </a>
                             </div>
                         </div>';
         $mform->addElement('html', $settingstext);
+
+        $apiregionoptions = [];
+        foreach (api_regions::get_list() as $apiregion) {
+            $apiregionoptions[$apiregion] = plagiarism_unicheck::trans('apiregion:' . $apiregion);
+        }
+
+        $mform->addElement('select', 'unicheck_api_region', plagiarism_unicheck::trans('api_region'), $apiregionoptions);
+        $mform->addRule('unicheck_api_region', null, 'required', null, 'client');
+        $mform->addHelpButton('unicheck_api_region', 'api_region', UNICHECK_PLAGIN_NAME);
+        $mform->setDefault('unicheck_api_region', api_regions::US_EAST_1);
+        $mform->setType('unicheck_api_region', PARAM_TEXT);
 
         $mform->addElement('text', 'unicheck_client_id', plagiarism_unicheck::trans('client_id'));
         $mform->addHelpButton('unicheck_client_id', 'client_id', UNICHECK_PLAGIN_NAME);

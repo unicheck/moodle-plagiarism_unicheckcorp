@@ -94,13 +94,13 @@ class module_form extends moodleform {
         /** @var MoodleQuickForm $mform */
         $mform = &$this->_form;
 
-        $defaultsforfield = function (MoodleQuickForm &$mform, $setting, $defaultvalue) {
+        $defaultsforfield = function(MoodleQuickForm &$mform, $setting, $defaultvalue) {
             if (!isset($mform->exportValues()[$setting]) || is_null($mform->exportValues()[$setting])) {
                 $mform->setDefault($setting, $defaultvalue);
             }
         };
 
-        $addyesnoelem = function ($setting, $showhelpballoon = false, $defaultvalue = null) use (&$mform, $defaultsforfield) {
+        $addyesnoelem = function($setting, $showhelpballoon = false, $defaultvalue = null) use (&$mform, $defaultsforfield) {
             $ynoptions = [get_string('no'), get_string('yes')];
             $elem = $mform->addElement('select', $setting, plagiarism_unicheck::trans($setting), $ynoptions);
             if ($showhelpballoon) {
@@ -118,7 +118,7 @@ class module_form extends moodleform {
             return $elem;
         };
 
-        $addtextelem = function ($setting, $defaultvalue = null) use ($defaultsforfield, &$mform) {
+        $addtextelem = function($setting, $defaultvalue = null) use ($defaultsforfield, &$mform) {
             $elem = $mform->addElement('text', $setting, plagiarism_unicheck::trans($setting));
             $mform->addHelpButton($setting, $setting, UNICHECK_PLAGIN_NAME);
             $mform->setType($setting, unicheck_settings::get_setting_type($setting));
@@ -191,7 +191,7 @@ class module_form extends moodleform {
             true
         );
 
-        $mform->addFormRule(function ($values) {
+        $mform->addFormRule(function($values) {
             // Number could not be less than 0.
             $errors = [];
             if (isset($values[unicheck_settings::SENSITIVITY_SETTING_NAME]) &&

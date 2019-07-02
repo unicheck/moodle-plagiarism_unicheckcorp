@@ -53,10 +53,10 @@ class unicheck_api_fixture {
      */
     public function upload_file(&$content, $filename, $format = 'html', $cmid, $owner = null, $internalfile) {
 
-        return (object)[
+        return (object) [
             "result"         => true,
             "errors"         => [],
-            "file"           => (object)[
+            "file"           => (object) [
                 "id"                => null,
                 'uuid'              => '7d812e4747b549a4be9807e16f975f25',
                 'name'              => $filename,

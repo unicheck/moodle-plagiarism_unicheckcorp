@@ -14,54 +14,52 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * unicheck_exception.class.php
+ * integration_api.class.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @author      Andrew Chirskiy <a.chirskiy@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plagiarism_unicheck\classes\exception;
+namespace plagiarism_unicheck\classes\services\api;
+
+use plagiarism_unicheck\classes\unicheck_api_request;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
 /**
- * Class unicheck_exception
+ * Class integration_api
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- *
- * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @author      2019 Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class unicheck_exception extends \Exception {
+class integration_api {
+
     /**
-     * ARCHIVE_IS_EMPTY
+     * Integration test
      */
-    const ARCHIVE_IS_EMPTY = 'Archive is empty or contains document(s) with no text';
+    const INTEGRATION_TEST = 'integration/test';
+
     /**
-     * ARCHIVE_CANT_BE_OPEN
+     * Integration test
+     *
+     * @param string $callbackurl
+     *
+     * @return \stdClass
      */
-    const ARCHIVE_CANT_BE_OPEN = 'Can not open archive';
-    /**
-     * UNSUPPORTED_MIMETYPE
-     */
-    const UNSUPPORTED_MIMETYPE = 'Unsupported mimetype';
-    /**
-     * FILE_NOT_FOUND
-     */
-    const FILE_NOT_FOUND = 'File not found';
-    /**
-     * FILE_IS_TOO_LARGE
-     */
-    const FILE_IS_TOO_LARGE = 'File is too large for similarity checking';
-    /**
-     * CAN_NOT_READ_FILE
-     */
-    const CAN_NOT_READ_FILE = 'File does not exist or there is a permission problem';
+    public function test($callbackurl) {
+        $postdata = [
+            'integration_type' => 'PLUGIN',
+            'callback_url'     => $callbackurl
+        ];
+
+        return unicheck_api_request::instance()->http_post()->request(self::INTEGRATION_TEST, $postdata);
+    }
 }

@@ -129,10 +129,16 @@ class unicheck_core {
                 return true;
             }
 
-            if ($plagiarismfile->check_id) {
+            if ($plagiarismfile->check_id && !$plagiarismfile->external_file_uuid) {
                 unicheck_api::instance()->delete_check($plagiarismfile);
+                unicheck_adhoc::upload($file, $ucore);
+            } else if ($plagiarismfile->external_file_id) {
+                unicheck_adhoc::check($plagiarismfile);
+            } else {
+                $plagiarismfile->external_file_uuid = null;
+                unicheck_file_provider::save($plagiarismfile);
+                unicheck_adhoc::upload($file, $ucore);
             }
-            unicheck_adhoc::upload($file, $ucore);
 
             unicheck_notification::success('plagiarism_run_success', true);
         } catch (\Exception $exception) {
