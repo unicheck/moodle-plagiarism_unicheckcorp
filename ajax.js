@@ -123,10 +123,10 @@ M.plagiarismUnicheck.activityForm = function() {
 /** global: M */
 M.plagiarismUnicheck.init_debugging_table = function(Y) {
     Y.use('node', function(Y) {
-        checkboxes = Y.all('td.c0 input');
+        var checkboxes = Y.all('td.c0 input');
         checkboxes.each(function(node) {
             node.on('change', function(e) {
-                rowelement = e.currentTarget.get('parentNode').get('parentNode');
+                var rowelement = e.currentTarget.get('parentNode').get('parentNode');
                 if (e.currentTarget.get('checked')) {
                     rowelement.removeClass('unselectedrow');
                     rowelement.addClass('selectedrow');
@@ -136,7 +136,7 @@ M.plagiarismUnicheck.init_debugging_table = function(Y) {
                 }
             });
 
-            rowelement = node.get('parentNode').get('parentNode');
+            var rowelement = node.get('parentNode').get('parentNode');
             if (node.get('checked')) {
                 rowelement.removeClass('unselectedrow');
                 rowelement.addClass('selectedrow');
@@ -152,7 +152,7 @@ M.plagiarismUnicheck.init_debugging_table = function(Y) {
                 if (e.currentTarget.get('checked')) {
                     checkboxes = Y.all('td.c0 input[type="checkbox"]');
                     checkboxes.each(function(node) {
-                        rowelement = node.get('parentNode').get('parentNode');
+                        var rowelement = node.get('parentNode').get('parentNode');
                         node.set('checked', true);
                         rowelement.removeClass('unselectedrow');
                         rowelement.addClass('selectedrow');
@@ -160,7 +160,7 @@ M.plagiarismUnicheck.init_debugging_table = function(Y) {
                 } else {
                     checkboxes = Y.all('td.c0 input[type="checkbox"]');
                     checkboxes.each(function(node) {
-                        rowelement = node.get('parentNode').get('parentNode');
+                        var rowelement = node.get('parentNode').get('parentNode');
                         node.set('checked', false);
                         rowelement.removeClass('selectedrow');
                         rowelement.addClass('unselectedrow');
@@ -180,15 +180,15 @@ M.plagiarismUnicheck.init_debugging_table = function(Y) {
                     }
                 });
 
-                operation = Y.one('#id_operation');
-                usersinput = Y.one('input.selectedfiles');
+                var operation = Y.one('#id_operation');
+                var usersinput = Y.one('input.selectedfiles');
                 usersinput.set('value', selectedfiles.join(','));
                 if (selectedfiles.length === 0) {
                     alert(M.util.get_string('debugging:batchoperations:nofilesselected', 'plagiarism_unicheck'));
                     e.preventDefault();
                 } else {
-                    action = operation.get('value');
-                    confirmmessage = M.util.get_string('debugging:batchoperations:confirm' + operation.get('value'), 'plagiarism_unicheck');
+                    var action = operation.get('value');
+                    var confirmmessage = M.util.get_string('debugging:batchoperations:confirm' + operation.get('value'), 'plagiarism_unicheck');
 
                     if (!confirm(confirmmessage)) {
                         e.preventDefault();
