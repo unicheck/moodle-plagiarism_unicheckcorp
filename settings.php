@@ -64,6 +64,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
         }
     }
 
+    cache_helper::purge_by_definition('plagiarism_unicheck', 'debugging');
     unicheck_notification::success('savedconfigsuccess', true);
 }
 

@@ -27,6 +27,7 @@ namespace plagiarism_unicheck\classes\helpers;
 
 use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\exception\unicheck_exception;
+use plagiarism_unicheck\classes\permissions\capability;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\unicheck_adhoc;
 use plagiarism_unicheck\classes\unicheck_api;
@@ -78,7 +79,7 @@ class unicheck_progress {
         $info = [
             'file_id'  => $plagiarismfile->id,
             'state'    => $plagiarismfile->state,
-            'progress' => (int)$plagiarismfile->progress,
+            'progress' => (int) $plagiarismfile->progress,
             'content'  => self::gen_row_content_score($cid, $plagiarismfile),
         ];
 
@@ -181,6 +182,13 @@ class unicheck_progress {
      * @return string
      */
     public static function gen_row_content_score($cid, $fileobj) {
+        global $USER;
+
+        // Not allowed to view similarity check result.
+        if (!capability::can_view_similarity_check_result($cid, $USER->id)) {
+            return null;
+        }
+
         if ($fileobj->progress == 100 && $cid) {
             return require(dirname(__FILE__) . '/../../views/view_tmpl_processed.php');
         }

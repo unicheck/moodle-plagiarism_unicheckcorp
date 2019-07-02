@@ -130,7 +130,7 @@ class unicheck_assign {
 
         $sql = 'SELECT COUNT(id) FROM {assign_submission} WHERE id = ? AND status = ?';
 
-        return (bool)$DB->count_records_sql($sql, [$id, 'draft']);
+        return (bool) $DB->count_records_sql($sql, [$id, 'draft']);
     }
 
     /**
@@ -157,5 +157,33 @@ class unicheck_assign {
         $cm = get_coursemodule_from_id('', $cmid, 0, false, MUST_EXIST);
 
         return self::get($cm->instance);
+    }
+
+    /**
+     * get_assign_by_cm
+     *
+     * @param context_module $contextmodule
+     *
+     * @return assign|bool
+     */
+    public static function get_assign_by_cm(context_module $contextmodule) {
+        try {
+            return new assign($contextmodule, false, false);
+        } catch (\Exception $ex) {
+            return false;
+        }
+    }
+
+    /**
+     * Get onlinetext submission information from the database
+     *
+     * @param int $submissionid
+     *
+     * @return mixed
+     */
+    public static function get_onlinetext_submission($submissionid) {
+        global $DB;
+
+        return $DB->get_record('assignsubmission_onlinetext', ['submission' => $submissionid]);
     }
 }

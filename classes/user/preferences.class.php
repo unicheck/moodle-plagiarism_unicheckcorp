@@ -14,54 +14,49 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * unicheck_exception.class.php
+ * preferences.class.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @author      2019 Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plagiarism_unicheck\classes\exception;
+namespace plagiarism_unicheck\classes\user;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
 /**
- * Class unicheck_exception
+ * Class preferences
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- *
- * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @author      2019 Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class unicheck_exception extends \Exception {
+class preferences {
     /**
-     * ARCHIVE_IS_EMPTY
+     * DEBUGGING_TIME_SUBMITTED_FROM
      */
-    const ARCHIVE_IS_EMPTY = 'Archive is empty or contains document(s) with no text';
+    const DEBUGGING_TIME_SUBMITTED_FROM = 'plagiarism/unicheck:debuggingtimesubmittedfrom';
     /**
-     * ARCHIVE_CANT_BE_OPEN
+     * DEBUGGING_TIME_SUBMITTED_TO
      */
-    const ARCHIVE_CANT_BE_OPEN = 'Can not open archive';
+    const DEBUGGING_TIME_SUBMITTED_TO = 'plagiarism/unicheck:debuggingtimesubmittedto';
     /**
-     * UNSUPPORTED_MIMETYPE
+     * DEBUGGING_PER_PAGE
      */
-    const UNSUPPORTED_MIMETYPE = 'Unsupported mimetype';
+    const DEBUGGING_PER_PAGE = 'plagiarism/unicheck:debuggingperpage';
     /**
-     * FILE_NOT_FOUND
+     * DEBUGGING_ERROR_TYPE
      */
-    const FILE_NOT_FOUND = 'File not found';
+    const DEBUGGING_ERROR_TYPE = 'plagiarism/unicheck:debuggingerrortype';
     /**
-     * FILE_IS_TOO_LARGE
+     * DEBUGGING_ERROR_FILTER
      */
-    const FILE_IS_TOO_LARGE = 'File is too large for similarity checking';
-    /**
-     * CAN_NOT_READ_FILE
-     */
-    const CAN_NOT_READ_FILE = 'File does not exist or there is a permission problem';
+    const DEBUGGING_ERROR_MESSAGE = 'plagiarism/unicheck:debuggingerrormessage';
 }

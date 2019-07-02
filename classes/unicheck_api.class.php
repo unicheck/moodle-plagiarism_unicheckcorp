@@ -144,12 +144,12 @@ class unicheck_api {
 
         $content = null;
 
-        $mustindex = (bool)unicheck_settings::get_activity_settings($cmid, unicheck_settings::ADD_TO_INSTITUTIONAL_LIBRARY);
+        $mustindex = (bool) unicheck_settings::get_activity_settings($cmid, unicheck_settings::ADD_TO_INSTITUTIONAL_LIBRARY);
         $postdata['options']['no_index'] = !$mustindex;
 
         $response = unicheck_api_request::instance()->http_post()->request(self::FILE_UPLOAD, $postdata);
         if (!is_object($response)) {
-            $response = (object)[
+            $response = (object) [
                 "result" => false,
                 "errors" => [
                     [
@@ -313,19 +313,23 @@ class unicheck_api {
     private function advanced_check_options($cmid, &$options, $fileowner = null) {
         $options['exclude_self_plagiarism'] = 1;
 
+        $options['sensitivity'] = unicheck_settings::$defaultsensitivity / 100;
         $similaritysensitivity = unicheck_settings::get_activity_settings($cmid, unicheck_settings::SENSITIVITY_SETTING_NAME);
-        $options['sensitivity']
-            = (is_numeric($similaritysensitivity) ? $similaritysensitivity : unicheck_settings::$defaultsensitivity) / 100;
+        if (is_numeric($similaritysensitivity)) {
+            $options['sensitivity'] = $similaritysensitivity / 100;
+        }
 
+        $options['words_sensitivity'] = unicheck_settings::$defaultwordssensitivity;
         $wordssensitivity = unicheck_settings::get_activity_settings($cmid, unicheck_settings::WORDS_SENSITIVITY);
-        $options['words_sensitivity']
-            = is_numeric($wordssensitivity) ? $wordssensitivity : unicheck_settings::$defaultwordssensitivity;
+        if (is_numeric($wordssensitivity)) {
+            $options['words_sensitivity'] = $wordssensitivity;
+        }
 
-        $sendstudentreport = (bool)unicheck_settings::get_activity_settings($cmid, unicheck_settings::SENT_STUDENT_REPORT);
-        $showstudentscore = (bool)unicheck_settings::get_activity_settings($cmid, unicheck_settings::SHOW_STUDENT_SCORE);
+        $sendstudentreport = (bool) unicheck_settings::get_activity_settings($cmid, unicheck_settings::SENT_STUDENT_REPORT);
+        $showstudentscore = (bool) unicheck_settings::get_activity_settings($cmid, unicheck_settings::SHOW_STUDENT_SCORE);
 
         if (null !== $fileowner && $sendstudentreport && $showstudentscore) {
-            $showstudentreport = (bool)unicheck_settings::get_activity_settings(
+            $showstudentreport = (bool) unicheck_settings::get_activity_settings(
                 $cmid,
                 unicheck_settings::SHOW_STUDENT_REPORT
             );

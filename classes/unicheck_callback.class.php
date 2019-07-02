@@ -56,6 +56,7 @@ class unicheck_callback {
      * @uses file_upload_error
      * @uses similarity_check_finish
      * @uses similarity_check_recalculated
+     * @uses integration_callback_test
      */
     public function handle(\stdClass $body, $token) {
         if (!isset($body->event_type)) {
@@ -77,12 +78,16 @@ class unicheck_callback {
         }
 
         try {
+            $resourceid = null;
+            if (property_exists($body, $body->resource_type)) {
+                $resourceid = $body->{$body->resource_type}->id;
+            }
             $callback = new \stdClass();
             $callback->api_key = $apikey;
             $callback->event_type = $body->event_type;
             $callback->event_id = $body->event_id;
             $callback->resource_type = $body->resource_type;
-            $callback->resource_id = $body->{$body->resource_type}->id;
+            $callback->resource_id = $resourceid;
             $callback->request_body = json_encode($body, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
             $callbackid = callback_provider::create($callback);
@@ -101,7 +106,7 @@ class unicheck_callback {
      * file_upload_success
      *
      * @param \stdClass $body
-     * @param  string   $identifier
+     * @param string    $identifier
      *
      * @throws \InvalidArgumentException
      */
@@ -161,5 +166,17 @@ class unicheck_callback {
 
         $internalfile = unicheck_stored_file::get_plagiarism_file_by_identifier($identifier);
         unicheck_check_helper::check_recalculated($internalfile, $body->check);
+    }
+
+    /**
+     * integration_callback_test
+     *
+     * @param \stdClass $body
+     * @param string    $identifier
+     *
+     * @return string
+     */
+    private function integration_callback_test(\stdClass $body, $identifier) {
+        return "OK";
     }
 }
