@@ -110,7 +110,6 @@ M.plagiarismUnicheck.activityForm = function() {
         }
     });
 };
-/* jshint ignore:end */
 
 /**
  * Javascript helper function for plugin
@@ -196,3 +195,4 @@ M.plagiarismUnicheck.init_debugging_table = function(Y) {
         }
     });
 };
+/* jshint ignore:end */
