@@ -241,9 +241,7 @@ class debugging_table extends table_sql {
      * @return int
      */
     public function col_type(stdClass $row) {
-        return $row->type == unicheck_plagiarism_entity::TYPE_ARCHIVE
-            ? get_string('yes')
-            : get_string('no');
+        return $row->type == unicheck_plagiarism_entity::TYPE_ARCHIVE ? get_string('yes') : get_string('no');
     }
 
     /**
