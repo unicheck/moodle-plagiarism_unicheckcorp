@@ -72,6 +72,11 @@ $getrankclass = function($fileobj) {
     return $rankclass;
 };
 
+$metadata = [];
+if ($fileobj->metadata) {
+    $metadata = json_decode($fileobj->metadata, true);
+}
+
 $getcheatingblock = function($reporturl = null) use ($fileobj, $metadata) {
     $htmlparts = [];
     if ($fileobj->type === unicheck_plagiarism_entity::TYPE_ARCHIVE) {
@@ -98,11 +103,6 @@ $getcheatingblock = function($reporturl = null) use ($fileobj, $metadata) {
 
     return implode('', $htmlparts);
 };
-
-$metadata = [];
-if ($fileobj->metadata) {
-    $metadata = json_decode($fileobj->metadata, true);
-}
 
 if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similarityscore)) {
     $activitycfg = unicheck_settings::get_activity_settings($cid, null, true);
