@@ -101,7 +101,7 @@
                 <FIELD NAME="event_type" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Unicheck event type"/>
                 <FIELD NAME="event_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Unicheck event ID"/>
                 <FIELD NAME="resource_type" TYPE="char" LENGTH="64" NOTNULL="true" SEQUENCE="false" COMMENT="Unicheck resource type"/>
-                <FIELD NAME="resource_id" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="resource_id" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="request_body" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Event request body"/>
                 <FIELD NAME="processed" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Event processing status"/>
                 <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Event incoming time"/>
