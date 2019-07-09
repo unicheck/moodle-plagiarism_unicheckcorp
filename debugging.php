@@ -57,7 +57,7 @@ $id = optional_param('id', 0, PARAM_INT);
 $action = optional_param('action', 'tableview', PARAM_TEXT);
 $downloadformat = optional_param('download', '', PARAM_ALPHA);
 
-$exportfilename = 'DebugOutput.csv';
+$exportfilename = 'DebugOutput';
 
 unicheck_settings::get_settings();
 $filestable = new debugging_table('files', [
