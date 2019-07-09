@@ -73,7 +73,7 @@ class filter_options_form extends moodleform {
         $dateoptions = [
             'startyear' => date('Y', $this->get_min_timesubmitted()),
             'stopyear'  => date('Y'),
-            'optional' => false
+            'optional'  => false
         ];
 
         $mform->addElement(
@@ -160,7 +160,7 @@ class filter_options_form extends moodleform {
     protected function get_min_timesubmitted() {
 
         if (!$this->mintimesubmitted) {
-            $this->mintimesubmitted = unicheck_file_provider::get_min_value('timesubmitted');
+            $this->mintimesubmitted = unicheck_file_provider::get_min_timesubmitted();
         }
 
         return $this->mintimesubmitted;
