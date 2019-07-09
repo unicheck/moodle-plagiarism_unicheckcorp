@@ -48,13 +48,16 @@ require_once($CFG->libdir . '/datalib.php');
 require_login();
 admin_externalpage_setup('plagiarismunicheck');
 
+$currenturl = new moodle_url('/plagiarism/unicheck/debugging.php');
+$urlwithquery = clone $currenturl;
+
 $context = context_system::instance();
 
 $id = optional_param('id', 0, PARAM_INT);
 $action = optional_param('action', 'tableview', PARAM_TEXT);
 $downloadformat = optional_param('download', '', PARAM_ALPHA);
 
-$exportfilename = 'DebugOutput.csv';
+$exportfilename = 'DebugOutput';
 
 unicheck_settings::get_settings();
 $filestable = new debugging_table('files', [
@@ -63,31 +66,39 @@ $filestable = new debugging_table('files', [
     debugging_table::TIMESUBMITTED_TO_CONDITION   => get_user_preferences(preferences::DEBUGGING_TIME_SUBMITTED_TO)
 ], $exportfilename, $downloadformat);
 
+$curpage = optional_param('page', 0, PARAM_INT);
+if ($curpage) {
+    $urlwithquery->param('page', $curpage);
+}
+
 // Apply forms actions.
 if (!$filestable->is_downloading()) {
     $unicheckstatustable = new unicheck_status_table();
-    $resetcacheform = new unicheck_status_recheck_form();
+    $filterform = new filter_options_form();
+    $resetcacheform = new unicheck_status_recheck_form($urlwithquery);
     $batchoperationsform = new batch_operations_form(
-        null,
+        $urlwithquery,
         [],
         'post',
         '',
         ['class' => 'debuggingbatchoperationsform']
     );
-    $filterform = new filter_options_form();
 
     if ($resetcacheform->is_submitted()) {
-        $unicheckstatustable->reset_cache(new moodle_url("debugging.php"));
+        $unicheckstatustable->reset_cache($urlwithquery);
     }
 
-    $filterform->apply_filters(new moodle_url("debugging.php"));
-    $batchoperationsform->apply_operation();
+    if ($batchoperationsform->is_submitted()) {
+        $batchoperationsform->apply_operation($urlwithquery);
+    }
+
+    $filterform->apply_filters($currenturl);
 }
 
 if (!$filestable->is_downloading()) {
     $PAGE->set_title(plagiarism_unicheck::trans('unicheckdebug'));
     $PAGE->set_heading(plagiarism_unicheck::trans('unicheckdebug'));
-    $PAGE->navbar->add(plagiarism_unicheck::trans('unicheckdebug'), new moodle_url("debugging.php"));
+    $PAGE->navbar->add(plagiarism_unicheck::trans('unicheckdebug'), $currenturl);
     echo $OUTPUT->header();
 
     $jsmodule = [
