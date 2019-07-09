@@ -303,7 +303,7 @@ class debugging_table extends table_sql {
         if ($this->is_downloading()) {
             $operations = ['delete'];
             if ($row->type == unicheck_plagiarism_entity::TYPE_DOCUMENT && !file_error_code::is_consider_file_issue($errorcode)) {
-                $operations[] = $operations['resubmit'];
+                $operations[] = 'resubmit';
             }
 
             return implode(',', $operations);
@@ -315,6 +315,10 @@ class debugging_table extends table_sql {
                 'id'      => $row->id,
                 'sesskey' => sesskey(),
             ]);
+
+            if ($this->currpage) {
+                $actionurl->param('page', $this->currpage);
+            }
 
             $actiontext = plagiarism_unicheck::trans($action);
 
