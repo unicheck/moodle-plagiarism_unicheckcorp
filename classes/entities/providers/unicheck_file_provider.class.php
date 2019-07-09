@@ -283,6 +283,17 @@ class unicheck_file_provider {
     }
 
     /**
+     * Get min value from the timesubmitted field
+     *
+     * @return mixed|null
+     */
+    public static function get_min_timesubmitted() {
+        global $DB;
+
+        return $DB->get_field_sql("SELECT MIN(timesubmitted) FROM {plagiarism_unicheck_files} where timesubmitted > 0");
+    }
+
+    /**
      * resubmit_by_ids
      *
      * @param array $ids
