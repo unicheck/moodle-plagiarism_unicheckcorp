@@ -26,6 +26,7 @@
 
 namespace plagiarism_unicheck\classes;
 
+use plagiarism_unicheck\classes\services\api\api_regions;
 use plagiarism_unicheck\event\api_called;
 use plagiarism_unicheck\library\OAuth\OAuthConsumer;
 use plagiarism_unicheck\library\OAuth\OAuthRequest;
@@ -65,6 +66,11 @@ class unicheck_api_request {
      * @var  string
      */
     private $httpmethod = 'get';
+
+    /**
+     * @var \curl|null
+     */
+    private $lastcurl;
 
     /**
      * Get instance
@@ -147,6 +153,8 @@ class unicheck_api_request {
             )->trigger();
         }
 
+        $this->lastcurl = $ch;
+
         return $this->handle_response($response);
     }
 
@@ -166,10 +174,13 @@ class unicheck_api_request {
     /**
      * Set action
      *
-     * @param string $url
+     * @param string $action
      */
-    private function set_action($url) {
-        $this->url = UNICHECK_API_URL . $url;
+    private function set_action($action) {
+
+        $apiregion = unicheck_settings::get_current_region();
+
+        $this->url = api_regions::get_api_base_url_by_region($apiregion) . $action;
     }
 
     /**
@@ -243,5 +254,14 @@ class unicheck_api_request {
      */
     private function handle_response($resp) {
         return json_decode($resp);
+    }
+
+    /**
+     * Get last curl
+     *
+     * @return \curl|null
+     */
+    public function get_last_curl() {
+        return $this->lastcurl;
     }
 }

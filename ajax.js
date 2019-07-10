@@ -100,3 +100,88 @@ M.plagiarismUnicheck.init = function(Y, contextid) {
 
     runPlugin();
 };
+
+/**
+ * Javascript helper function for plugin
+ *
+ * @package   plagiarism_unicheck
+ * @author    2019 Aleksandr kostylev <a.kostylev@p1k.co.uk>
+ * @copyright UKU Group, LTD, https://www.unicheck.com
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+/** global: M */
+M.plagiarismUnicheck.init_debugging_table = function(Y) {
+    Y.use('node', function(Y) {
+        var checkboxes = Y.all('td.c0 input');
+        checkboxes.each(function(node) {
+            node.on('change', function(e) {
+                var rowelement = e.currentTarget.get('parentNode').get('parentNode');
+                if (e.currentTarget.get('checked')) {
+                    rowelement.removeClass('unselectedrow');
+                    rowelement.addClass('selectedrow');
+                } else {
+                    rowelement.removeClass('selectedrow');
+                    rowelement.addClass('unselectedrow');
+                }
+            });
+
+            var rowelement = node.get('parentNode').get('parentNode');
+            if (node.get('checked')) {
+                rowelement.removeClass('unselectedrow');
+                rowelement.addClass('selectedrow');
+            } else {
+                rowelement.removeClass('selectedrow');
+                rowelement.addClass('unselectedrow');
+            }
+        });
+
+        var selectall = Y.one('th.c0 input');
+        if (selectall) {
+            selectall.on('change', function(e) {
+                if (e.currentTarget.get('checked')) {
+                    checkboxes = Y.all('td.c0 input[type="checkbox"]');
+                    checkboxes.each(function(node) {
+                        var rowelement = node.get('parentNode').get('parentNode');
+                        node.set('checked', true);
+                        rowelement.removeClass('unselectedrow');
+                        rowelement.addClass('selectedrow');
+                    });
+                } else {
+                    checkboxes = Y.all('td.c0 input[type="checkbox"]');
+                    checkboxes.each(function(node) {
+                        var rowelement = node.get('parentNode').get('parentNode');
+                        node.set('checked', false);
+                        rowelement.removeClass('selectedrow');
+                        rowelement.addClass('unselectedrow');
+                    });
+                }
+            });
+        }
+
+        var batchform = Y.one('form.debuggingbatchoperationsform');
+        if (batchform) {
+            batchform.on('submit', function(e) {
+                checkboxes = Y.all('td.c0 input');
+                var selectedfiles = [];
+                checkboxes.each(function(node) {
+                    if (node.get('checked')) {
+                        selectedfiles[selectedfiles.length] = node.get('value');
+                    }
+                });
+
+                var operation = Y.one('#id_operation');
+                var usersinput = Y.one('input.selectedfiles');
+                usersinput.set('value', selectedfiles.join(','));
+                if (selectedfiles.length === 0) {
+                    alert(M.util.get_string('debugging:batchoperations:nofilesselected', 'plagiarism_unicheck'));
+                    e.preventDefault();
+                } else {
+                    var confirmmessage = M.util.get_string('debugging:batchoperations:confirm' + operation.get('value'), 'plagiarism_unicheck');
+                    if (!confirm(confirmmessage)) {
+                        e.preventDefault();
+                    }
+                }
+            });
+        }
+    });
+};

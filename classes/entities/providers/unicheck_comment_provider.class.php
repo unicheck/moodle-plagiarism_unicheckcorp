@@ -47,12 +47,13 @@ class unicheck_comment_provider {
      * Update plagiarism comment
      *
      * @param comment $filecomment
+     *
      * @return bool
      */
     public static function save(comment $filecomment) {
         global $DB;
 
-        $row = (object)$filecomment->to_array();
+        $row = (object) $filecomment->to_array();
         if ($filecomment->get_id()) {
             return $DB->update_record(UNICHECK_COMMENTS_TABLE, $row);
         }
@@ -64,6 +65,7 @@ class unicheck_comment_provider {
      * Get plagiarism file comment by id
      *
      * @param int $id
+     *
      * @return comment
      */
     public static function get_by_id($id) {
@@ -76,6 +78,7 @@ class unicheck_comment_provider {
      * Find plagiarism file comment by id
      *
      * @param int $id
+     *
      * @return comment|null
      */
     public static function find_by_id($id) {
@@ -88,6 +91,7 @@ class unicheck_comment_provider {
      * Find plagiarism comments by commentable object
      *
      * @param commentable_interface $commentable
+     *
      * @return comment[]
      */
     public static function find_by_commentable(commentable_interface $commentable) {

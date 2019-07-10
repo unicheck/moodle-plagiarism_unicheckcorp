@@ -48,6 +48,7 @@ class filesize_checker {
      * Check if file is too large
      *
      * @param \stored_file $file
+     *
      * @return bool
      */
     public static function file_is_to_large(\stored_file $file) {
@@ -62,6 +63,7 @@ class filesize_checker {
      * Check if filesize is too large
      *
      * @param int $filesize In bytes
+     *
      * @return bool
      */
     public static function is_too_large($filesize) {
@@ -70,5 +72,21 @@ class filesize_checker {
         }
 
         return false;
+    }
+
+    /**
+     * Check if content is empty
+     *
+     * @param string|null $content
+     *
+     * @return bool
+     */
+    public static function is_valid_content($content) {
+
+        if (is_null($content) || !is_string($content)) {
+            return false;
+        }
+
+        return strlen(trim($content)) > 0;
     }
 }

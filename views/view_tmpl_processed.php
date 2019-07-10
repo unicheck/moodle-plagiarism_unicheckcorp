@@ -40,6 +40,10 @@ if (AJAX_SCRIPT) {
     $PAGE->set_context(null);
 }
 
+if (!isset($fileobj)) {
+    return null;
+}
+
 // Normal situation - Unicheck has successfully analyzed the file.
 $htmlparts = [];
 
@@ -47,8 +51,8 @@ if (empty($cid) && !empty($linkarray['cmid'])) {
     $cid = $linkarray['cmid'];
 }
 
-$getrankclass = function ($fileobj) {
-    $score = (float)$fileobj->similarityscore;
+$getrankclass = function($fileobj) {
+    $score = (float) $fileobj->similarityscore;
     $rankclass = 'rankBlue';
     switch (true) {
         case ($score >= 1 && $score < 25):
@@ -73,39 +77,39 @@ if ($fileobj->metadata) {
     $metadata = json_decode($fileobj->metadata, true);
 }
 
+$getcheatingblock = function($reporturl = null) use ($fileobj, $metadata) {
+    $htmlparts = [];
+    if ($fileobj->type === unicheck_plagiarism_entity::TYPE_ARCHIVE) {
+        return '';
+    }
+
+    if (isset($metadata[unicheck_file_metadata::CHEATING_CHAR_REPLACEMENTS_COUNT])) {
+        $cheatingchars = (int) $metadata[unicheck_file_metadata::CHEATING_CHAR_REPLACEMENTS_COUNT];
+        if ($cheatingchars > 0) {
+            $htmlparts[] = ($reporturl) ? sprintf(
+                '<a title="%s" href="%s" target="_blank" class="un-cheating">',
+                plagiarism_unicheck::trans('report'),
+                $reporturl
+            ) : '<div class="un-cheating">';
+
+            $htmlparts[] = sprintf(
+                '<span>%s</span>',
+                plagiarism_unicheck::trans('ui:possiblecheating')
+            );
+
+            $htmlparts[] = ($reporturl) ? '</a>' : '</div>';
+        }
+    }
+
+    return implode('', $htmlparts);
+};
+
 if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similarityscore)) {
     $activitycfg = unicheck_settings::get_activity_settings($cid, null, true);
     $canviewsimilarity = capability::user_can(capability::VIEW_SIMILARITY, $cid, $USER->id);
     if (!$canviewsimilarity) {
         $canviewsimilarity = $activitycfg[unicheck_settings::SHOW_STUDENT_SCORE];
     }
-
-    $getcheatingblock = function ($reporturl = null) use ($fileobj, $metadata) {
-        $htmlparts = [];
-        if ($fileobj->type === unicheck_plagiarism_entity::TYPE_ARCHIVE) {
-            return '';
-        }
-
-        if (isset($metadata[unicheck_file_metadata::CHEATING_CHAR_REPLACEMENTS_COUNT])) {
-            $cheatingchars = (int)$metadata[unicheck_file_metadata::CHEATING_CHAR_REPLACEMENTS_COUNT];
-            if ($cheatingchars > 0) {
-                $htmlparts[] = ($reporturl) ? sprintf(
-                    '<a title="%s" href="%s" target="_blank" class="un-cheating">',
-                    plagiarism_unicheck::trans('report'),
-                    $reporturl
-                ) : '<div class="un-cheating">';
-
-                $htmlparts[] = sprintf(
-                    '<span>%s</span>',
-                    plagiarism_unicheck::trans('ui:possiblecheating')
-                );
-
-                $htmlparts[] = ($reporturl) ? '</a>' : '</div>';
-            }
-        }
-
-        return implode('', $htmlparts);
-    };
 
     $canviewreport = capability::user_can(capability::VIEW_REPORT, $cid, $USER->id);
     if (!$canviewreport) {
@@ -114,18 +118,18 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
 
     $canvieweditreport = capability::user_can(capability::VIEW_EDIT_REPORT, $cid, $USER->id);
 
-    $htmlparts[] = '<div class="un_detect_result">';
-    $htmlparts[] = sprintf(
-        '<a href="%s" class="un_link" target="_blank">' .
-        '<img width="69" src="%s" title="%s">',
-        new moodle_url(UNICHECK_DOMAIN),
-        $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME),
-        plagiarism_unicheck::trans('pluginname')
-    );
     if (in_array(true, [$canviewsimilarity, $canviewreport, $canvieweditreport]) && !empty($fileobj->check_id)) {
+        $htmlparts[] = '<div class="un_detect_result">';
+        $htmlparts[] = sprintf(
+            '<a href="%s" class="un_link" target="_blank">' .
+            '<img width="69" src="%s" title="%s">',
+            new moodle_url(UNICHECK_DOMAIN),
+            $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME),
+            plagiarism_unicheck::trans('pluginname')
+        );
         $htmlparts[] = sprintf('<span class="un_report_id">ID:%s</span>', $fileobj->check_id);
+        $htmlparts[] = '</a>';
     }
-    $htmlparts[] = '</a>';
 
     if (isset($fileobj->similarityscore)) {
         if (in_array(true, [$canviewsimilarity, $canviewreport, $canvieweditreport])) {

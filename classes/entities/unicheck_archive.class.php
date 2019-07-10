@@ -145,7 +145,7 @@ class unicheck_archive {
         $internalfile = $this->core->get_plagiarism_entity($this->file)->get_internal_file();
         $childs = unicheck_file_provider::get_file_list_by_parent_id($internalfile->id);
         if (count($childs)) {
-            foreach ((object)$childs as $child) {
+            foreach ((object) $childs as $child) {
                 if ($child->check_id) {
                     unicheck_api::instance()->delete_check($child);
                 }

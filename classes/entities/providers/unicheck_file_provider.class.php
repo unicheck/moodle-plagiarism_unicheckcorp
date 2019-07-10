@@ -26,7 +26,10 @@
 namespace plagiarism_unicheck\classes\entities\providers;
 
 use plagiarism_unicheck\classes\helpers\unicheck_check_helper;
+use plagiarism_unicheck\classes\services\storage\file_error_code;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
+use plagiarism_unicheck\classes\unicheck_api;
+use plagiarism_unicheck\classes\unicheck_core;
 use plagiarism_unicheck\classes\unicheck_plagiarism_entity;
 
 if (!defined('MOODLE_INTERNAL')) {
@@ -48,6 +51,7 @@ class unicheck_file_provider {
      * Update plagiarism file
      *
      * @param \stdClass $file
+     *
      * @return bool
      */
     public static function save(\stdClass $file) {
@@ -60,6 +64,7 @@ class unicheck_file_provider {
      * Get plagiarism file by id
      *
      * @param int $id
+     *
      * @return mixed
      */
     public static function get_by_id($id) {
@@ -72,6 +77,7 @@ class unicheck_file_provider {
      * Find plagiarism file by id
      *
      * @param int $id
+     *
      * @return mixed
      */
     public static function find_by_id($id) {
@@ -84,6 +90,7 @@ class unicheck_file_provider {
      * Find plagiarism file by check id
      *
      * @param int $checkid
+     *
      * @return mixed
      */
     public static function find_by_check_id($checkid) {
@@ -96,6 +103,7 @@ class unicheck_file_provider {
      * Find plagiarism files by ids
      *
      * @param array $ids
+     *
      * @return array
      */
     public static function find_by_ids($ids) {
@@ -108,14 +116,17 @@ class unicheck_file_provider {
      * Can start check
      *
      * @param \stdClass $plagiarismfile
+     *
      * @return bool
      */
     public static function can_start_check(\stdClass $plagiarismfile) {
         if (in_array($plagiarismfile->state,
-            [unicheck_file_state::UPLOADING,
+            [
+                unicheck_file_state::UPLOADING,
                 unicheck_file_state::UPLOADED,
                 unicheck_file_state::CHECKING,
-                unicheck_file_state::CHECKED])
+                unicheck_file_state::CHECKED
+            ])
         ) {
             return false;
         }
@@ -127,7 +138,7 @@ class unicheck_file_provider {
      * Set file to error state
      *
      * @param \stdClass $plagiarismfile
-     * @param  string   $reason
+     * @param string    $reason
      */
     public static function to_error_state(\stdClass $plagiarismfile, $reason) {
         $plagiarismfile->state = unicheck_file_state::HAS_ERROR;
@@ -158,6 +169,7 @@ class unicheck_file_provider {
      * Get file list by parent id
      *
      * @param int $parentid
+     *
      * @return array
      */
     public static function get_file_list_by_parent_id($parentid) {
@@ -169,8 +181,9 @@ class unicheck_file_provider {
     /**
      * Add file metadata
      *
-     * @param   int $fileid
+     * @param int   $fileid
      * @param array $metadata
+     *
      * @return bool
      */
     public static function add_metadata($fileid, array $metadata) {
@@ -254,5 +267,73 @@ class unicheck_file_provider {
         }
         $allrecordssql = implode(',', $ids);
         $DB->delete_records_select(UNICHECK_FILES_TABLE, "id IN ($allrecordssql) OR parent_id IN ($allrecordssql)");
+    }
+
+    /**
+     * Get min value from the field
+     *
+     * @param string $field
+     *
+     * @return mixed|null
+     */
+    public static function get_min_value($field) {
+        global $DB;
+
+        return $DB->get_field_sql("SELECT MIN({$field}) FROM {plagiarism_unicheck_files}");
+    }
+
+    /**
+     * Get min value from the timesubmitted field
+     *
+     * @return mixed|null
+     */
+    public static function get_min_timesubmitted() {
+        global $DB;
+
+        return $DB->get_field_sql("SELECT MIN(timesubmitted) FROM {plagiarism_unicheck_files} where timesubmitted > 0");
+    }
+
+    /**
+     * resubmit_by_ids
+     *
+     * @param array $ids
+     *
+     * @return int
+     */
+    public static function resubmit_by_ids(array $ids) {
+        /** @var \stdClass[] $plagiarismfiles */
+        $plagiarismfiles = self::find_by_ids($ids);
+        $resubmittedcount = 0;
+        foreach ($plagiarismfiles as $plagiarismfile) {
+            switch ($plagiarismfile->state) {
+                case unicheck_file_state::CHECKING:
+                    $response = unicheck_api::instance()->get_check_data($plagiarismfile->check_id);
+                    if ($response->result) {
+                        unicheck_check_helper::check_complete($plagiarismfile, $response->check);
+                    } else {
+                        $plagiarismfile->errorresponse = json_encode($response->errors);
+                        self::save($plagiarismfile);
+                    }
+
+                    break;
+                case unicheck_file_state::HAS_ERROR:
+                    $error = json_decode($plagiarismfile->errorresponse, true);
+                    $errorcode = 'internal_error';
+                    if (isset($error[0]['error_code'])) {
+                        $errorcode = $error[0]['error_code'];
+                    }
+
+                    if (file_error_code::is_consider_file_issue($errorcode)) {
+                        break;
+                    }
+
+                    $resubmittedcount++;
+                    unicheck_core::resubmit_file($plagiarismfile->id);
+
+                    break;
+            }
+        }
+
+        return $resubmittedcount;
     }
 }
