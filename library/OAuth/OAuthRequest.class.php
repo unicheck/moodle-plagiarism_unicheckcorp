@@ -65,62 +65,6 @@ class OAuthRequest {
     }
 
     /**
-     * attempt to build up a request from what was passed to the server
-     *
-     * @param null $httpmethod
-     * @param null $httpurl
-     * @param null $parameters
-     *
-     * @return OAuthRequest
-     */
-    public static function from_request($httpmethod = null, $httpurl = null, $parameters = null) {
-        $scheme = (!is_https()) ? 'http' : 'https';
-        $port = "";
-        if ($_SERVER['SERVER_PORT'] != "80" && $_SERVER['SERVER_PORT'] != "443" && strpos(':', $_SERVER['HTTP_HOST']) < 0) {
-            $port = ':' . $_SERVER['SERVER_PORT'];
-        }
-        @$httpurl or $httpurl = $scheme .
-            '://' . $_SERVER['HTTP_HOST'] .
-            $port .
-            $_SERVER['REQUEST_URI'];
-        @$httpmethod or $httpmethod = $_SERVER['REQUEST_METHOD'];
-
-        // We weren't handed any parameters, so let's find the ones relevant to
-        // this request.
-        // If you run XML-RPC or similar you should use this to provide your own
-        // parsed parameter-list.
-        if (!$parameters) {
-            // Find request headers.
-            $requestheaders = OAuthUtil::get_headers();
-
-            // Parse the query-string to find GET parameters.
-            $parameters = OAuthUtil::parse_parameters($_SERVER['QUERY_STRING']);
-
-            $ourpost = $_POST;
-            // Deal with magic_quotes
-            // http://www.php.net/manual/en/security.magicquotes.disabling.php.
-            if (get_magic_quotes_gpc()) {
-                $outpost = [];
-                foreach ($_POST as $k => $v) {
-                    $v = stripslashes($v);
-                    $ourpost[$k] = $v;
-                }
-            }
-            // Add POST Parameters if they exist.
-            $parameters = array_merge($parameters, $ourpost);
-
-            // We have a Authorization-header with OAuth data. Parse the header
-            // and add those overriding any duplicates from GET or POST.
-            if (@substr($requestheaders['Authorization'], 0, 6) == "OAuth ") {
-                $headerparameters = OAuthUtil::split_header($requestheaders['Authorization']);
-                $parameters = array_merge($parameters, $headerparameters);
-            }
-        }
-
-        return new OAuthRequest($httpmethod, $httpurl, $parameters);
-    }
-
-    /**
      * pretty much a helper function to set up the request
      *
      * @param object $consumer

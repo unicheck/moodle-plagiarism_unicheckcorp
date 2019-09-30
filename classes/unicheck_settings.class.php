@@ -303,6 +303,6 @@ class unicheck_settings {
      * @return string
      */
     public static function get_setting_type($setting) {
-        return isset(self::$settingstypemap[$setting]) ? self::$settingstypemap[$setting] : PARAM_RAW;
+        return isset(self::$settingstypemap[$setting]) ? self::$settingstypemap[$setting] : PARAM_ALPHAEXT;
     }
 }
