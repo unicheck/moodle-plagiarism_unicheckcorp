@@ -30,15 +30,15 @@ require_once(dirname(__FILE__) . '/../../config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 
 $action = required_param('action', PARAM_ALPHAEXT);
-$data = optional_param('data', array(), PARAM_RAW);
-$token = optional_param('token', '', PARAM_RAW);
+$data = optional_param('data', [], PARAM_TEXT);
+$token = optional_param('token', '', PARAM_ALPHAEXT);
 
 if (!$token) {
     require_login();
     require_sesskey();
 }
 $plugin = new plagiarism_unicheck();
-if (!is_callable(array($plugin, $action))) {
+if (!is_callable([$plugin, $action])) {
     echo json_encode('Called method does not exists');
 
     return null;
