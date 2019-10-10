@@ -83,7 +83,7 @@ foreach ($childs as $child) {
                 $link = html_writer::link($url, $child->filename);
                 $fileinfos[] = [
                     'filename' => html_writer::tag('div', $link, ['class' => 'edit-link']),
-                    'status'   => $OUTPUT->pix_icon('i/valid', plagiarism_unicheck::trans('reportready')) .
+                    'status'   => $OUTPUT->image_icon('i/valid', plagiarism_unicheck::trans('reportready')) .
                         plagiarism_unicheck::trans('reportready'),
                 ];
             }
@@ -93,7 +93,7 @@ foreach ($childs as $child) {
             $erroresponse = plagiarism_unicheck::error_resp_handler($child->errorresponse);
             $fileinfos[] = [
                 'filename' => $child->filename,
-                'status'   => $OUTPUT->pix_icon('i/invalid', $erroresponse) . $erroresponse,
+                'status'   => $OUTPUT->image_icon('i/invalid', $erroresponse) . $erroresponse,
             ];
             break;
     }

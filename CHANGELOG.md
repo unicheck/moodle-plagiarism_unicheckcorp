@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.4.3] - 2019-09-30
+### Changed
+- Avoid the use of PARAM_RAW
+- Use $OUTPUT->image_icon() instead of $OUTPUT->pix_icon()
+
+### Removed 
+- Unused functions
+
 ## [2.4.2] - 2019-06-20
 ### Added 
 - Unicheck Availability Status in debugging tab
@@ -154,6 +162,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Change validation mode
 - Massive refactoring comparing to Unplag plugin
 
+[2.4.3]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.4.3
 [2.4.2]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.4.2
 [2.4.1]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.4.1
 [2.4.0]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.4.0

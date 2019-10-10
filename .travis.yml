@@ -1,10 +1,15 @@
 language: php
 
 # Behat no longer passes when false.
-sudo: true
+sudo: required
 
 notifications:
   email: false
+
+dist: xenial
+
+services:
+  - mysql
 
 cache:
   directories:

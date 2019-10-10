@@ -12,9 +12,9 @@
 define(['jquery'], function($) {
     return {
         init: function() {
-            $("#id_plagiarism_unicheck").find("#id_show_student_score").change(function() {
+            $('#id_plagiarism_unicheck').find('#id_show_student_score').change(function() {
                 if ($(this).val() == 0) {
-                    $("#id_plagiarism_unicheck").find("#id_sent_student_report").val($(this).val()).change();
+                    $('#id_plagiarism_unicheck').find('#id_sent_student_report').val($(this).val()).change();
                 }
             });
         }
