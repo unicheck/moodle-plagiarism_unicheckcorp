@@ -127,7 +127,11 @@ class unicheck_linkarray {
                 break;
         }
 
-        $output = is_null($tmpl) ? '' : require(dirname(__FILE__) . '/../../views/' . $tmpl);
+        if (is_null($tmpl)) {
+            $output = '';
+        } else {
+            $output = require(UNICHECK_PLUGIN_PATH . '/views/' . $tmpl);
+        }
 
         if ($inciterator) {
             $iterator++;

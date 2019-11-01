@@ -128,7 +128,7 @@ $string['web_and_my_library'] = 'Internet + Library';
 $string['external_database'] = 'External database';
 $string['web_and_my_lib_and_external_db'] = 'Internet + Library + External database';
 $string['reportready'] = 'Report ready';
-$string['ui:reportlink'] = '<span class="only-xxl-width">Open&nbsp;</span>Report';
+$string['ui:reportlink'] = '<span class="unicheck-only-xxl-width">Open&nbsp;</span>Report';
 $string['generalinfo'] = 'General information';
 $string['similarity_sensitivity'] = 'Exclude sources with a match less than (%)';
 $string['similarity_sensitivity_help'] = 'Sources which have less than specified similarity % will not be included in the total similarity score.';
@@ -237,6 +237,7 @@ $string['privacy:export:plagiarism_unicheck:plagiarismpath'] = 'Plagiarism detec
 $string['privacy:export:plagiarism_unicheck:reportfiledescription'] = 'Unicheck similarity detection result for submitted file with pathnamehash {$a}';
 $string['privacy:export:plagiarism_unicheck:reportcontentdescription'] = 'Unicheck similarity detection result for online text';
 // Debugging.
+$string['cachedef_debugging'] = 'Plugin debugging test results';
 $string['unicheckdebug'] = 'Debugging';
 $string['debugging:statustable:header'] = 'Unicheck status checks';
 $string['debugging:statustable:checkunicheck_host'] = 'Test Unicheck Host availability';

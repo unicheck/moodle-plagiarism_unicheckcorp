@@ -27,8 +27,8 @@
 use plagiarism_unicheck\classes\unicheck_notification;
 use plagiarism_unicheck\classes\forms\setup_form;
 
-require_once(dirname(dirname(__FILE__)) . '/../config.php');
-require_once(dirname(__FILE__) . '/lib.php');
+require(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/lib.php');
 
 global $CFG, $OUTPUT, $USER;
 
@@ -49,7 +49,7 @@ if ($mform->is_cancelled()) {
 
 echo $OUTPUT->header();
 $currenttab = 'unichecksettings';
-require_once(dirname(__FILE__) . '/views/view_tabs.php');
+require_once(__DIR__ . '/views/view_tabs.php');
 
 if (($data = $mform->get_data()) && confirm_sesskey()) {
     foreach (plagiarism_plugin_unicheck::default_plugin_options() as $option) {

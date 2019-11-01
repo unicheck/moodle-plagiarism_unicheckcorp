@@ -32,8 +32,8 @@ use plagiarism_unicheck\classes\services\storage\unicheck_file_metadata;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\unicheck_plagiarism_entity;
 
-require_once(dirname(dirname(__FILE__)) . '/../config.php');
-require_once(dirname(__FILE__) . '/lib.php');
+require(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/lib.php');
 
 global $PAGE, $CFG, $OUTPUT, $USER;
 
@@ -53,7 +53,7 @@ if ($cpf !== null) {
     $currenttab = 'unicheck_file_id_' . $current->id;
     $pageparams['cpf'] = $cpf;
 } else {
-    $currenttab = 'un_files_info';
+    $currenttab = 'unicheck-files_info';
 }
 
 $PAGE->set_pagelayout('report');
@@ -105,7 +105,7 @@ $generalinfourl = new \moodle_url('/plagiarism/unicheck/reports.php', [
 ]);
 
 array_unshift($tabs,
-    new tabobject('un_files_info', $generalinfourl->out(), plagiarism_unicheck::trans('generalinfo'), '', false));
+    new tabobject('unicheck-files_info', $generalinfourl->out(), plagiarism_unicheck::trans('generalinfo'), '', false));
 
 print_tabs([$tabs], $currenttab);
 
@@ -118,7 +118,7 @@ if ($cpf !== null) {
         $link = $reporturl->get_edit_url($cmid);
     }
 
-    echo '<iframe src="' . $link . '" frameborder="0" id="_un_report_frame" style="width: 100%; height: 750px;"></iframe>';
+    echo '<iframe src="' . $link . '" frameborder="0" id="_unicheck_report_frame" style="width: 100%; height: 750px;"></iframe>';
 } else {
     $table = new html_table();
     $table->head = ['Filename', 'Status'];

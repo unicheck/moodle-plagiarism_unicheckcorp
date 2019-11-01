@@ -27,8 +27,8 @@
 use plagiarism_unicheck\classes\unicheck_core;
 use plagiarism_unicheck\classes\permissions\capability;
 
-require_once(dirname(dirname(__FILE__)) . '/../config.php');
-require_once(dirname(__FILE__) . '/lib.php');
+require(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/lib.php');
 
 global $PAGE, $CFG;
 
@@ -37,7 +37,7 @@ $pf = required_param('pf', PARAM_INT); // plagiarism file id.
 
 require_sesskey();
 
-$url = new moodle_url(dirname(__FILE__) . '/reset.php');
+$url = new moodle_url(__DIR__ . '/reset.php');
 $cm = get_coursemodule_from_id('', $cmid, 0, false, MUST_EXIST);
 
 $PAGE->set_url($url);

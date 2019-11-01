@@ -190,16 +190,16 @@ class unicheck_progress {
         }
 
         if ($fileobj->progress == 100 && $cid) {
-            return require(dirname(__FILE__) . '/../../views/view_tmpl_processed.php');
+            return require(UNICHECK_PLUGIN_PATH . '/views/view_tmpl_processed.php');
         }
 
         switch ($fileobj->state) {
             case unicheck_file_state::UPLOADING:
             case unicheck_file_state::UPLOADED:
             case unicheck_file_state::CHECKING:
-                return require(dirname(__FILE__) . '/../../views/view_tmpl_progress.php');
+                return require(UNICHECK_PLUGIN_PATH . '/views/view_tmpl_progress.php');
             case unicheck_file_state::HAS_ERROR:
-                return require(dirname(__FILE__) . '/../../views/view_tmpl_invalid_response.php');
+                return require(UNICHECK_PLUGIN_PATH . '/views/view_tmpl_invalid_response.php');
         }
 
         return '';

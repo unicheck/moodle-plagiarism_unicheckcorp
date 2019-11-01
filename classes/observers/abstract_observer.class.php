@@ -26,6 +26,7 @@
 namespace plagiarism_unicheck\classes\observers;
 
 use core\event\base;
+use plagiarism_unicheck\classes\exception\unicheck_exception;
 use plagiarism_unicheck\classes\unicheck_adhoc;
 use plagiarism_unicheck\classes\unicheck_assign;
 use plagiarism_unicheck\classes\unicheck_core;
@@ -34,6 +35,9 @@ use stored_file;
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
+
+global $CFG;
+require_once($CFG->dirroot . '/mod/assign/locallib.php');
 
 /**
  * Class unicheck_abstract_event
@@ -73,13 +77,9 @@ abstract class abstract_observer {
      * @return bool
      */
     public static function is_submition_draft(base $event) {
-        global $CFG;
-
         if ($event->objecttable != 'assign_submission') {
             return false;
         }
-
-        require_once($CFG->dirroot . '/mod/assign/locallib.php');
 
         $submission = unicheck_assign::get_user_submission_by_cmid($event->contextinstanceid);
         if (!$submission) {
@@ -93,6 +93,8 @@ abstract class abstract_observer {
      * after_handle_event
      *
      * @param unicheck_core $ucore
+     *
+     * @throws unicheck_exception
      */
     protected function after_handle_event(unicheck_core $ucore) {
         if (empty($this->tasks)) {

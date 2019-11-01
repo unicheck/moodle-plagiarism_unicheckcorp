@@ -31,7 +31,7 @@ if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
-require_once(dirname(__FILE__) . '/../../locallib.php');
+require_once(UNICHECK_PLUGIN_PATH . '/locallib.php');
 
 /**
  * Class abstact_file_event
@@ -49,7 +49,9 @@ abstract class abstract_file_event extends base {
      * Create event log from plagiarism file.
      *
      * @param object $plagiarismfile
+     *
      * @return base
+     * @throws \coding_exception
      */
     public static function create_from_plagiarismfile($plagiarismfile) {
         $data = [
@@ -69,7 +71,9 @@ abstract class abstract_file_event extends base {
      *
      * @param object $plagiarismfile
      * @param string $errormessage
+     *
      * @return base
+     * @throws \coding_exception
      */
     public static function create_from_failed_plagiarismfile($plagiarismfile, $errormessage) {
         $data = [

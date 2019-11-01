@@ -38,8 +38,8 @@ global $CFG;
 
 require_once($CFG->libdir . '/filelib.php');
 
-require_once(dirname(__FILE__) . '/constants.php');
-require_once(dirname(__FILE__) . '/autoloader.php');
+require_once(__DIR__ . '/constants.php');
+require_once(__DIR__ . '/autoloader.php');
 
 /**
  * Class plagiarism_unicheck

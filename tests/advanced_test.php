@@ -79,6 +79,10 @@ class plagiarism_unicheck_advanced_testcase extends advanced_testcase {
 
     /**
      * Setup function - we will create a course and add an assign instance to it.
+     *
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws ReflectionException
      */
     protected function setUp() {
         global $DB;
@@ -145,6 +149,8 @@ class plagiarism_unicheck_advanced_testcase extends advanced_testcase {
 
     /**
      * test_create_ucore
+     *
+     * @throws coding_exception
      */
     public function test_create_ucore() {
         $generator = $this->getDataGenerator()->get_plugin_generator('plagiarism_unicheck');

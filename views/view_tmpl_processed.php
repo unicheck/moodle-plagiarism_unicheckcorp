@@ -87,10 +87,10 @@ $getcheatingblock = function($reporturl = null) use ($fileobj, $metadata) {
         $cheatingchars = (int) $metadata[unicheck_file_metadata::CHEATING_CHAR_REPLACEMENTS_COUNT];
         if ($cheatingchars > 0) {
             $htmlparts[] = ($reporturl) ? sprintf(
-                '<a title="%s" href="%s" target="_blank" class="un-cheating">',
+                '<a title="%s" href="%s" target="_blank" class="unicheck-cheating">',
                 plagiarism_unicheck::trans('report'),
                 $reporturl
-            ) : '<div class="un-cheating">';
+            ) : '<div class="unicheck-cheating">';
 
             $htmlparts[] = sprintf(
                 '<span>%s</span>',
@@ -119,15 +119,15 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
     $canvieweditreport = capability::user_can(capability::VIEW_EDIT_REPORT, $cid, $USER->id);
 
     if (in_array(true, [$canviewsimilarity, $canviewreport, $canvieweditreport]) && !empty($fileobj->check_id)) {
-        $htmlparts[] = '<div class="un_detect_result">';
+        $htmlparts[] = '<div class="unicheck-detect_result">';
         $htmlparts[] = sprintf(
-            '<a href="%s" class="un_link" target="_blank">' .
+            '<a href="%s" class="unicheck-link" target="_blank">' .
             '<img width="69" src="%s" title="%s">',
             new moodle_url(UNICHECK_DOMAIN),
             $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME),
             plagiarism_unicheck::trans('pluginname')
         );
-        $htmlparts[] = sprintf('<span class="un_report_id">ID:%s</span>', $fileobj->check_id);
+        $htmlparts[] = sprintf('<span class="unicheck-report_id">ID:%s</span>', $fileobj->check_id);
         $htmlparts[] = '</a>';
     }
 
@@ -147,41 +147,41 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
             }
 
             if ($canviewsimilarity && $reporturl) {
-                $htmlparts[] = '<div class="un-report">';
+                $htmlparts[] = '<div class="unicheck-report">';
                 $htmlparts[] = sprintf(
-                    '<span class="un_report_percentage rank1 %s">%s%%</span>',
+                    '<span class="unicheck-report_percentage rank1 %s">%s%%</span>',
                     $rankclass,
                     $fileobj->similarityscore
                 );
                 $htmlparts[] = sprintf(
-                    '<a title="%s" href="%s" class="un-report-link" target="_blank">',
+                    '<a title="%s" href="%s" class="unicheck-report-link" target="_blank">',
                     plagiarism_unicheck::trans('report'),
                     $reporturl
                 );
                 $htmlparts[] = sprintf(
-                    '<span class="un_report_text">%s</span>',
+                    '<span class="unicheck-report_text">%s</span>',
                     plagiarism_unicheck::trans('ui:reportlink')
                 );
                 $htmlparts[] = '</a>';
                 $htmlparts[] = '</div>';
             } else if ($reporturl) {
-                $htmlparts[] = '<div class="un-report">';
+                $htmlparts[] = '<div class="unicheck-report">';
                 $htmlparts[] = sprintf(
-                    '<a title="%s" href="%s" class="un-report-without-score-link" target="_blank">',
+                    '<a title="%s" href="%s" class="unicheck-report-without-score-link" target="_blank">',
                     plagiarism_unicheck::trans('report'),
                     $reporturl
                 );
                 $htmlparts[] = sprintf(
-                    '<span class="un-report-without-score-text">%s</span>',
+                    '<span class="unicheck-report-without-score-text">%s</span>',
                     plagiarism_unicheck::trans('ui:reportlink')
                 );
                 $htmlparts[] = '</a>';
                 $htmlparts[] = '</div>';
             } else if ($canviewsimilarity) {
-                $htmlparts[] = '<div class="un-report un_report_without_link">';
+                $htmlparts[] = '<div class="unicheck-report unicheck-report_without_link">';
                 // User is allowed to view only the score.
                 $htmlparts[] = sprintf(
-                    '<span class="un_report_percentage rank1 %s">%s%%</span>',
+                    '<span class="unicheck-report_percentage rank1 %s">%s%%</span>',
                     $rankclass,
                     $fileobj->similarityscore
                 );

@@ -47,8 +47,10 @@ if (!$iterator) {
     $PAGE->requires->js_init_call('M.plagiarismUnicheck.init', [$linkarray['cmid']], true, $jsmodule);
 }
 
-$htmlparts = [sprintf('<div class="un_detect_result fid-%1$s"><div class="un_data">{"fid":"%1$s"}</div>', $fileobj->id)];
-$htmlparts[] = sprintf('<img  class="un_progress un_tooltip" src="%1$s" alt="%2$s" title="%2$s" />',
+$htmlparts = [
+    sprintf('<div class="unicheck-detect_result fid-%1$s"><div class="unicheck-data">{"fid":"%1$s"}</div>', $fileobj->id)
+];
+$htmlparts[] = sprintf('<img  class="unicheck-progress unicheck-tooltip" src="%1$s" alt="%2$s" title="%2$s" />',
     $OUTPUT->image_url('loader', UNICHECK_PLAGIN_NAME),
     plagiarism_unicheck::trans('processing')
 );
@@ -56,7 +58,7 @@ $htmlparts[] = sprintf('<img  class="un_progress un_tooltip" src="%1$s" alt="%2$
 if ($fileobj->state === unicheck_file_state::UPLOADING) {
     $htmlparts[] = sprintf('%s', plagiarism_unicheck::trans('uploading'));
 } else {
-    $htmlparts[] = sprintf('%s: <span class="un_progress-val" >%d%%</span>',
+    $htmlparts[] = sprintf('%s: <span class="unicheck-progress-val" >%d%%</span>',
         plagiarism_unicheck::trans('progress'), intval($fileobj->progress)
     );
 }

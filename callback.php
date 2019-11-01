@@ -26,8 +26,8 @@
 
 define('AJAX_SCRIPT', true);
 
-require_once(dirname(__FILE__) . '/../../config.php');
-require_once(dirname(__FILE__) . '/locallib.php');
+require(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/locallib.php');
 
 use plagiarism_unicheck\classes\unicheck_callback;
 use plagiarism_unicheck\classes\unicheck_core;

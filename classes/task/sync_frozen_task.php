@@ -72,6 +72,8 @@ class sync_frozen_task extends \core\task\scheduled_task {
     /**
      * Do the job.
      * Throw exceptions on errors (the job will be retried).
+     *
+     * @throws \coding_exception
      */
     public function execute() {
         $files = [
@@ -135,6 +137,8 @@ class sync_frozen_task extends \core\task\scheduled_task {
      *
      * @param array $externalfiles
      * @param array $dbfiles
+     *
+     * @throws \coding_exception
      */
     protected function fix_file($externalfiles, $dbfiles) {
         if ($externalfiles[unicheck_file_api::TO_UPDATE]) {
@@ -164,6 +168,8 @@ class sync_frozen_task extends \core\task\scheduled_task {
 
     /**
      * Fix frozen archive
+     *
+     * @throws \moodle_exception
      */
     protected function fix_archive() {
         $fronzenarchive = unicheck_file_provider::get_frozen_archive();

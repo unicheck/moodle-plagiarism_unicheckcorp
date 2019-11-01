@@ -71,9 +71,9 @@ if (isset($linkarray['content'])) {
 
 $params['submissiontype'] = $submissiontype;
 
-$htmlparts[] = '<div class="un_detect_result">';
+$htmlparts[] = '<div class="unicheck-detect_result">';
 $htmlparts[] = sprintf(
-    '<a href="%s" class="un_link" target="_blank">' .
+    '<a href="%s" class="unicheck-link" target="_blank">' .
     '<img width="69" src="%s" alt="%s">' .
     '</a>',
     new moodle_url(UNICHECK_DOMAIN),
@@ -83,9 +83,9 @@ $htmlparts[] = sprintf(
 
 $url = new moodle_url('/plagiarism/unicheck/check.php', $params);
 $htmlparts[] = sprintf(
-    '<div class="un-report">' .
-    '<a href="%1$s" class="un-start-scan-link" title="%2$s">' .
-    '<span class="un_start_scan_text">%2$s</span>' .
+    '<div class="unicheck-report">' .
+    '<a href="%1$s" class="unicheck-start-scan-link" title="%2$s">' .
+    '<span class="unicheck-start_scan_text">%2$s</span>' .
     '</a>' .
     '</div>',
     $url,

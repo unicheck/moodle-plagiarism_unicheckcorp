@@ -34,9 +34,9 @@ use plagiarism_unicheck\classes\unicheck_notification;
 use plagiarism_unicheck\classes\unicheck_settings;
 use plagiarism_unicheck\classes\user\preferences;
 
-require_once(dirname(__FILE__) . '/../../config.php');
-require_once(dirname(__FILE__) . '/lib.php');
-require_once(dirname(__FILE__) . '/constants.php');
+require(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/lib.php');
+require_once(__DIR__ . '/constants.php');
 
 global $CFG, $DB, $OUTPUT;
 
@@ -119,7 +119,7 @@ if (!$filestable->is_downloading()) {
     $PAGE->requires->js_init_call('M.plagiarismUnicheck.init_debugging_table', [], true, $jsmodule);
 
     $currenttab = 'unicheckdebug';
-    require_once(dirname(__FILE__) . '/views/view_tabs.php');
+    require_once(__DIR__ . '/views/view_tabs.php');
 
     // Unicheck status table.
     echo $OUTPUT->heading(plagiarism_unicheck::trans('debugging:statustable:header'));

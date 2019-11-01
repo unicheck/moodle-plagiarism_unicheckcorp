@@ -32,7 +32,8 @@ if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
-require_once(dirname(__FILE__) . '/../../locallib.php');
+global $CFG;
+require_once($CFG->libdir . '/plagiarismlib.php');
 
 /**
  * Class similarity_check_failed

@@ -65,7 +65,7 @@ class unicheck_zip_extractor implements unicheck_extractor_interface {
         global $CFG;
 
         if (!extension_loaded('zip')) {
-            throw new unicheck_exception(unicheck_exception::ARCHIVE_CANT_BE_OPEN);
+            throw new unicheck_exception(unicheck_exception::ZIP_ARCHIVE_CANT_BE_OPEN);
         }
 
         $this->file = $file;
@@ -77,7 +77,7 @@ class unicheck_zip_extractor implements unicheck_extractor_interface {
         $this->ziparch = new \zip_archive();
 
         if (!$this->ziparch->open($this->tmpzipfile, \file_archive::OPEN)) {
-            throw new unicheck_exception(unicheck_exception::ARCHIVE_CANT_BE_OPEN);
+            throw new unicheck_exception(unicheck_exception::ZIP_ARCHIVE_CANT_BE_OPEN);
         }
     }
 

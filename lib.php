@@ -44,8 +44,8 @@ global $CFG;
 require_once($CFG->dirroot . '/plagiarism/lib.php');
 require_once($CFG->libdir . '/filelib.php');
 require_once($CFG->libdir . '/accesslib.php');
-require_once(dirname(__FILE__) . '/autoloader.php');
-require_once(dirname(__FILE__) . '/locallib.php');
+require_once(__DIR__ . '/autoloader.php');
+require_once(__DIR__ . '/locallib.php');
 
 // There is a new Unicheck API - The Integration Service - we only currently use this to verify the receiver address.
 // If we convert the existing calls to send file/get score we should move this to a config setting.
@@ -111,7 +111,7 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
                 }
             } else {
                 if (isset($linkarray['content']) && filesize_checker::is_valid_content($linkarray['content'])) {
-                    $output = require(dirname(__FILE__) . '/views/' . 'view_tmpl_can_check.php');
+                    $output = require(__DIR__ . '/views/' . 'view_tmpl_can_check.php');
                 }
             }
         }

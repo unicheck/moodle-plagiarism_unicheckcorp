@@ -63,7 +63,7 @@ trait unicheck_translate {
 
         if (empty($translates)) {
             $lang = current_language();
-            $path = UNICHECK_PROJECT_PATH . "lang/$lang/api_translates.json";
+            $path = UNICHECK_PLUGIN_PATH . "/lang/$lang/api_translates.json";
             if (file_exists($path)) {
                 $translates = json_decode(file_get_contents($path));
             }

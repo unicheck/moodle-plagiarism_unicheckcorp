@@ -32,7 +32,7 @@ if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
-require_once(dirname(__FILE__) . '/../../locallib.php');
+require_once(UNICHECK_PLUGIN_PATH . '/locallib.php');
 
 /**
  * Class api_called
@@ -100,6 +100,7 @@ class api_called extends base {
      * @param array  $requestdata
      * @param string $responsedata
      * @param int    $responsecode
+     *
      * @return base
      */
     public static function create_log_message($apikey, $apiurl, $requestdata, $responsedata, $responsecode = 200) {

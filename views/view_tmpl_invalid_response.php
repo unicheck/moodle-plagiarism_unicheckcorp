@@ -33,9 +33,9 @@ if (AJAX_SCRIPT) {
     $PAGE->set_context(null);
 }
 
-$htmlparts[] = '<div class="un_detect_result">';
+$htmlparts[] = '<div class="unicheck-detect_result">';
 $htmlparts[] = sprintf(
-    '<a href="%s" class="un_link" target="_blank">' .
+    '<a href="%s" class="unicheck-link" target="_blank">' .
     '<img width="69" src="%s" title="%s">' .
     '</a>',
     new moodle_url(UNICHECK_DOMAIN),
@@ -46,7 +46,7 @@ $htmlparts[] = '</div>';
 
 $erroresponse = plagiarism_unicheck::error_resp_handler($fileobj->errorresponse);
 $htmlparts[] = sprintf(
-    '<div class="un_processing_error"><span>%s</span></div>',
+    '<div class="unicheck-processing_error"><span>%s</span></div>',
     $erroresponse
 );
 
