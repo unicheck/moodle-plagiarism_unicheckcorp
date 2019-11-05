@@ -113,6 +113,38 @@ class unicheck_file_provider {
     }
 
     /**
+     * Find plagiarism files by ids for context
+     *
+     * @param array      $ids
+     * @param int        $cmid
+     * @param array|null $userids
+     *
+     * @return array
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public static function find_by_ids_for_context(array $ids, $cmid, array $userids = null) {
+        global $DB;
+
+        list($idssql, $idparams) = $DB->get_in_or_equal($ids);
+        $params = $idparams;
+
+        $sql = "id $idssql
+                AND cm = ?";
+
+        $params[] = $cmid;
+
+        if ($userids) {
+            list($useridssql, $useridparams) = $DB->get_in_or_equal($userids);
+
+            $sql .= " AND userid $useridssql";
+            $params = array_merge($params, $useridparams);
+        }
+
+        return $DB->get_records_select(UNICHECK_FILES_TABLE, $sql, $params);
+    }
+
+    /**
      * Can start check
      *
      * @param \stdClass $plagiarismfile
@@ -202,16 +234,17 @@ class unicheck_file_provider {
     public static function get_frozen_files() {
         global $DB;
 
-        $querywhere = "(state <> '"
-            . unicheck_file_state::CHECKED
-            . "'AND state <> '"
-            . unicheck_file_state::HAS_ERROR
-            . "') AND UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 DAY)) > timesubmitted "
-            . "AND external_file_uuid IS NOT NULL";
+        $querywhere = "(state <> :checked_state AND state <> :error_state)
+                        AND UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 DAY)) > timesubmitted 
+                        AND external_file_uuid IS NOT NULL";
 
         return $DB->get_records_select(
             UNICHECK_FILES_TABLE,
-            $querywhere
+            $querywhere,
+            [
+                'checked_state' => unicheck_file_state::CHECKED,
+                'error_state'   => unicheck_file_state::HAS_ERROR
+            ]
         );
     }
 
@@ -223,19 +256,18 @@ class unicheck_file_provider {
     public static function get_frozen_archive() {
         global $DB;
 
-        $querywhere = "(state <> '"
-            . unicheck_file_state::CHECKED
-            . "'AND state <> '"
-            . unicheck_file_state::HAS_ERROR
-            . "'
-            ) AND UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 DAY )) > timesubmitted "
-            . "AND type = '"
-            . unicheck_plagiarism_entity::TYPE_ARCHIVE
-            . "'";
+        $querywhere = "(state <> :checked_state AND state <> :error_state)
+                        AND UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 DAY )) > timesubmitted
+                        AND type = :archive_type";
 
         return $DB->get_records_select(
             UNICHECK_FILES_TABLE,
-            $querywhere
+            $querywhere,
+            [
+                'checked_state' => unicheck_file_state::CHECKED,
+                'error_state'   => unicheck_file_state::HAS_ERROR,
+                'archive_type'  => unicheck_plagiarism_entity::TYPE_ARCHIVE
+            ]
         );
     }
 
@@ -265,21 +297,12 @@ class unicheck_file_provider {
         if (empty($ids)) {
             return;
         }
-        $allrecordssql = implode(',', $ids);
-        $DB->delete_records_select(UNICHECK_FILES_TABLE, "id IN ($allrecordssql) OR parent_id IN ($allrecordssql)");
-    }
 
-    /**
-     * Get min value from the field
-     *
-     * @param string $field
-     *
-     * @return mixed|null
-     */
-    public static function get_min_value($field) {
-        global $DB;
+        list($select, $params) = $DB->get_in_or_equal($ids);
+        // We are going to use select twice so double the params
+        $params = array_merge($params, $params);
 
-        return $DB->get_field_sql("SELECT MIN({$field}) FROM {plagiarism_unicheck_files}");
+        $DB->delete_records_select(UNICHECK_FILES_TABLE, "id {$select} OR parent_id {$select}", $params);
     }
 
     /**

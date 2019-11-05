@@ -127,6 +127,8 @@ class unicheck_linkarray {
                 break;
         }
 
+        $tmpl = 'view_tmpl_unknownwarning.php';
+
         if (is_null($tmpl)) {
             $output = '';
         } else {

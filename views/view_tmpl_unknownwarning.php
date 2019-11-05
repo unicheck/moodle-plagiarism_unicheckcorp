@@ -35,33 +35,37 @@ if (AJAX_SCRIPT) {
     $PAGE->set_context(null);
 }
 
-$title = plagiarism_unicheck::trans('unknownwarning');
-$reset = '';
 $modulecontext = context_module::instance($linkarray['cmid']);
+$errorresponse = plagiarism_unicheck::trans('unknownwarning');
+$resetlink = '';
+
 // This is a teacher viewing the responses.
 if (has_capability(capability::RESET_FILE, $modulecontext) && !empty($fileobj->errorresponse)) {
-    // Strip out some possible known text to tidy it up.
-    $erroresponse = plagiarism_unicheck::error_resp_handler($fileobj->errorresponse);
-
-    $erroresponse = str_replace('{&quot;LocalisedMessage&quot;:&quot;', '', $erroresponse);
-    $erroresponse = str_replace('&quot;,&quot;Message&quot;:null}', '', $erroresponse);
-    $title .= ': ' . $erroresponse;
+    $errorresponse .= ': ' . $erroresponse;
     $url = new moodle_url('/plagiarism/unicheck/reset.php', [
         'cmid'    => $linkarray['cmid'],
         'pf'      => $fileobj->id,
         'sesskey' => sesskey(),
     ]);
-    $reset = sprintf('<a href="%1$s"><img src="%2$s" title="%3$s"></a>',
+
+    $resetlink = sprintf('<a href="%1$s"><img src="%2$s" title="%3$s"></a>',
         $url, $OUTPUT->image_url('reset', UNICHECK_PLAGIN_NAME), get_string('reset')
     );
 }
 
-$htmlparts = ['<span class="unicheck-detect_result">'];
-$htmlparts[] = sprintf('<img width="16" class="unicheck-tooltip" src="%1$s" alt="%2$s" title="%3$s" />%4$s',
-    $OUTPUT->image_url('error', UNICHECK_PLAGIN_NAME),
-    plagiarism_unicheck::trans('unknownwarning'), $title, $reset
+$htmlparts[] = '<div class="unicheck-detect_result">';
+$htmlparts[] = sprintf(
+    '<a href="%s" class="unicheck-link" target="_blank">' .
+    '<img width="69" src="%s" title="%s">' .
+    '</a>',
+    new moodle_url(UNICHECK_DOMAIN),
+    $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME),
+    plagiarism_unicheck::trans('pluginname')
 );
-
-$htmlparts[] = '</span>';
+$htmlparts[] = '</div>';
+$htmlparts[] = sprintf(
+    '<div class="unicheck-processing_error"><span>%s</span></div>',
+    format_string($errorresponse)
+);
 
 return implode('', $htmlparts);

@@ -48,7 +48,7 @@ M.plagiarismUnicheck.init = function(Y, contextid) {
             return;
         }
 
-        var url = M.cfg.wwwroot + '/plagiarism/unicheck/ajax.php';
+        var url = M.cfg.wwwroot + '/plagiarism/unicheck/track_progress.php';
 
         var callback = {
             method: 'get',
@@ -57,10 +57,8 @@ M.plagiarismUnicheck.init = function(Y, contextid) {
             data: {
                 'action': 'track_progress',
                 'sesskey': M.cfg.sesskey,
-                'data': Y.JSON.stringify({
-                    ids: items,
-                    cid: contextid
-                })
+                'cmid': contextid,
+                'fileids': items.join(',')
             },
             on: {
                 success: function(tid, response) {
