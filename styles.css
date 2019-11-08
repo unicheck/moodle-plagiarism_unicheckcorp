@@ -80,11 +80,16 @@ div.unicheck-detect_result div:first-child {
     padding: 2px 4px;
     transition: background-color ease-in-out 0.3s;
 }
+.unicheck-mt5{
+    margin-top: 5px;
+}
 .unicheck-report .unicheck-start-scan-link,
+.unicheck-report .unicheck-reset-link,
 .unicheck-report .unicheck-report-without-score-link {
     width: inherit;
 }
 .unicheck-report .unicheck-report-link:hover,
+.unicheck-report .unicheck-reset-link:hover,
 .unicheck-report .unicheck-start-scan-link:hover,
 .unicheck-report .unicheck-report-without-score-link:hover {
     background-color: #67768a;
@@ -120,6 +125,7 @@ div.unicheck-detect_result div:first-child {
 }
 .unicheck-report_text,
 .unicheck-start_scan_text,
+.unicheck-reset-text,
 .unicheck-report-without-score-text {
     display: flex;
     justify-content: center;
@@ -185,6 +191,7 @@ div.unicheck-detect_result div:first-child {
 
 @media screen and (max-width: 1600px) {
     .unicheck-start_scan_text,
+    .unicheck-reset-text,
     .unicheck-report-without-score-text {
         height: 40px;
     }

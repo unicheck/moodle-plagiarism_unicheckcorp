@@ -62,37 +62,26 @@ if (!empty($fileobj->id)) {
 }
 
 $submissiontype = 'file';
-$content = '';
-
 if (isset($linkarray['content'])) {
     $submissiontype = 'onlinetext';
-    $content = $linkarray['content'];
 }
 
 $params['submissiontype'] = $submissiontype;
+$startcheckurl = new moodle_url('/plagiarism/unicheck/check.php', $params);
+$startchecktitle = plagiarism_unicheck::trans('check_file');
 
-$htmlparts[] = '<div class="unicheck-detect_result">';
-$htmlparts[] = sprintf(
-    '<a href="%s" class="unicheck-link" target="_blank">' .
-    '<img width="69" src="%s" alt="%s">' .
-    '</a>',
-    new moodle_url(UNICHECK_DOMAIN),
-    $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME),
-    plagiarism_unicheck::trans('pluginname')
-);
+$unicheckurl = new moodle_url(UNICHECK_DOMAIN);
+$unichecklogourl = $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME);
+$pluginname = plagiarism_unicheck::trans('pluginname');
+$errormessage = plagiarism_unicheck::error_resp_handler($fileobj->errorresponse);
 
-$url = new moodle_url('/plagiarism/unicheck/check.php', $params);
-$htmlparts[] = sprintf(
-    '<div class="unicheck-report">' .
-    '<a href="%1$s" class="unicheck-start-scan-link" title="%2$s">' .
-    '<span class="unicheck-start_scan_text">%2$s</span>' .
-    '</a>' .
-    '</div>',
-    $url,
-    plagiarism_unicheck::trans('check_file'),
-    $content
-);
+$context = [
+    'unicheckurl'     => (string) $unicheckurl,
+    'unichecklogourl' => (string) $unichecklogourl,
+    'pluginname'      => s($pluginname),
+    'errormessage'    => format_text($errormessage, FORMAT_HTML),
+    'startcheckurl'   => (string) $startcheckurl,
+    'startchecktitle' => s($startchecktitle)
+];
 
-$htmlparts[] = '</div>';
-
-return implode('', $htmlparts);
+return $OUTPUT->render_from_template('plagiarism_unicheck/can_check', $context);
