@@ -98,6 +98,7 @@ class unicheck_linkarray {
      * @return mixed
      */
     public static function get_output_for_linkarray(\stdClass $fileobj, $cm, $linkarray) {
+        global $CFG;
         static $iterator; // This iterator for one-time start-up.
 
         $tmpl = null;
@@ -130,7 +131,7 @@ class unicheck_linkarray {
         if (is_null($tmpl)) {
             $output = '';
         } else {
-            $output = require(UNICHECK_PLUGIN_PATH . '/views/' . $tmpl);
+            $output = require($CFG->dirroot . '/plagiarism/unicheck/views/' . $tmpl);
         }
 
         if ($inciterator) {

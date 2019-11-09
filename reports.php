@@ -66,21 +66,21 @@ $tabs = [];
 $fileinfos = [];
 $canvieweditreport = capability::user_can(capability::VIEW_EDIT_REPORT, $cmid, $USER->id);
 foreach ($childs as $child) {
-
+    $childid = (int) $child->id;
+    $childfilename = s($child->filename);
     switch ($child->state) {
         case unicheck_file_state::CHECKED:
 
             $url = new \moodle_url('/plagiarism/unicheck/reports.php', [
                 'cmid' => $cmid,
                 'pf'   => $pf,
-                'cpf'  => $child->id,
+                'cpf'  => $childid,
             ]);
 
             if ($child->check_id !== null && $child->progress == 100) {
+                $tabs[] = new tabobject('unicheck_file_id_' . $childid, $url->out(), $childfilename, '', false);
 
-                $tabs[] = new tabobject('unicheck_file_id_' . $child->id, $url->out(), $child->filename, '', false);
-
-                $link = html_writer::link($url, $child->filename);
+                $link = html_writer::link($url, $childfilename);
                 $fileinfos[] = [
                     'filename' => html_writer::tag('div', $link, ['class' => 'edit-link']),
                     'status'   => $OUTPUT->image_icon('i/valid', plagiarism_unicheck::trans('reportready')) .
@@ -90,9 +90,9 @@ foreach ($childs as $child) {
             break;
         case unicheck_file_state::HAS_ERROR :
 
-            $erroresponse = plagiarism_unicheck::error_resp_handler($child->errorresponse);
+            $erroresponse = s(plagiarism_unicheck::error_resp_handler($child->errorresponse));
             $fileinfos[] = [
-                'filename' => $child->filename,
+                'filename' => $childfilename,
                 'status'   => $OUTPUT->image_icon('i/invalid', $erroresponse) . $erroresponse,
             ];
             break;
@@ -148,7 +148,7 @@ if ($cpf !== null) {
 
             if ($archivefilescount > $extractedfilescount) {
                 $params = new stdClass();
-                $params->filename = $fileobj->filename;
+                $params->filename = s($fileobj->filename);
                 $params->max_supported_count = $extractedfilescount;
 
                 echo html_writer::span(plagiarism_unicheck::trans('archive:limitreachedfulldescription', $params), 'text-danger');

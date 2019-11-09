@@ -33,7 +33,7 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 global $CFG;
-require_once($CFG->libdir . '/plagiarismlib.php');
+require_once($CFG->dirroot . '/plagiarism/unicheck/lib.php');
 
 /**
  * Class error_handled
@@ -73,13 +73,16 @@ class error_handled extends base {
      * @return string
      */
     public function get_description() {
-        return "Error handled. Message '{$this->other['errormessage']}'";
+        $errormessage = format_text($this->other['errormessage'], FORMAT_HTML);
+
+        return "Error handled. Message '{$errormessage}'";
     }
 
     /**
      * Create from exception
      *
      * @param \Exception $exception
+     *
      * @return base
      */
     public static function create_from_exception(\Exception $exception) {

@@ -33,7 +33,7 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 global $CFG;
-require_once($CFG->libdir . '/plagiarismlib.php');
+require_once($CFG->dirroot . '/plagiarism/unicheck/lib.php');
 
 /**
  * Class file_similarity_check_recalculated
@@ -72,6 +72,9 @@ class file_similarity_check_recalculated extends abstract_file_event {
      * @return string
      */
     public function get_description() {
-        return "User file '{$this->other['fileid']}' similarity check recalculated in course module '{$this->contextinstanceid}'";
+        $fileid = s($this->other['fileid']);
+        $cmid = (int) $this->contextinstanceid;
+
+        return "File '{$fileid}' similarity check recalculated in course module '{$cmid}'";
     }
 }

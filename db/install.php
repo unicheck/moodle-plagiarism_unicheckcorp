@@ -27,7 +27,7 @@ if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
-require_once($CFG->dirroot . '/plagiarism/unicheck/constants.php');
+require_once($CFG->libdir . '/plagiarismlib.php');
 
 /**
  * Installer

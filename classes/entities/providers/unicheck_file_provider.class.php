@@ -198,16 +198,37 @@ class unicheck_file_provider {
     }
 
     /**
-     * Get file list by parent id
+     * Get files list by parent id
      *
      * @param int $parentid
      *
      * @return array
      */
-    public static function get_file_list_by_parent_id($parentid) {
+    public static function get_files_by_parent_id($parentid) {
         global $DB;
 
         return $DB->get_records_list(UNICHECK_FILES_TABLE, 'parent_id', [$parentid]);
+    }
+
+    /**
+     * Get files list by parent id and states list
+     *
+     * @param int   $parentid
+     *
+     * @param array $states
+     *
+     * @param bool  $equel IN or NOT IN
+     *
+     * @return array
+     */
+    public static function get_files_by_parent_id_in_states($parentid, array $states, $equel = true) {
+        global $DB;
+
+        $params = [$parentid];
+        list($instatessql, $instatesparams) = $DB->get_in_or_equal($states, SQL_PARAMS_QM, 'param', $equel);
+        $params = array_merge($params, $instatesparams);
+
+        return $DB->get_records_select(UNICHECK_FILES_TABLE, "parent_id = ? AND state {$instatessql}", $params);
     }
 
     /**

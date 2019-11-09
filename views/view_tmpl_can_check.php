@@ -43,7 +43,6 @@ if (!empty($fileobj->check_id)) {
     return '';
 }
 
-$htmlparts = [];
 $modname = $PAGE->cm->modname;
 
 if (!in_array($modname, [UNICHECK_MODNAME_ASSIGN])) {

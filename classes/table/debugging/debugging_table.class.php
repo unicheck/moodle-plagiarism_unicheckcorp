@@ -195,7 +195,10 @@ class debugging_table extends table_sql {
             return $row->username;
         }
 
-        return '<a href="/user/profile.php?id=' . $row->userid . '">' . $row->username . '</a>';
+        $userid = (int) $row->userid;
+        $username = s($row->username);
+
+        return '<a href="/user/profile.php?id=' . $userid . '">' . $username . '</a>';
     }
 
     /**

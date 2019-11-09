@@ -37,7 +37,7 @@ use plagiarism_unicheck\classes\helpers\unicheck_progress;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\unicheck_core;
 
-global $USER, $DB;
+global $USER;
 
 require_sesskey();
 

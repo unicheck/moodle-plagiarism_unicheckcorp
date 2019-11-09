@@ -29,7 +29,7 @@ if (!defined('MOODLE_INTERNAL')) {
 
 global $CFG;
 
-require_once($CFG->dirroot . '/plagiarism/unicheck/classes/unicheck_core.class.php');
+require_once($CFG->libdir . '/plagiarismlib.php');
 
 use plagiarism_unicheck\classes\unicheck_core;
 

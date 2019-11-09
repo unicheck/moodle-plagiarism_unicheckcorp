@@ -146,7 +146,7 @@ class plagiarism_unicheck_privacy_provider_testcase extends provider_testcase {
      */
     public function test_export_plagiarism_user_data() {
         $this->resetAfterTest();
-        global $DB;
+        global $DB, $CFG;
 
         $student = $this->getDataGenerator()->create_user();
         $this->setUser($student);
@@ -154,7 +154,7 @@ class plagiarism_unicheck_privacy_provider_testcase extends provider_testcase {
         /** @var plagiarism_unicheck_generator $generator */
         $generator = $this->getDataGenerator()->get_plugin_generator('plagiarism_unicheck');
         $storedfile = $generator->create_file_from_pathname(
-            UNICHECK_PLUGIN_PATH . '/tests/fixtures/sample.pdf',
+            $CFG->dirroot . '/plagiarism/unicheck/tests/fixtures/sample.pdf',
             $student
         );
         $plagiarismfile = $this->create_plagiarism_unicheck_file($student, $storedfile);

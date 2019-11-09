@@ -33,7 +33,7 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 global $CFG;
-require_once($CFG->libdir . '/plagiarismlib.php');
+require_once($CFG->dirroot . '/plagiarism/unicheck/lib.php');
 
 /**
  * Class callback_accepted
@@ -73,10 +73,17 @@ class callback_accepted extends base {
      * @return string
      */
     public function get_description() {
-        $body = isset($this->other['body']) ? json_encode($this->other['body']) : '-';
-        $token = isset($this->other['token']) ? $this->other['token'] : '-';
-        $message = "Token: '$token'<br>";
-        $message .= "$body";
+        $token = isset($this->other['token']) ? s($this->other['token']) : '-';
+        $body = '';
+        if (isset($this->other['body'])) {
+            $body = s(json_encode($this->other['body']));
+        }
+
+        $message = <<<HTML
+            Token: '$token'<br>
+            Callback body:<br>
+            $body
+HTML;
 
         return $message;
     }
@@ -86,6 +93,7 @@ class callback_accepted extends base {
      *
      * @param string $body
      * @param string $token
+     *
      * @return base
      */
     public static function create_log_message($body, $token) {

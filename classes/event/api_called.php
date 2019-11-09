@@ -32,12 +32,13 @@ if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
-require_once(UNICHECK_PLUGIN_PATH . '/locallib.php');
+global $CFG;
+require_once($CFG->dirroot . '/plagiarism/unicheck/lib.php');
 
 /**
  * Class api_called
  *
- * @package     plagiarism_unicheck
+ * @package     plagiarism_unicheck̵̵
  * @subpackage  plagiarism
  *
  * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
@@ -72,22 +73,22 @@ class api_called extends base {
      * @return string
      */
     public function get_description() {
-        $message = '';
-        $apiurl = isset($this->other['api_url']) ? $this->other['api_url'] : '';
-        $message .= "URL: $apiurl<br>";
-        $responsecode = isset($this->other['response_code']) ? $this->other['response_code'] : null;
-        if (null !== $responsecode) {
-            $message .= "Response code: $responsecode<br>";
+        $apiurl = isset($this->other['api_url']) ? s($this->other['api_url']) : '?';
+        $apikey = isset($this->other['api_key']) ? s($this->other['api_key']) : '-';
+        $requestdata = [];
+        if (isset($this->other['request_data'])) {
+            $requestdata = s(json_encode($this->other['request_data']));
         }
+        $responsecode = isset($this->other['response_code']) ? (int) $this->other['response_code'] : '?';
+        $response = isset($this->other['response_data']) ? s($this->other['response_data']) : '';
 
-        $requestdata = isset($this->other['request_data']) ? $this->other['request_data'] : [];
-        if ($requestdata) {
-            $message .= 'Request data: ' . json_encode($requestdata) . '<br>';
-        }
-        $response = isset($this->other['response_data']) ? $this->other['response_data'] : '';
-        $message .= "Response: $response<br>";
-        $apikey = isset($this->other['api_key']) ? $this->other['api_key'] : '';
-        $message .= "API key: $apikey";
+        $message = <<<HTML
+                URL: $apiurl<br>
+                API key: $apikey<br>
+                Request data: $requestdata<br>
+                Response code: $responsecode<br>
+                Response: $response
+HTML;
 
         return $message;
     }

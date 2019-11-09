@@ -31,7 +31,8 @@ if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
-require_once(UNICHECK_PLUGIN_PATH . '/locallib.php');
+global $CFG;
+require_once($CFG->dirroot . '/plagiarism/unicheck/lib.php');
 
 /**
  * Class abstact_file_event

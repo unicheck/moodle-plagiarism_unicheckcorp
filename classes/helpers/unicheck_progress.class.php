@@ -59,7 +59,7 @@ class unicheck_progress {
     public static function get_check_progress_info($plagiarismfile, $cid, &$checkstatusforids) {
         $childs = [];
         if ($plagiarismfile->type == unicheck_plagiarism_entity::TYPE_ARCHIVE) {
-            $childs = unicheck_file_provider::get_file_list_by_parent_id($plagiarismfile->id);
+            $childs = unicheck_file_provider::get_files_by_parent_id($plagiarismfile->id);
         }
 
         if ($plagiarismfile->progress != 100) {
@@ -94,7 +94,7 @@ class unicheck_progress {
     public static function track_upload(\stdClass $plagiarismfile) {
         $trackedfiles = [$plagiarismfile];
         if ($plagiarismfile->type == unicheck_plagiarism_entity::TYPE_ARCHIVE) {
-            $trackedfiles = unicheck_file_provider::get_file_list_by_parent_id($plagiarismfile->id);
+            $trackedfiles = unicheck_file_provider::get_files_by_parent_id($plagiarismfile->id);
         }
 
         foreach ($trackedfiles as $trackedfile) {
@@ -147,8 +147,11 @@ class unicheck_progress {
 
             foreach ($checkstatusforids as $recordid => $checkids) {
                 if (count($checkids) > 0) {
-                    $childscount = $DB->count_records_select(UNICHECK_FILES_TABLE, "parent_id = ? AND state not in (?)",
-                        [$recordid, unicheck_file_state::HAS_ERROR]) ?: 1;
+                    $childscount = $DB->count_records_select(
+                        UNICHECK_FILES_TABLE,
+                        "parent_id = ? AND state != ?",
+                        [$recordid, unicheck_file_state::HAS_ERROR]
+                    ) ?: 1;
 
                     $progress = 0;
 
@@ -182,7 +185,7 @@ class unicheck_progress {
      * @return string
      */
     public static function gen_row_content_score($cid, $fileobj) {
-        global $USER;
+        global $USER, $CFG;
 
         // Not allowed to view similarity check result.
         if (!capability::can_view_similarity_check_result($cid, $USER->id)) {
@@ -190,16 +193,16 @@ class unicheck_progress {
         }
 
         if ($fileobj->progress == 100 && $cid) {
-            return require(UNICHECK_PLUGIN_PATH . '/views/view_tmpl_processed.php');
+            return require($CFG->dirroot . '/plagiarism/unicheck/views/view_tmpl_processed.php');
         }
 
         switch ($fileobj->state) {
             case unicheck_file_state::UPLOADING:
             case unicheck_file_state::UPLOADED:
             case unicheck_file_state::CHECKING:
-                return require(UNICHECK_PLUGIN_PATH . '/views/view_tmpl_progress.php');
+                return require($CFG->dirroot . '/plagiarism/unicheck/views/view_tmpl_progress.php');
             case unicheck_file_state::HAS_ERROR:
-                return require(UNICHECK_PLUGIN_PATH . '/views/view_tmpl_invalid_response.php');
+                return require($CFG->dirroot . '/plagiarism/unicheck/views/view_tmpl_invalid_response.php');
         }
 
         return '';

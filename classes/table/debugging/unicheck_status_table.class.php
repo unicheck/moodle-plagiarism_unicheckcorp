@@ -185,21 +185,26 @@ class unicheck_status_table extends \html_table {
         $stoptestingby = null;
         $currenttest = 'unicheck_host';
         $unicheckhosttest = new availability_check_results($currenttest);
-        $unicheckhosttest->set_info(
-            plagiarism_unicheck::trans('debugging:statustable:check' . $currenttest) .
-            "<br>Region: $apiregion<br>API Base URL: $apiurl<br>"
-        );
 
+        $infotext = plagiarism_unicheck::trans('debugging:statustable:check' . $currenttest) .
+            "<br>Region: " . s($apiregion) .
+            "<br>API Base URL: " . s($apiurl) .
+            "<br>";
+
+        $unicheckhosttest->set_info($infotext);
         $httpcode = $lastcurl->get_info()['http_code'];
         if ($httpcode < 200 || $httpcode >= 500) {
             $unicheckhosttest->set_status(false);
             if ($lastcurl->get_errno()) {
-                $unicheckhosttest->set_restrictstr($lastcurl->error);
+                $restrictstr = s($lastcurl->error);
+                $unicheckhosttest->set_restrictstr($restrictstr);
             }
 
             if ($lastcurl->getResponse()) {
-                $unicheckhosttest->set_bypassstr(json_encode($lastcurl->getResponse(),
-                    JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+                $bypassstr = s(
+                    json_encode($lastcurl->getResponse(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+                );
+                $unicheckhosttest->set_bypassstr($bypassstr);
             }
 
             $unicheckhosttest->set_errorcode(availability_check_results::FAILED);
@@ -212,17 +217,20 @@ class unicheck_status_table extends \html_table {
 
         $currenttest = 'unicheck_api_key';
         $unicheckapikeytest = new availability_check_results($currenttest);
-        $unicheckapikeytest->set_info(
-            plagiarism_unicheck::trans('debugging:statustable:check' . $currenttest) .
-            "<br>API Key: $apikey"
-        );
+
+        $infotext = plagiarism_unicheck::trans('debugging:statustable:check' . $currenttest) .
+            "<br>API Key: " . s($apikey);
+
+        $unicheckapikeytest->set_info($infotext);
 
         if (!$stoptestingby) {
             if (in_array($httpcode, [401, 403, 404])) {
                 $unicheckapikeytest->set_status(false);
                 $unicheckapikeytest->set_errorcode(availability_check_results::FAILED);
-                $unicheckapikeytest->set_restrictstr(json_encode($lastcurl->getResponse(),
-                    JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+                $restrictstr = s(
+                    json_encode($lastcurl->getResponse(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+                );
+                $unicheckapikeytest->set_restrictstr($restrictstr);
                 $stoptestingby = $currenttest;
             } else {
                 $unicheckapikeytest->set_status(true);
@@ -237,17 +245,23 @@ class unicheck_status_table extends \html_table {
 
         $currenttest = 'callback_url';
         $moodlecallbackurltest = new availability_check_results($currenttest);
-        $moodlecallbackurltest->set_info(
-            plagiarism_unicheck::trans('debugging:statustable:check' . $currenttest) .
-            "<br>Callback URL: $callbackurl"
-        );
+
+        $infotext = plagiarism_unicheck::trans('debugging:statustable:check' . $currenttest) .
+            "<br>Callback URL: " . s($callbackurl);
+
+        $moodlecallbackurltest->set_info($infotext);
 
         if (!$stoptestingby) {
             if (!$response->integration_tests->callback_sent->passed) {
                 $moodlecallbackurltest->set_status(false);
                 $moodlecallbackurltest->set_errorcode(availability_check_results::FAILED);
-                $moodlecallbackurltest->set_restrictstr(json_encode($response->integration_tests->callback_sent->info,
-                    JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+                $restrictstr = s(
+                    json_encode(
+                        $response->integration_tests->callback_sent->info,
+                        JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+                    )
+                );
+                $moodlecallbackurltest->set_restrictstr($restrictstr);
             } else {
                 $moodlecallbackurltest->set_status(true);
             }
@@ -281,7 +295,7 @@ class unicheck_status_table extends \html_table {
         $currenttest = 'moodle_adhoc';
         $crontest = new availability_check_results($currenttest);
 
-        $adhoctaskscount = $DB->count_records('task_adhoc', ['component' => UNICHECK_PLAGIN_NAME]);
+        $adhoctaskscount = (int) $DB->count_records('task_adhoc', ['component' => UNICHECK_PLAGIN_NAME]);
         $lastexecution = (int) $DB->get_field_sql("SELECT MIN(nextruntime) FROM {task_adhoc}");
 
         $infotext = plagiarism_unicheck::trans('debugging:statustable:check' . $currenttest)

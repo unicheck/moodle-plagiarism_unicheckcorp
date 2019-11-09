@@ -33,7 +33,7 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 global $CFG;
-require_once($CFG->libdir . '/plagiarismlib.php');
+require_once($CFG->dirroot . '/plagiarism/unicheck/lib.php');
 
 /**
  * Class archive_files_uploaded
@@ -73,6 +73,9 @@ class archive_files_uploaded extends abstract_file_event {
      * @return string
      */
     public function get_description() {
-        return "User archive '{$this->other['fileid']}' files uploaded to UNICHECK in course module '{$this->contextinstanceid}'";
+        $fileid = s($this->other['fileid']);
+        $cmid = (int) $this->contextinstanceid;
+
+        return "Archive file with identifier '{$fileid}' uploaded to Unicheck for the course module with id '{$cmid}'";
     }
 }

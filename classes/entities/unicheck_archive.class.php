@@ -143,7 +143,7 @@ class unicheck_archive {
      */
     public function restart_check() {
         $internalfile = $this->core->get_plagiarism_entity($this->file)->get_internal_file();
-        $childs = unicheck_file_provider::get_file_list_by_parent_id($internalfile->id);
+        $childs = unicheck_file_provider::get_files_by_parent_id($internalfile->id);
         if (count($childs)) {
             foreach ((object) $childs as $child) {
                 if ($child->check_id) {

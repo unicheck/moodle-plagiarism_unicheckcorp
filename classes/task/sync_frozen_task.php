@@ -37,9 +37,8 @@ if (!defined('MOODLE_INTERNAL')) {
 // Get global class.
 global $CFG;
 
-require_once($CFG->dirroot . '/plagiarism/unicheck/autoloader.php');
-require_once($CFG->dirroot . '/plagiarism/unicheck/constants.php');
 require_once($CFG->libdir . '/filelib.php');
+require_once($CFG->libdir . '/plagiarismlib.php');
 
 /**
  * Class failed_task
@@ -175,7 +174,7 @@ class sync_frozen_task extends \core\task\scheduled_task {
         $fronzenarchive = unicheck_file_provider::get_frozen_archive();
 
         foreach ($fronzenarchive as $archive) {
-            $trackedfiles = unicheck_file_provider::get_file_list_by_parent_id($archive->id);
+            $trackedfiles = unicheck_file_provider::get_files_by_parent_id($archive->id);
             if (count($trackedfiles)) {
                 $checkedcount = 0;
                 $haserrorcount = 0;

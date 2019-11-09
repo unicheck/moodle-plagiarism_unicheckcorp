@@ -55,8 +55,8 @@
 
 
 <div class="unicheck-detect_result">
-    <a href="{{unicheckurl}}" class="unicheck-link" target="_blank">
-        <img width="69" src="{{unichecklogourl}}" title="{{pluginname}}" alt="{{pluginname}}">
+    <a href="{{{unicheckurl}}}" class="unicheck-link" target="_blank">
+        <img width="69" src="{{{unichecklogourl}}}" title="{{pluginname}}" alt="{{pluginname}}">
         {{#checkid}}
             <span class="unicheck-report_id">ID:{{checkid}}</span>
         {{/checkid}}
@@ -66,7 +66,7 @@
             {{#reporturl}}
                 <div class="unicheck-report">
                     <span class="unicheck-report_percentage rank1 {{rankclass}}">{{similarityscore}}%</span>
-                    <a title="{{reporttitle}}" href="{{reporturl}}" class="unicheck-report-link" target="_blank">
+                    <a title="{{reporttitle}}" href="{{{reporturl}}}" class="unicheck-report-link" target="_blank">
                         <span class="unicheck-report_text">{{{uireportlinktitle}}}</span>
                     </a>
                 </div>
@@ -82,7 +82,7 @@
         {{^canviewsimilarity}}
             {{#reporturl}}
                 <div class="unicheck-report">
-                    <a title="{{reporttitle}}" href="{{reporturl}}" class="unicheck-report-without-score-link" target="_blank">
+                    <a title="{{reporttitle}}" href="{{{reporturl}}}" class="unicheck-report-without-score-link" target="_blank">
                         <span class="unicheck-report-without-score-text">{{{uireportlinktitle}}}</span>
                     </a>
                 </div>
@@ -91,7 +91,7 @@
 
         {{#hascheating}}
             {{#reporturl}}
-                <a title="{{reporttitle}}" href="{{reporturl}}" target="_blank" class="unicheck-cheating">
+                <a title="{{reporttitle}}" href="{{{reporturl}}}" target="_blank" class="unicheck-cheating">
                     <span>{{cheatingtitle}}</span>
                 </a>
             {{/reporturl}}

@@ -36,13 +36,11 @@ use plagiarism_unicheck\classes\user\preferences;
 
 require(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
-require_once(__DIR__ . '/constants.php');
 
-global $CFG, $DB, $OUTPUT;
+global $CFG, $OUTPUT;
 
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/tablelib.php');
-require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->libdir . '/datalib.php');
 
 require_login();

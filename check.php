@@ -43,13 +43,12 @@ $submissiontype = required_param('submissiontype', PARAM_TEXT); // submission ty
 $pf = optional_param('pf', null, PARAM_INT); // plagiarism file id.
 
 require_sesskey();
-require_login();
+
+$cm = get_coursemodule_from_id('', $cmid, 0, false, MUST_EXIST);
+require_login($cm->course, true, $cm);
 
 $url = new moodle_url(__DIR__ . '/check.php');
-$cm = get_coursemodule_from_id('', $cmid, 0, false, MUST_EXIST);
-
 $PAGE->set_url($url);
-require_login($cm->course, true, $cm);
 
 $modulecontext = context_module::instance($cmid);
 require_capability(capability::CHECK_FILE, $modulecontext);

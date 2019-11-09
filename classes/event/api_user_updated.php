@@ -33,7 +33,7 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 global $CFG;
-require_once($CFG->libdir . '/plagiarismlib.php');
+require_once($CFG->dirroot . '/plagiarism/unicheck/lib.php');
 
 /**
  * Class api_user_updated
@@ -73,7 +73,9 @@ class api_user_updated extends base {
      * @return string
      */
     public function get_description() {
-        return "API user with token '{$this->other['external_token']}' updated";
+        $token = s($this->other['external_token']);
+
+        return "API user with token '$token' updated";
     }
 
     /**

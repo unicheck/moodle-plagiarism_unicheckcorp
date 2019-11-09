@@ -33,7 +33,7 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 global $CFG;
-require_once($CFG->libdir . '/plagiarismlib.php');
+require_once($CFG->dirroot . '/plagiarism/unicheck/lib.php');
 
 /**
  * Class file_upload_started
@@ -73,6 +73,9 @@ class file_upload_started extends abstract_file_event {
      * @return string
      */
     public function get_description() {
-        return "User file '{$this->other['fileid']}' upload started in course module '{$this->contextinstanceid}'";
+        $fileid = s($this->other['fileid']);
+        $cmid = (int) $this->contextinstanceid;
+
+        return "File '{$fileid}' upload started in course module '{$cmid}'";
     }
 }
