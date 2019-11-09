@@ -29,8 +29,6 @@ if (!defined('MOODLE_INTERNAL')) {
 
 global $CFG;
 
-require_once($CFG->libdir . '/plagiarismlib.php');
-
 /**
  * Class plagiarism_unicheck_basic_testcase
  *

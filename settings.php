@@ -33,7 +33,6 @@ require_once(__DIR__ . '/lib.php');
 global $CFG, $OUTPUT, $USER;
 
 require_once($CFG->libdir . '/adminlib.php');
-require_once($CFG->libdir . '/plagiarismlib.php');
 
 require_login();
 admin_externalpage_setup('plagiarismunicheck');

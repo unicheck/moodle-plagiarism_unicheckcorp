@@ -29,8 +29,6 @@ if (!defined('MOODLE_INTERNAL')) {
 
 global $CFG;
 
-require_once($CFG->libdir . '/plagiarismlib.php');
-
 use plagiarism_unicheck_unittests\unicheck_api_fixture;
 
 /**

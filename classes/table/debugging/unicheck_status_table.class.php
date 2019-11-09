@@ -201,8 +201,9 @@ class unicheck_status_table extends \html_table {
             }
 
             if ($lastcurl->getResponse()) {
-                $bypassstr = s(
-                    json_encode($lastcurl->getResponse(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+                $bypassstr = format_text(
+                    json_encode($lastcurl->getResponse(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                    FORMAT_HTML
                 );
                 $unicheckhosttest->set_bypassstr($bypassstr);
             }
@@ -227,8 +228,9 @@ class unicheck_status_table extends \html_table {
             if (in_array($httpcode, [401, 403, 404])) {
                 $unicheckapikeytest->set_status(false);
                 $unicheckapikeytest->set_errorcode(availability_check_results::FAILED);
-                $restrictstr = s(
-                    json_encode($lastcurl->getResponse(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+                $restrictstr = format_text(
+                    json_encode($lastcurl->getResponse(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                    FORMAT_HTML
                 );
                 $unicheckapikeytest->set_restrictstr($restrictstr);
                 $stoptestingby = $currenttest;
