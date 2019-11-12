@@ -147,7 +147,8 @@ $string['max_100000_words'] = 'File(s) should have no more than 100 000 words an
 $string['max_supported_archive_files_count'] = 'Maximum number of files to be checked in archive';
 $string['max_supported_archive_files_count_help'] = 'Specify maximum number of files to be reviewed by Unicheck. System will pick only file types supported by Unicheck and will process files one by one. Supported formats: ZIP, RAR.';
 $string['uploading'] = 'Uploading';
-$string['ui:possiblecheating'] = 'Possible Cheating';
+$string['ui:cheatingtitle'] = 'Attention';
+$string['ui:cheatingtooltip'] = 'Potential cheating detected. View the Attention tab.';
 // Capabilities.
 $string['unicheck:enable'] = 'Allow to enable/disable Unicheck inside an activity';
 $string['unicheck:resetfile'] = 'Allow to resubmit the file to Unicheck after an error occurred';

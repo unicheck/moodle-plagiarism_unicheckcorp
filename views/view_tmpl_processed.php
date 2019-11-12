@@ -104,7 +104,8 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
     $bigarchive = false;
     $bigarchivetitle = plagiarism_unicheck::trans('archive:limitreachedshortdescripton');
     $hascheating = false;
-    $cheatingtitle = plagiarism_unicheck::trans('ui:possiblecheating');
+    $cheatingtitle = plagiarism_unicheck::trans('ui:cheatingtitle');
+    $cheatingtooltip = plagiarism_unicheck::trans('ui:cheatingtooltip');
 
     if ($similarityscore) {
         $rankclass = $getrankclass($fileobj);
@@ -155,6 +156,7 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
         'uireportlinktitle' => format_text($uireportlinktitle, FORMAT_HTML),
         'hascheating'       => $hascheating,
         'cheatingtitle'     => s($cheatingtitle),
+        'cheatingtooltip'   => s($cheatingtooltip),
         'bigarchive'        => $bigarchive,
         'bigarchivetitle'   => s($bigarchivetitle)
     ];

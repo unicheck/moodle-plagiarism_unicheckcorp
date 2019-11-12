@@ -91,14 +91,16 @@
 
         {{#hascheating}}
             {{#reporturl}}
-                <a title="{{reporttitle}}" href="{{{reporturl}}}" target="_blank" class="unicheck-cheating">
+                <a title="{{reporttitle}}" href="{{{reporturl}}}" target="_blank" class="unicheck-cheating ">
                     <span>{{cheatingtitle}}</span>
+                    <span class="unicheck-cheating__tooltip">{{cheatingtooltip}}</span>
                 </a>
             {{/reporturl}}
 
             {{^reporturl}}
                 <div class="unicheck-cheating">
                     <span>{{cheatingtitle}}</span>
+                    <span class="unicheck-cheating__tooltip">{{cheatingtooltip}}</span>
                 </div>
             {{/reporturl}}
         {{/hascheating}}

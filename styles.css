@@ -1,10 +1,11 @@
-@import url(https://fonts.googleapis.com/css?family=Open+Sans);
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,600,700&display=swap');
 
 div.unicheck-detect_result {
     display: flex;
     flex-direction: column;
     width: 69px;
 }
+
 div.unicheck-detect_result span.rank1 {
     color: white;
     padding: 2px;
@@ -61,6 +62,7 @@ div.unicheck-detect_result div:first-child {
     width: 100%;
     margin-bottom: 6px;
 }
+
 .unicheck-report_id {
     color: #4a4a4a;
     font-family: Arial;
@@ -68,6 +70,7 @@ div.unicheck-detect_result div:first-child {
     text-transform: uppercase;
     margin-top: 4px;
 }
+
 .unicheck-report {
     box-sizing: border-box;
     display: flex;
@@ -80,37 +83,31 @@ div.unicheck-detect_result div:first-child {
     padding: 2px 4px;
     transition: background-color ease-in-out 0.3s;
 }
-.unicheck-mt5{
+
+.unicheck-mt5 {
     margin-top: 5px;
 }
+
 .unicheck-report .unicheck-start-scan-link,
 .unicheck-report .unicheck-reset-link,
 .unicheck-report .unicheck-report-without-score-link {
     width: inherit;
 }
+
 .unicheck-report .unicheck-report-link:hover,
 .unicheck-report .unicheck-reset-link:hover,
 .unicheck-report .unicheck-start-scan-link:hover,
 .unicheck-report .unicheck-report-without-score-link:hover {
     background-color: #67768a;
 }
-.unicheck-cheating:hover {
-    color: #fff;
-    background-color: #ff495c;
-}
-.unicheck-cheating .unicheck-cheating-link {
-    text-decoration: none;
-    color: #ff495c;
-}
-.unicheck-cheating .unicheck-cheating-link:hover {
-    color: #fff;
-}
+
 .unicheck-report {
     display: flex;
     font-weight: 700;
     font-family: "Open Sans", sans-serif;
     text-align: center;
 }
+
 .unicheck-report_percentage {
     display: flex;
     justify-content: center;
@@ -123,6 +120,7 @@ div.unicheck-detect_result div:first-child {
     border-radius: 2px;
     font-size: 16px;
 }
+
 .unicheck-report_text,
 .unicheck-start_scan_text,
 .unicheck-reset-text,
@@ -138,7 +136,7 @@ div.unicheck-detect_result div:first-child {
     font-size: 14px;
     color: #fff;
 }
-.unicheck-cheating,
+
 .unicheck-processing_error {
     display: flex;
     align-items: center;
@@ -149,8 +147,8 @@ div.unicheck-detect_result div:first-child {
     text-align: center;
     padding: 2px 0;
     line-height: 11px;
-    background-color: #ffe4e7;
-    color: #ff495c;
+    background-color: #f76262;
+    color: #fff;
     font-size: 10px;
     font-weight: 600;
     border-radius: 12px;
@@ -158,6 +156,99 @@ div.unicheck-detect_result div:first-child {
     font-family: 'Open Sans', sans-serif;
     transition: all ease-in-out 0.3s;
 }
+
+.unicheck-cheating:hover {
+    text-decoration: none;
+    color: #fff;
+}
+
+.unicheck-cheating:hover .unicheck-cheating__tooltip {
+    opacity: 0.9;
+}
+
+.unicheck-cheating {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 69px;
+    min-height: 18px;
+    text-align: center;
+    line-height: 11px;
+    background-color: #f76262;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    border-radius: 12px;
+    margin-top: 4px;
+    font-family: 'Open Sans', sans-serif;
+    transition: all ease-in-out 0.3s;
+    font-size: 10px;
+    font-weight: 600;
+    position: relative;
+    padding-left: 14px;
+    box-sizing: border-box;
+    text-decoration: none;
+}
+
+.unicheck-cheating::before {
+    content: '!';
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ff495c;
+    background-color: #fff;
+    font-family: "Open Sans", sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 12px;
+    position: absolute;
+    left: 2px;
+    top: 2px
+}
+
+.unicheck-cheating__tooltip {
+    position: absolute;
+    min-width: 190px;
+    top: 100%;
+    left: 50%;
+    margin-top: 6px;
+    transform: translate(-50%);
+    box-shadow: 0 5px 10px rgba(103, 118, 138, 0.3);
+    background-color: #f76262;
+    padding: 14px;
+    z-index: 1;
+    color: #fff;
+    font-family: "Open Sans", sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.4;
+    text-align: left;
+    border-radius: 3px;
+    box-sizing: border-box;
+    opacity: 0;
+    pointer-events: none;
+    transition: all .2s;
+}
+
+.unicheck-cheating__tooltip::before {
+    content: '';
+    display: inline-block;
+    position: absolute;
+    bottom: 100%;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 6px 4px 6px;
+    border-color: transparent transparent #f76262 transparent;
+    left: 50%;
+    transform: translate(-50%);
+}
+
 .unicheck-only-xxl-width,
 .unicheck-only-xl-width {
     display: none;
@@ -167,23 +258,28 @@ div.unicheck-detect_result div:first-child {
     div.unicheck-detect_result {
         width: 135px;
     }
+
     .unicheck-report {
         width: 135px;
         justify-content: space-between;
         flex-direction: row;
         padding: 2px;
     }
+
     .unicheck-report.unicheck-report_without_link {
         width: max-content;
         width: -moz-max-content; /* stylelint-disable-line */
     }
+
     .unicheck-report-link {
         width: calc(100% - 65px);
         padding: 0;
     }
+
     .unicheck-only-xl-width {
         display: inline;
     }
+
     .unicheck-report-without-score-text .unicheck-only-xxl-width {
         display: inline;
     }
@@ -201,21 +297,26 @@ div.unicheck-detect_result div:first-child {
     div.unicheck-detect_result {
         width: 176px;
     }
+
     .unicheck-report {
         width: 176px;
         flex-direction: row;
         padding: 2px;
     }
+
     .unicheck-report.unicheck-report_without_link {
         width: max-content;
     }
+
     .unicheck-link {
         flex-direction: row;
         height: 14px;
     }
+
     .unicheck-report_id {
         margin: 0 0 0 5px;
     }
+
     .unicheck-only-xxl-width {
         display: inline;
     }
