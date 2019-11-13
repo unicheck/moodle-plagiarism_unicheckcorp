@@ -87,7 +87,7 @@ class user_provider {
     /**
      * get_users_by_group
      *
-     * @param $groupid
+     * @param int $groupid
      *
      * @return array
      */

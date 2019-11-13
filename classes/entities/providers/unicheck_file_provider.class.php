@@ -217,15 +217,15 @@ class unicheck_file_provider {
      *
      * @param array $states
      *
-     * @param bool  $equel IN or NOT IN
+     * @param bool  $statesequel IN or NOT IN states
      *
      * @return array
      */
-    public static function get_files_by_parent_id_in_states($parentid, array $states, $equel = true) {
+    public static function get_files_by_parent_id_in_states($parentid, array $states, $statesequel = true) {
         global $DB;
 
         $params = [$parentid];
-        list($instatessql, $instatesparams) = $DB->get_in_or_equal($states, SQL_PARAMS_QM, 'param', $equel);
+        list($instatessql, $instatesparams) = $DB->get_in_or_equal($states, SQL_PARAMS_QM, 'param', $statesequel);
         $params = array_merge($params, $instatesparams);
 
         return $DB->get_records_select(UNICHECK_FILES_TABLE, "parent_id = ? AND state {$instatessql}", $params);
@@ -256,7 +256,7 @@ class unicheck_file_provider {
         global $DB;
 
         $querywhere = "(state <> :checked_state AND state <> :error_state)
-                        AND UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 DAY)) > timesubmitted 
+                        AND UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 DAY)) > timesubmitted
                         AND external_file_uuid IS NOT NULL";
 
         return $DB->get_records_select(
@@ -320,7 +320,7 @@ class unicheck_file_provider {
         }
 
         list($select, $params) = $DB->get_in_or_equal($ids);
-        // We are going to use select twice so double the params
+        // We are going to use select twice so double the params.
         $params = array_merge($params, $params);
 
         $DB->delete_records_select(UNICHECK_FILES_TABLE, "id {$select} OR parent_id {$select}", $params);

@@ -104,7 +104,7 @@ if (!in_array(true, [$member, $grader])) {
     die;
 }
 
-// show all files progress for grader
+// Show all files progress for grader.
 if ($grader) {
     $userids = null;
 }
@@ -116,7 +116,7 @@ if (empty($records)) {
 }
 
 $response = [];
-$checkstatusforids = [];
+$trackedfiles = [];
 try {
     foreach ($records as $record) {
         switch ($record->state) {
@@ -131,13 +131,13 @@ try {
                 ];
                 break;
             default:
-                $progressinfo = unicheck_progress::get_check_progress_info($record, $cmid, $checkstatusforids);
+                $progressinfo = unicheck_progress::get_check_progress_info($record, $cmid, $trackedfiles);
                 if ($progressinfo) {
                     $response[$record->id] = $progressinfo;
                 }
 
                 if (!empty($checkstsatusforids)) {
-                    unicheck_progress::get_real_check_progress($cmid, $checkstatusforids, $response);
+                    unicheck_progress::get_real_check_progress($cmid, $trackedfiles, $response);
                 }
 
                 break;

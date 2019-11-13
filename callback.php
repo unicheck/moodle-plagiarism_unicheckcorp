@@ -25,15 +25,16 @@
  */
 
 define('AJAX_SCRIPT', true);
+define('NO_MOODLE_COOKIES', true);
 
 require(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/locallib.php');
-require_once($CFG->dirroot . '/mod/lti/OAuthBody.php');
 
 use plagiarism_unicheck\classes\unicheck_callback;
 use plagiarism_unicheck\classes\unicheck_core;
 use plagiarism_unicheck\classes\unicheck_settings;
 use plagiarism_unicheck\event\callback_accepted;
+use plagiarism_unicheck\library\OAuth\OAuthBody;
 
 try {
     $token = required_param('token', PARAM_ALPHANUMEXT);
@@ -46,9 +47,9 @@ try {
     $oauthconsumerkey = unicheck_settings::get_settings('client_id');
     $oauthconsumersecret = unicheck_settings::get_settings('api_secret');
 
-    \moodle\mod\lti\handle_oauth_body_post($oauthconsumerkey, $oauthconsumersecret, $rawbody);
+    $verifiedrawbody = OAuthBody::handle_oauth_body_post($oauthconsumerkey, $oauthconsumersecret, $rawbody);
 
-    $body = unicheck_core::parse_json($rawbody);
+    $body = unicheck_core::parse_json($verifiedrawbody);
     if (!is_object($body)) {
         http_response_code(400);
         echo 'Invalid callback body';

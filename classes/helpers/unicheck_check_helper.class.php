@@ -132,7 +132,7 @@ class unicheck_check_helper {
                 'pf'   => $parentrecord->id,
             ]);
 
-            // The similarity result of the archive is created from the similarity results of its contents
+            // The similarity result of the archive is created from the similarity results of its contents.
             $parentcheck = (object) [
                 'report' => (object) [
                     'similarity'    => round($similarity / count($childs), 2, PHP_ROUND_HALF_DOWN),
@@ -186,7 +186,7 @@ class unicheck_check_helper {
                 $similarity += $child->similarityscore;
             }
 
-            // The similarity result of the archive is created from the similarity results of its contents
+            // The similarity result of the archive is created from the similarity results of its contents.
             $parentcheck = (object) [
                 'report' => (object) [
                     'similarity' => round($similarity / count($childs), 2, PHP_ROUND_HALF_DOWN),

@@ -14,66 +14,68 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * OAuthSignatureMethod_HMAC_SHA1.class.php
+ * OAuthToken.class.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plagiarism_unicheck\library\OAuth\Signature;
-
-use plagiarism_unicheck\library\OAuth\OAuthConsumer;
-use plagiarism_unicheck\library\OAuth\OAuthRequest;
-use plagiarism_unicheck\library\OAuth\OAuthToken;
-use plagiarism_unicheck\library\OAuth\OAuthUtil;
+namespace plagiarism_unicheck\library\OAuth;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
 /**
- * Class OAuthSignatureMethod_HMAC_SHA1
+ * Class OAuthToken
  *
  * @package     plagiarism_unicheck
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class OAuthSignatureMethod_HMAC_SHA1 extends OAuthSignatureMethod {
+class OAuthToken {
     /**
-     * Get method name
-     *
-     * @return string
+     * @var string
      */
-    public function get_name() {
-        return "HMAC-SHA1";
+    public $key;
+    /**
+     * @var string
+     */
+    public $secret;
+
+    /**
+     * OAuthToken constructor.
+     *
+     * @param string $key    the token
+     * @param string $secret the token secret
+     */
+    public function __construct($key, $secret) {
+        $this->key = $key;
+        $this->secret = $secret;
     }
 
     /**
-     * Build signature
-     *
-     * @param OAuthRequest  $request
-     * @param OAuthConsumer $consumer
-     * @param OAuthToken    $token
+     * Generates the basic string serialization of a token that a server
+     * would respond to request_token and access_token calls with
      *
      * @return string
      */
-    public function build_signature(OAuthRequest $request, $consumer, $token) {
-        $basestring = $request->get_signature_base_string();
-        $request->basestring = $basestring;
+    public function to_string() {
+        return 'oauth_token=' .
+            OAuthUtil::urlencode_rfc3986($this->key) .
+            '&oauth_token_secret=' .
+            OAuthUtil::urlencode_rfc3986($this->secret);
+    }
 
-        $keyparts = [
-            $consumer->secret,
-            ($token) ? $token->secret : ""
-        ];
-
-        $keyparts = OAuthUtil::urlencode_rfc3986($keyparts);
-        $key = implode('&', $keyparts);
-
-        $computedsignature = base64_encode(hash_hmac('sha1', $basestring, $key, true));
-
-        return $computedsignature;
+    /**
+     * String representation of current class
+     *
+     * @return string
+     */
+    public function __toString() {
+        return $this->to_string();
     }
 }

@@ -38,7 +38,7 @@ require_once($CFG->dirroot . '/plagiarism/unicheck/lib.php');
 /**
  * Class api_called
  *
- * @package     plagiarism_unicheck̵̵
+ * @package     plagiarism_unicheck
  * @subpackage  plagiarism
  *
  * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>

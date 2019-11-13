@@ -135,10 +135,10 @@ class filter_options_form extends moodleform {
         }
 
         $data = $this->is_cancelled() ? [
-            'perpage'           => $perpage,
+            'perpage'           => (int) $perpage,
             'errormessage'      => null,
-            'timesubmittedfrom' => $minsubmitteddate,
-            'timesubmittedto'   => $maxsubmitteddate
+            'timesubmittedfrom' => (int) $minsubmitteddate,
+            'timesubmittedto'   => (int) $maxsubmitteddate
         ] : $this->get_data();
 
         foreach ($data as $filter => $value) {

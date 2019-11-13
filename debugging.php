@@ -52,7 +52,7 @@ $urlwithquery = clone $currenturl;
 $context = context_system::instance();
 
 $id = optional_param('id', 0, PARAM_INT);
-$action = optional_param('action', 'tableview', PARAM_TEXT);
+$action = optional_param('action', 'tableview', PARAM_ALPHA);
 $downloadformat = optional_param('download', '', PARAM_ALPHA);
 
 $exportfilename = 'DebugOutput';

@@ -257,12 +257,12 @@ class unicheck_status_table extends \html_table {
             if (!$response->integration_tests->callback_sent->passed) {
                 $moodlecallbackurltest->set_status(false);
                 $moodlecallbackurltest->set_errorcode(availability_check_results::FAILED);
-                $restrictstr = s(
+                $restrictstr = format_text(
                     json_encode(
                         $response->integration_tests->callback_sent->info,
                         JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
                     )
-                );
+                    , FORMAT_HTML);
                 $moodlecallbackurltest->set_restrictstr($restrictstr);
             } else {
                 $moodlecallbackurltest->set_status(true);
