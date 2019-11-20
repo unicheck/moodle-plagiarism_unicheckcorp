@@ -116,7 +116,6 @@ if (empty($records)) {
 }
 
 $response = [];
-$trackedfiles = [];
 try {
     foreach ($records as $record) {
         switch ($record->state) {
@@ -131,12 +130,13 @@ try {
                 ];
                 break;
             default:
+                $trackedfiles = [];
                 $progressinfo = unicheck_progress::get_check_progress_info($record, $cmid, $trackedfiles);
                 if ($progressinfo) {
                     $response[$record->id] = $progressinfo;
                 }
 
-                if (!empty($checkstsatusforids)) {
+                if (!empty($trackedfiles[$record->id]['checks'])) {
                     unicheck_progress::get_real_check_progress($cmid, $trackedfiles, $response);
                 }
 

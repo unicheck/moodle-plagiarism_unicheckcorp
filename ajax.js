@@ -90,9 +90,10 @@ M.plagiarismUnicheck.init = function(Y, contextid) {
         collectItems();
 
         if (M.plagiarismUnicheck.items.length) {
+            trackProgress(Y, M.plagiarismUnicheck.items, contextid);
             M.plagiarismUnicheck.interval = setInterval(function() {
                 trackProgress(Y, M.plagiarismUnicheck.items, contextid);
-            }, 3000);
+            }, 10000);
         }
     };
 
