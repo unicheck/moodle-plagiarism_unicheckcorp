@@ -1,3 +1,5 @@
+dist: xenial
+
 language: php
 
 # Behat no longer passes when false.
@@ -5,8 +7,6 @@ sudo: required
 
 notifications:
   email: false
-
-dist: xenial
 
 services:
   - mysql
