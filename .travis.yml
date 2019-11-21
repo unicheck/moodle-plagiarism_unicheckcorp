@@ -1,3 +1,5 @@
+dist: xenial
+
 language: php
 
 # Behat no longer passes when false.
@@ -8,14 +10,13 @@ notifications:
 
 services:
   - mysql
-  - postgresql
 
 cache:
   directories:
     - $HOME/.composer/cache
+    - $HOME/.npm
 
 addons:
-  firefox: "47.0.1"
   postgresql: "9.6"
 
 php:
@@ -52,6 +53,7 @@ before_install:
   - nvm install 8.9
   - nvm use 8.9
   - cd ../..
+  - composer selfupdate
   - if [ -n "$GITHUB_APITOKEN" ]; then composer global config github-oauth.github.com $GITHUB_APITOKEN; fi
   - composer create-project -n --no-dev --prefer-dist blackboard-open-source/moodle-plugin-ci ci ^2
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
@@ -66,7 +68,7 @@ script:
   - moodle-plugin-ci codechecker
   - moodle-plugin-ci validate
   - moodle-plugin-ci savepoints
-  - moodle-plugin-ci mustache
+#  - moodle-plugin-ci mustache
   - moodle-plugin-ci grunt
   - moodle-plugin-ci phpdoc
   - moodle-plugin-ci phpunit
