@@ -24,7 +24,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use plagiarism_unicheck\classes\entities\unicheck_archive;
+use plagiarism_unicheck\classes\entities\providers\config_provider;
 use plagiarism_unicheck\classes\forms\module_form;
 use plagiarism_unicheck\classes\helpers\unicheck_linkarray;
 use plagiarism_unicheck\classes\permissions\capability;
@@ -44,8 +44,8 @@ global $CFG;
 require_once($CFG->dirroot . '/plagiarism/lib.php');
 require_once($CFG->libdir . '/filelib.php');
 require_once($CFG->libdir . '/accesslib.php');
-require_once(dirname(__FILE__) . '/autoloader.php');
-require_once(dirname(__FILE__) . '/locallib.php');
+require_once(__DIR__ . '/autoloader.php');
+require_once(__DIR__ . '/locallib.php');
 
 // There is a new Unicheck API - The Integration Service - we only currently use this to verify the receiver address.
 // If we convert the existing calls to send file/get score we should move this to a config setting.
@@ -111,7 +111,7 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
                 }
             } else {
                 if (isset($linkarray['content']) && filesize_checker::is_valid_content($linkarray['content'])) {
-                    $output = require(dirname(__FILE__) . '/views/' . 'view_tmpl_can_check.php');
+                    $output = require(__DIR__ . '/views/' . 'view_tmpl_can_check.php');
                 }
             }
         }
@@ -136,42 +136,35 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
         }
 
         // First get existing values.
-        $existingelements = $DB->get_records_menu(UNICHECK_CONFIG_TABLE, ['cm' => $data->coursemodule], '', 'name, id');
+        $configs = config_provider::get_configs($data->coursemodule);
         // Array of possible plagiarism config options.
         foreach (self::config_options() as $element) {
-            if ($element == unicheck_settings::SENSITIVITY_SETTING_NAME
-                && (!is_numeric($data->$element)
-                    || $data->$element < 0
-                    || $data->$element > 100)
-            ) {
-                if (isset($existingelements[$element])) {
-                    continue;
-                }
-
-                $data->$element = 0;
+            if (!isset($data->{$element})) {
+                continue;
             }
 
-            if ($element == unicheck_settings::MAX_SUPPORTED_ARCHIVE_FILES_COUNT
-                && (!is_numeric($data->$element) || $data->$element < 0 || $data->$element > 100)
-            ) {
-                if (isset($existingelements[$element])) {
-                    continue;
-                }
+            $configvalue = isset($configs[$element]) ? $configs[$element]['value'] : null;
+            $newconfigvalue = unicheck_settings::get_sanitized_value($element, $data->{$element}, $configvalue);
 
-                $data->$element = unicheck_archive::DEFAULT_SUPPORTED_FILES_COUNT;
-            }
+            $configrow = new Stdclass();
+            $configrow->cm = $data->coursemodule;
+            $configrow->name = $element;
+            $configrow->value = $newconfigvalue;
 
-            $newelement = new stdClass();
-            $newelement->cm = $data->coursemodule;
-            $newelement->name = $element;
-            $newelement->value = (isset($data->$element) ? $data->$element : 0);
-
-            if (isset($existingelements[$element])) {
-                $newelement->id = $existingelements[$element];
-                $DB->update_record(UNICHECK_CONFIG_TABLE, $newelement);
+            if (isset($configs[$element])) {
+                $configrow->id = $configs[$element]['id'];
+                $updates[] = $configrow;
             } else {
-                $DB->insert_record(UNICHECK_CONFIG_TABLE, $newelement);
+                $inserts[] = $configrow;
             }
+        }
+
+        if (!empty($updates)) {
+            config_provider::update_configs($updates);
+        }
+
+        if (!empty($inserts)) {
+            config_provider::insert_configs($inserts);
         }
 
         // Plugin is enabled.

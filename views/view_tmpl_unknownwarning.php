@@ -35,33 +35,33 @@ if (AJAX_SCRIPT) {
     $PAGE->set_context(null);
 }
 
-$title = plagiarism_unicheck::trans('unknownwarning');
-$reset = '';
 $modulecontext = context_module::instance($linkarray['cmid']);
-// This is a teacher viewing the responses.
-if (has_capability(capability::RESET_FILE, $modulecontext) && !empty($fileobj->errorresponse)) {
-    // Strip out some possible known text to tidy it up.
-    $erroresponse = plagiarism_unicheck::error_resp_handler($fileobj->errorresponse);
 
-    $erroresponse = str_replace('{&quot;LocalisedMessage&quot;:&quot;', '', $erroresponse);
-    $erroresponse = str_replace('&quot;,&quot;Message&quot;:null}', '', $erroresponse);
-    $title .= ': ' . $erroresponse;
-    $url = new moodle_url('/plagiarism/unicheck/reset.php', [
-        'cmid'    => $linkarray['cmid'],
-        'pf'      => $fileobj->id,
-        'sesskey' => sesskey(),
-    ]);
-    $reset = sprintf('<a href="%1$s"><img src="%2$s" title="%3$s"></a>',
-        $url, $OUTPUT->image_url('reset', UNICHECK_PLAGIN_NAME), get_string('reset')
-    );
+$unicheckurl = new moodle_url(UNICHECK_DOMAIN);
+$unichecklogourl = $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME);
+$pluginname = plagiarism_unicheck::trans('pluginname');
+
+$errormessage = plagiarism_unicheck::trans('unknownwarning');
+$canreset = has_capability(capability::RESET_FILE, $modulecontext);
+if ($canreset) {
+    $errormessage .= ': ' . plagiarism_unicheck::error_resp_handler($fileobj->errorresponse);
 }
 
-$htmlparts = ['<span class="un_detect_result">'];
-$htmlparts[] = sprintf('<img width="16" class="un_tooltip" src="%1$s" alt="%2$s" title="%3$s" />%4$s',
-    $OUTPUT->image_url('error', UNICHECK_PLAGIN_NAME),
-    plagiarism_unicheck::trans('unknownwarning'), $title, $reset
-);
+$resetlink = new moodle_url('/plagiarism/unicheck/reset.php', [
+    'cmid'    => $linkarray['cmid'],
+    'pf'      => $fileobj->id,
+    'sesskey' => sesskey(),
+]);
+$resettitle = get_string('reset');
 
-$htmlparts[] = '</span>';
+$context = [
+    'unicheckurl'     => (string) $unicheckurl,
+    'unichecklogourl' => (string) $unichecklogourl,
+    'pluginname'      => s($pluginname),
+    'canreset'        => $canreset,
+    'errormessage'    => format_text($errormessage, FORMAT_HTML),
+    'resetlink'       => (string) $resetlink,
+    'resettitle'      => s($resettitle)
+];
 
-return implode('', $htmlparts);
+return $OUTPUT->render_from_template('plagiarism_unicheck/unknown_warning', $context);

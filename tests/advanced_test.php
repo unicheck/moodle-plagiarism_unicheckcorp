@@ -29,9 +29,7 @@ if (!defined('MOODLE_INTERNAL')) {
 
 global $CFG;
 
-require_once($CFG->dirroot . '/plagiarism/unicheck/classes/services/storage/unicheck_file_state.class.php');
-require_once($CFG->dirroot . '/plagiarism/unicheck/classes/services/storage/unicheck_file_state.class.php');
-require_once($CFG->dirroot . '/plagiarism/unicheck/classes/unicheck_api.class.php');
+require_once($CFG->dirroot . '/plagiarism/unicheck/locallib.php');
 require_once($CFG->dirroot . '/plagiarism/unicheck/tests/fixtures/unicheck_api_fixture.php');
 
 use plagiarism_unicheck_unittests\unicheck_api_fixture;
@@ -79,6 +77,10 @@ class plagiarism_unicheck_advanced_testcase extends advanced_testcase {
 
     /**
      * Setup function - we will create a course and add an assign instance to it.
+     *
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws ReflectionException
      */
     protected function setUp() {
         global $DB;
@@ -145,6 +147,8 @@ class plagiarism_unicheck_advanced_testcase extends advanced_testcase {
 
     /**
      * test_create_ucore
+     *
+     * @throws coding_exception
      */
     public function test_create_ucore() {
         $generator = $this->getDataGenerator()->get_plugin_generator('plagiarism_unicheck');

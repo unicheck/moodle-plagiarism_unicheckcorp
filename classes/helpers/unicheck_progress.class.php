@@ -51,27 +51,32 @@ class unicheck_progress {
      * get_file_progress_info
      *
      * @param object $plagiarismfile
-     * @param int    $cid
-     * @param array  $checkstatusforids
+     * @param int    $cmid
+     * @param array  $trackedfiles
      *
      * @return array|bool
      */
-    public static function get_check_progress_info($plagiarismfile, $cid, &$checkstatusforids) {
+    public static function get_check_progress_info($plagiarismfile, $cmid, &$trackedfiles) {
         $childs = [];
         if ($plagiarismfile->type == unicheck_plagiarism_entity::TYPE_ARCHIVE) {
-            $childs = unicheck_file_provider::get_file_list_by_parent_id($plagiarismfile->id);
+            $childs = unicheck_file_provider::get_files_by_parent_id_in_states(
+                $plagiarismfile->id,
+                [unicheck_file_state::HAS_ERROR],
+                false
+            );
         }
 
         if ($plagiarismfile->progress != 100) {
+            $trackedfiles[$plagiarismfile->id]['checks'] = [];
             if (count($childs)) {
                 foreach ($childs as $child) {
                     if ($child->check_id) {
-                        $checkstatusforids[$plagiarismfile->id][] = $child->check_id;
+                        $trackedfiles[$plagiarismfile->id]['checks'][] = $child->check_id;
                     }
                 }
             } else {
                 if ($plagiarismfile->check_id) {
-                    $checkstatusforids[$plagiarismfile->id][] = $plagiarismfile->check_id;
+                    $trackedfiles[$plagiarismfile->id]['checks'][] = $plagiarismfile->check_id;
                 }
             }
         }
@@ -80,7 +85,7 @@ class unicheck_progress {
             'file_id'  => $plagiarismfile->id,
             'state'    => $plagiarismfile->state,
             'progress' => (int) $plagiarismfile->progress,
-            'content'  => self::gen_row_content_score($cid, $plagiarismfile),
+            'content'  => self::gen_row_content_score($cmid, $plagiarismfile),
         ];
 
         return $info;
@@ -94,7 +99,11 @@ class unicheck_progress {
     public static function track_upload(\stdClass $plagiarismfile) {
         $trackedfiles = [$plagiarismfile];
         if ($plagiarismfile->type == unicheck_plagiarism_entity::TYPE_ARCHIVE) {
-            $trackedfiles = unicheck_file_provider::get_file_list_by_parent_id($plagiarismfile->id);
+            $trackedfiles = unicheck_file_provider::get_files_by_parent_id_in_states(
+                $plagiarismfile->id,
+                [unicheck_file_state::HAS_ERROR],
+                false
+            );
         }
 
         foreach ($trackedfiles as $trackedfile) {
@@ -119,48 +128,38 @@ class unicheck_progress {
     /**
      * get_real_check_progress
      *
-     * @param int   $cid
-     * @param array $checkstatusforids
+     * @param int   $cmid
+     * @param array $trackedfiles
      * @param array $resp
      *
      * @throws unicheck_exception
      */
-    public static function get_real_check_progress($cid, $checkstatusforids, &$resp) {
-        global $DB;
-
+    public static function get_real_check_progress($cmid, $trackedfiles, &$resp) {
         $progressids = [];
-
-        foreach ($checkstatusforids as $recordid => $checkids) {
-            $progressids = array_merge($progressids, $checkids);
+        foreach ($trackedfiles as $recordid => $recordparams) {
+            $progressids = array_merge($progressids, $recordparams['checks']);
         }
 
         $progressids = array_unique($progressids);
         $progresses = unicheck_api::instance()->get_check_progress($progressids);
 
         if ($progresses->result) {
-            foreach ($progresses->progress as $id => $val) {
-                $val *= 100;
-                $fileobj = self::update_file_progress($id, $val);
-                $resp[$fileobj->id]['progress'] = $val;
-                $resp[$fileobj->id]['content'] = self::gen_row_content_score($cid, $fileobj);
-            }
+            foreach ($trackedfiles as $recordid => $recordparams) {
+                $progress = 0;
+                $checks = $recordparams['checks'];
+                $childscount = count($checks);
 
-            foreach ($checkstatusforids as $recordid => $checkids) {
-                if (count($checkids) > 0) {
-                    $childscount = $DB->count_records_select(UNICHECK_FILES_TABLE, "parent_id = ? AND state not in (?)",
-                        [$recordid, unicheck_file_state::HAS_ERROR]) ?: 1;
-
-                    $progress = 0;
-
-                    foreach ($checkids as $id) {
-                        $progress += ($progresses->progress->{$id} * 100);
+                foreach ($progresses->progress as $checkid => $val) {
+                    if (in_array($checkid, $checks)) {
+                        $progress += ($progresses->progress->{$checkid} * 100);
+                        self::update_file_progress_by_check($checkid, $val);
                     }
-
-                    $progress = floor($progress / $childscount);
-                    $fileobj = self::update_parent_progress($recordid, $progress);
-                    $resp[$recordid]['progress'] = $progress;
-                    $resp[$recordid]['content'] = self::gen_row_content_score($cid, $fileobj);
                 }
+
+                $progress = floor($progress / $childscount);
+                $fileobj = self::update_parent_progress($recordid, $progress);
+                $resp[$recordid]['progress'] = $progress;
+                $resp[$recordid]['content'] = self::gen_row_content_score($cmid, $fileobj);
             }
         }
 
@@ -168,7 +167,7 @@ class unicheck_progress {
             foreach ($progresses->errors as $checkid => $error) {
                 $plagiarismfile = unicheck_file_provider::find_by_check_id($checkid);
                 unicheck_file_provider::to_error_state($plagiarismfile, $error->message);
-                $resp[$plagiarismfile->id]['content'] = self::gen_row_content_score($cid, $plagiarismfile);
+                $resp[$plagiarismfile->id]['content'] = self::gen_row_content_score($cmid, $plagiarismfile);
             }
         }
     }
@@ -182,7 +181,7 @@ class unicheck_progress {
      * @return string
      */
     public static function gen_row_content_score($cid, $fileobj) {
-        global $USER;
+        global $USER, $CFG;
 
         // Not allowed to view similarity check result.
         if (!capability::can_view_similarity_check_result($cid, $USER->id)) {
@@ -190,16 +189,16 @@ class unicheck_progress {
         }
 
         if ($fileobj->progress == 100 && $cid) {
-            return require(dirname(__FILE__) . '/../../views/view_tmpl_processed.php');
+            return require($CFG->dirroot . '/plagiarism/unicheck/views/view_tmpl_processed.php');
         }
 
         switch ($fileobj->state) {
             case unicheck_file_state::UPLOADING:
             case unicheck_file_state::UPLOADED:
             case unicheck_file_state::CHECKING:
-                return require(dirname(__FILE__) . '/../../views/view_tmpl_progress.php');
+                return require($CFG->dirroot . '/plagiarism/unicheck/views/view_tmpl_progress.php');
             case unicheck_file_state::HAS_ERROR:
-                return require(dirname(__FILE__) . '/../../views/view_tmpl_invalid_response.php');
+                return require($CFG->dirroot . '/plagiarism/unicheck/views/view_tmpl_invalid_response.php');
         }
 
         return '';
@@ -211,12 +210,12 @@ class unicheck_progress {
      * @param int $id
      * @param int $progress
      *
-     * @return mixed
+     * @return object
      * @throws unicheck_exception
      */
-    private static function update_file_progress($id, $progress) {
+    private static function update_file_progress_by_check($id, $progress) {
         $record = unicheck_file_provider::find_by_check_id($id);
-        if ($record->progress <= $progress) {
+        if ($record->progress < $progress) {
             $record->progress = $progress;
 
             if ($record->progress === 100) {

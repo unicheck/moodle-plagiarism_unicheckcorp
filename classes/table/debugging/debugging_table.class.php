@@ -89,15 +89,17 @@ class debugging_table extends table_sql {
      * Initialize table
      */
     public function init() {
+        global $DB;
         // Define the list of columns to show.
 
         $tablecolumns = [];
         $tableheaders = [];
+        $selectalltitle = get_string('selectall');
         if (!$this->is_downloading()) {
             $tablecolumns[] = 'select';
             $tableheaders[] = get_string('select') .
-                '<div class="selectall"><label class="accesshide" for="selectall">' . get_string('selectall') . '</label>
-                    <input type="checkbox" id="selectall" name="selectall" title="' . get_string('selectall') . '"/></div>';
+                '<div class="selectall"><label class="accesshide" for="selectall">' . $selectalltitle . '</label>
+                    <input type="checkbox" id="selectall" name="selectall" title="' . $selectalltitle . '"/></div>';
         }
 
         $tablecolumns = array_merge($tablecolumns, [
@@ -141,19 +143,21 @@ class debugging_table extends table_sql {
         ];
 
         if (isset($this->filterparams[self::ERRORMESSAGE_CONDITION]) && $this->filterparams[self::ERRORMESSAGE_CONDITION]) {
-            $where .= " AND puf.errorresponse LIKE :errormessage";
-            $params['errormessage'] = '%' . $this->filterparams[self::ERRORMESSAGE_CONDITION] . '%';
+            $likeerrormessagesql = $DB->sql_like('puf.errorresponse', ':errormessage', false);
+            $errormessageparam = s($this->filterparams[self::ERRORMESSAGE_CONDITION]);
+            $where .= " AND $likeerrormessagesql";
+            $params['errormessage'] = "%$errormessageparam%";
         }
 
         if (isset($this->filterparams[self::TIMESUBMITTED_FROM_CONDITION]) &&
             $this->filterparams[self::TIMESUBMITTED_FROM_CONDITION]) {
             $where .= " AND puf.timesubmitted >= :timesubmittedfrom";
-            $params['timesubmittedfrom'] = $this->filterparams[self::TIMESUBMITTED_FROM_CONDITION];
+            $params['timesubmittedfrom'] = (int) $this->filterparams[self::TIMESUBMITTED_FROM_CONDITION];
         }
 
         if (isset($this->filterparams[self::TIMESUBMITTED_TO_CONDITION]) && $this->filterparams[self::TIMESUBMITTED_TO_CONDITION]) {
             $where .= " AND puf.timesubmitted <= :timesubmittedto";
-            $params['timesubmittedto'] = $this->filterparams[self::TIMESUBMITTED_TO_CONDITION];
+            $params['timesubmittedto'] = (int) $this->filterparams[self::TIMESUBMITTED_TO_CONDITION];
         }
 
         $this->no_sorting('select');
@@ -179,7 +183,7 @@ class debugging_table extends table_sql {
      * @return int
      */
     public function col_id(stdClass $row) {
-        return $row->id;
+        return (int) $row->id;
     }
 
     /**
@@ -195,7 +199,10 @@ class debugging_table extends table_sql {
             return $row->username;
         }
 
-        return '<a href="/user/profile.php?id=' . $row->userid . '">' . $row->username . '</a>';
+        $userid = (int) $row->userid;
+        $username = s($row->username);
+
+        return '<a href="/user/profile.php?id=' . $userid . '">' . $username . '</a>';
     }
 
     /**
@@ -206,16 +213,18 @@ class debugging_table extends table_sql {
      * @return string
      */
     public function col_module(stdClass $row) {
+        $module = s($row->module);
+        $cmid = (int) $row->cm;
 
-        $cmlink = $row->module . ' ' . $row->cm;
+        $cmlink = $module . ' ' . $cmid;
 
         if ($this->is_downloading()) {
             return $cmlink;
         }
 
-        $coursemodule = get_coursemodule_from_id($row->module, $row->cm);
+        $coursemodule = get_coursemodule_from_id($module, $cmid);
         if ($coursemodule) {
-            $cmurl = new moodle_url("/mod/{$row->module}/view.php", ['id' => $coursemodule->id]);
+            $cmurl = new moodle_url("/mod/{$module}/view.php", ['id' => $coursemodule->id]);
             $cmlink = html_writer::link($cmurl, shorten_text($coursemodule->name, 40, true), ['title' => $coursemodule->name]);
         }
 
@@ -230,7 +239,7 @@ class debugging_table extends table_sql {
      * @return string
      */
     public function col_identifier(stdClass $row) {
-        return $row->identifier;
+        return s($row->identifier);
     }
 
     /**
@@ -254,7 +263,7 @@ class debugging_table extends table_sql {
     public function col_error_message(stdClass $row) {
         $error = json_decode($row->errorresponse, true);
 
-        return $error[0]['message'];
+        return format_text($error[0]['message'], FORMAT_HTML);
     }
 
     /**
@@ -271,7 +280,7 @@ class debugging_table extends table_sql {
             $errorcode = $error[0]['error_code'];
         }
 
-        return $errorcode;
+        return s($errorcode);
     }
 
     /**
@@ -309,10 +318,10 @@ class debugging_table extends table_sql {
             return implode(',', $operations);
         }
 
-        $builddebuglink = function($row, $action) {
+        $builddebuglink = function($fileid, $action) {
             $actionurl = new moodle_url('/plagiarism/unicheck/debugging.php', [
                 'action'  => $action,
-                'id'      => $row->id,
+                'id'      => $fileid,
                 'sesskey' => sesskey(),
             ]);
 
@@ -326,9 +335,9 @@ class debugging_table extends table_sql {
 
         };
 
-        $operations = [$builddebuglink($row, 'delete')];
+        $operations = [$builddebuglink((int) $row->id, 'delete')];
         if ($row->type == unicheck_plagiarism_entity::TYPE_DOCUMENT && !file_error_code::is_consider_file_issue($errorcode)) {
-            $operations[] = $builddebuglink($row, 'resubmit');
+            $operations[] = $builddebuglink((int) $row->id, 'resubmit');
         }
 
         return implode('|', $operations);
@@ -365,13 +374,14 @@ class debugging_table extends table_sql {
      * @return string
      */
     public function col_select(stdClass $row) {
-        $selectcol = '<label class="accesshide" for="selectfile_' . $row->id . '">';
-        $selectcol .= plagiarism_unicheck::trans('debugging:batchoperations:selectfile', $row->id);
-        $selectcol .= '</label>';
-        $selectcol .= '<input type="checkbox"
-                              id="selectfile_' . $row->id . '"
-                              name="selectedfiles"
-                              value="' . $row->id . '"/>';
+
+        $rowid = (int) $row->id;
+        $label = plagiarism_unicheck::trans('debugging:batchoperations:selectfile', $rowid);
+
+        $selectcol = <<<HTML
+            <label class="accesshide" for="selectfile_{$rowid}">$label</label>
+            <input type="checkbox" id="selectfile_{$rowid}" name="selectedfiles" value="{$rowid}"/>
+HTML;
 
         return $selectcol;
     }

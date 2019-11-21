@@ -1,74 +1,77 @@
-@import url(https://fonts.googleapis.com/css?family=Open+Sans);
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,600,700&display=swap');
 
-div.un_detect_result {
+div.unicheck-detect_result {
     display: flex;
     flex-direction: column;
     width: 69px;
 }
-div.un_detect_result span.rank1 {
+
+div.unicheck-detect_result span.rank1 {
     color: white;
     padding: 2px;
 }
 
-div.un_detect_result span.rankBlue {
+div.unicheck-detect_result span.rankBlue {
     color: #4193ff;
 }
 
-div.un_detect_result span.rankGreen {
+div.unicheck-detect_result span.rankGreen {
     color: #84be32;
 }
 
-div.un_detect_result span.rankYellow {
+div.unicheck-detect_result span.rankYellow {
     color: #fbd41c;
 }
 
-div.un_detect_result span.rankOrange {
+div.unicheck-detect_result span.rankOrange {
     color: #f79d62;
 }
 
-div.un_detect_result span.rankRed {
+div.unicheck-detect_result span.rankRed {
     color: #f76262;
 }
 
-div.un_detect_result a {
+div.unicheck-detect_result a {
     text-decoration: none;
 }
 
-div.un_detect_result img,
-div.un_detect_result img {
+div.unicheck-detect_result img,
+div.unicheck-detect_result img {
     position: relative;
     vertical-align: middle;
 }
 
-div.un_detect_result .un_progress {
+div.unicheck-detect_result .unicheck-progress {
     width: 30px;
 }
 
-div.un_detect_result img.un_progress {
+div.unicheck-detect_result img.unicheck-progress {
     margin-left: 5px;
     margin-right: 5px;
     vertical-align: middle;
     width: 25px;
 }
 
-div.un_detect_result div:first-child {
+div.unicheck-detect_result div:first-child {
     display: none;
 }
 
-.un_link {
+.unicheck-link {
     display: flex;
     flex-direction: column;
     width: 100%;
     margin-bottom: 6px;
 }
-.un_report_id {
+
+.unicheck-report_id {
     color: #4a4a4a;
     font-family: Arial;
     font-size: 12px;
     text-transform: uppercase;
     margin-top: 4px;
 }
-.un-report {
+
+.unicheck-report {
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -80,33 +83,32 @@ div.un_detect_result div:first-child {
     padding: 2px 4px;
     transition: background-color ease-in-out 0.3s;
 }
-.un-report .un-start-scan-link,
-.un-report .un-report-without-score-link {
+
+.unicheck-mt5 {
+    margin-top: 5px;
+}
+
+.unicheck-report .unicheck-start-scan-link,
+.unicheck-report .unicheck-reset-link,
+.unicheck-report .unicheck-report-without-score-link {
     width: inherit;
 }
-.un-report .un-report-link:hover,
-.un-report .un-start-scan-link:hover,
-.un-report .un-report-without-score-link:hover {
+
+.unicheck-report .unicheck-report-link:hover,
+.unicheck-report .unicheck-reset-link:hover,
+.unicheck-report .unicheck-start-scan-link:hover,
+.unicheck-report .unicheck-report-without-score-link:hover {
     background-color: #67768a;
 }
-.un-cheating:hover {
-    color: #fff;
-    background-color: #ff495c;
-}
-.un-cheating .un-cheating-link {
-    text-decoration: none;
-    color: #ff495c;
-}
-.un-cheating .un-cheating-link:hover {
-    color: #fff;
-}
-.un-report {
+
+.unicheck-report {
     display: flex;
     font-weight: 700;
     font-family: "Open Sans", sans-serif;
     text-align: center;
 }
-.un_report_percentage {
+
+.unicheck-report_percentage {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -118,9 +120,11 @@ div.un_detect_result div:first-child {
     border-radius: 2px;
     font-size: 16px;
 }
-.un_report_text,
-.un_start_scan_text,
-.un-report-without-score-text {
+
+.unicheck-report_text,
+.unicheck-start_scan_text,
+.unicheck-reset-text,
+.unicheck-report-without-score-text {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -132,8 +136,8 @@ div.un_detect_result div:first-child {
     font-size: 14px;
     color: #fff;
 }
-.un-cheating,
-.un_processing_error {
+
+.unicheck-processing_error {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -143,8 +147,8 @@ div.un_detect_result div:first-child {
     text-align: center;
     padding: 2px 0;
     line-height: 11px;
-    background-color: #ffe4e7;
-    color: #ff495c;
+    background-color: #f76262;
+    color: #fff;
     font-size: 10px;
     font-weight: 600;
     border-radius: 12px;
@@ -152,64 +156,165 @@ div.un_detect_result div:first-child {
     font-family: 'Open Sans', sans-serif;
     transition: all ease-in-out 0.3s;
 }
-.only-xxl-width,
-.only-xl-width {
+
+.unicheck-cheating:hover {
+    text-decoration: none;
+    color: #fff;
+}
+
+.unicheck-cheating:hover .unicheck-cheating__tooltip {
+    opacity: 0.9;
+}
+
+.unicheck-cheating {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 69px;
+    min-height: 18px;
+    text-align: center;
+    line-height: 11px;
+    background-color: #f76262;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    border-radius: 12px;
+    margin-top: 4px;
+    font-family: 'Open Sans', sans-serif;
+    transition: all ease-in-out 0.3s;
+    position: relative;
+    padding-left: 14px;
+    box-sizing: border-box;
+    text-decoration: none;
+}
+
+.unicheck-cheating::before {
+    content: '!';
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ff495c;
+    background-color: #fff;
+    font-family: "Open Sans", sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 12px;
+    position: absolute;
+    left: 2px;
+    top: 2px;
+}
+
+.unicheck-cheating__tooltip {
+    position: absolute;
+    min-width: 190px;
+    top: 100%;
+    left: 50%;
+    margin-top: 6px;
+    transform: translate(-50%);
+    box-shadow: 0 5px 10px rgba(103, 118, 138, 0.3);
+    background-color: #f76262;
+    padding: 14px;
+    z-index: 1;
+    color: #fff;
+    font-family: "Open Sans", sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.4;
+    text-align: left;
+    border-radius: 3px;
+    box-sizing: border-box;
+    opacity: 0;
+    pointer-events: none;
+    transition: all .2s;
+}
+
+.unicheck-cheating__tooltip::before {
+    content: '';
+    display: inline-block;
+    position: absolute;
+    bottom: 100%;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 6px 4px 6px;
+    border-color: transparent transparent #f76262 transparent;
+    left: 50%;
+    transform: translate(-50%);
+}
+
+.unicheck-only-xxl-width,
+.unicheck-only-xl-width {
     display: none;
 }
 
 @media screen and (min-width: 1600px) {
-    div.un_detect_result {
+    div.unicheck-detect_result {
         width: 135px;
     }
-    .un-report {
+
+    .unicheck-report {
         width: 135px;
         justify-content: space-between;
         flex-direction: row;
         padding: 2px;
     }
-    .un-report.un_report_without_link {
+
+    .unicheck-report.unicheck-report_without_link {
         width: max-content;
         width: -moz-max-content; /* stylelint-disable-line */
     }
-    .un-report-link {
+
+    .unicheck-report-link {
         width: calc(100% - 65px);
         padding: 0;
     }
-    .only-xl-width {
+
+    .unicheck-only-xl-width {
         display: inline;
     }
-    .un-report-without-score-text .only-xxl-width {
+
+    .unicheck-report-without-score-text .unicheck-only-xxl-width {
         display: inline;
     }
 }
 
 @media screen and (max-width: 1600px) {
-    .un_start_scan_text,
-    .un-report-without-score-text {
+    .unicheck-start_scan_text,
+    .unicheck-reset-text,
+    .unicheck-report-without-score-text {
         height: 40px;
     }
 }
 
 @media screen and (min-width: 2200px) {
-    div.un_detect_result {
+    div.unicheck-detect_result {
         width: 176px;
     }
-    .un-report {
+
+    .unicheck-report {
         width: 176px;
         flex-direction: row;
         padding: 2px;
     }
-    .un-report.un_report_without_link {
+
+    .unicheck-report.unicheck-report_without_link {
         width: max-content;
     }
-    .un_link {
+
+    .unicheck-link {
         flex-direction: row;
         height: 14px;
     }
-    .un_report_id {
+
+    .unicheck-report_id {
         margin: 0 0 0 5px;
     }
-    .only-xxl-width {
+
+    .unicheck-only-xxl-width {
         display: inline;
     }
 }

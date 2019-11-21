@@ -49,11 +49,10 @@ class unicheck_upload_helper {
      *
      * @param \stdClass $plagiarismfile
      * @param \stdClass $responsefile
+     *
      * @return bool
      */
     public static function upload_complete(\stdClass & $plagiarismfile, \stdClass $responsefile) {
-        global $DB;
-
         $plagiarismfile->external_file_id = $responsefile->id;
         $plagiarismfile->state = unicheck_file_state::UPLOADED;
         $plagiarismfile->errorresponse = null;
@@ -67,8 +66,11 @@ class unicheck_upload_helper {
 
         if ($plagiarismfile->parent_id !== null) {
             $parentrecord = unicheck_file_provider::get_by_id($plagiarismfile->parent_id);
-            $childs = $DB->get_records_select(UNICHECK_FILES_TABLE, "parent_id = ? AND state in (?)",
-                [$plagiarismfile->parent_id, unicheck_file_state::UPLOADING]);
+            $childs = unicheck_file_provider::get_files_by_parent_id_in_states(
+                $plagiarismfile->parent_id,
+                [unicheck_file_state::UPLOADING],
+                true
+            );
 
             if (!count($childs)) {
                 $parentrecord->state = unicheck_file_state::UPLOADED;

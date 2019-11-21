@@ -31,6 +31,7 @@ use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\unicheck_adhoc;
 use plagiarism_unicheck\classes\unicheck_core;
 use plagiarism_unicheck\classes\unicheck_workshop;
+use workshop;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -59,10 +60,10 @@ class workshop_observer extends abstract_observer {
         }
 
         switch ($event->other['workshopphase']) {
-            case UNICHECK_WORKSHOP_SUBMISSION_PHASE:
+            case workshop::PHASE_SUBMISSION:
                 $this->submission_phase($core, $event);
                 break;
-            case UNICHECK_WORKSHOP_ASSESSMENT_PHASE:
+            case workshop::PHASE_ASSESSMENT:
                 $this->assessment_phase($core, $event);
                 break;
         }

@@ -39,16 +39,18 @@ if (!defined('MOODLE_INTERNAL')) {
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class OAuthRequest {
-    /** @var string */
-    public static $version = '1.0';
-    /** @var string */
+    /** @var array|null $parameters */
+    protected $parameters;
+    /** @var string|null $httpmethod */
+    protected $httpmethod;
+    /** @var string|null $httpurl */
+    protected $httpurl;
+    /** @var string|null $basestring for debug purposes */
     public $basestring;
-    /** @var array|null */
-    private $parameters;
-    /** @var string */
-    private $httpmethod;
-    /** @var string */
-    private $httpurl;
+    /** @var string $version */
+    public static $version = '1.0';
+    /** @var string $postinput */
+    public static $postinput = 'php://input';
 
     /**
      * OAuthRequest constructor.
@@ -58,60 +60,129 @@ class OAuthRequest {
      * @param null   $parameters
      */
     public function __construct($httpmethod, $httpurl, $parameters = null) {
-        @$parameters or $parameters = [];
+        $parameters = ($parameters) ? $parameters : [];
+        $parameters = array_merge(OAuthUtil::parse_parameters(parse_url($httpurl, PHP_URL_QUERY)), $parameters);
         $this->parameters = $parameters;
         $this->httpmethod = $httpmethod;
         $this->httpurl = $httpurl;
     }
 
     /**
-     * pretty much a helper function to set up the request
+     * attempt to build up a request from what was passed to the server
      *
-     * @param object $consumer
-     * @param string $token
-     * @param string $httpmethod
-     * @param string $httpurl
-     * @param null   $parameters
+     * @param string|null $httpmethod
+     * @param string|null $httpurl
+     * @param array|null  $parameters
      *
      * @return OAuthRequest
      */
-    public static function from_consumer_and_token($consumer, $token, $httpmethod, $httpurl, $parameters = null) {
-        @$parameters or $parameters = [];
-        $defaults = [
-            "oauth_version"      => self::$version,
-            "oauth_nonce"        => self::generate_nonce(),
-            "oauth_timestamp"    => self::generate_timestamp(),
-            "oauth_consumer_key" => $consumer->key,
-        ];
-        if ($token) {
-            $defaults['oauth_token'] = $token->key;
-        }
-        $parameters = array_merge($defaults, $parameters);
-        // Parse the query-string to find and add GET parameters.
-        $parts = parse_url($httpurl);
-        if (isset($parts['query'])) {
-            $qparms = OAuthUtil::parse_parameters($parts['query']);
-            $parameters = array_merge($qparms, $parameters);
+    public static function from_request($httpmethod = null, $httpurl = null, $parameters = null) {
+        $scheme = (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != "on")
+            ? 'http'
+            : 'https';
+
+        $httpurl = ($httpurl)
+            ? $httpurl
+            : $scheme .
+            '://' . $_SERVER['SERVER_NAME'] .
+            ':' .
+            $_SERVER['SERVER_PORT'] .
+            $_SERVER['REQUEST_URI'];
+
+        $httpmethod = ($httpmethod) ? $httpmethod : $_SERVER['REQUEST_METHOD'];
+
+        // We weren't handed any parameters, so let's find the ones relevant to
+        // this request.
+        // If you run XML-RPC or similar you should use this to provide your own
+        // parsed parameter-list.
+        if (!$parameters) {
+            // Find request headers.
+            $requestheaders = OAuthUtil::get_headers();
+
+            // Parse the query-string to find GET parameters.
+            if (isset($_SERVER['QUERY_STRING'])) {
+                $parameters = OAuthUtil::parse_parameters($_SERVER['QUERY_STRING']);
+            } else {
+                $parameters = [];
+            }
+
+            // It's a POST request of the proper content-type, so parse POST
+            // parameters and add those overriding any duplicates from GET.
+            if ($httpmethod == "POST"
+                && isset($requestheaders['Content-Type'])
+                && strstr($requestheaders['Content-Type'], 'application/x-www-form-urlencoded')) {
+                $postdata = OAuthUtil::parse_parameters(file_get_contents(self::$postinput));
+                $parameters = array_merge($parameters, $postdata);
+            }
+
+            // We have a Authorization-header with OAuth data. Parse the header
+            // and add those overriding any duplicates from GET or POST.
+            if (isset($requestheaders['Authorization']) && substr($requestheaders['Authorization'], 0, 6) == 'OAuth ') {
+                $headerparameters = OAuthUtil::split_header($requestheaders['Authorization']);
+                $parameters = array_merge($parameters, $headerparameters);
+            }
         }
 
         return new OAuthRequest($httpmethod, $httpurl, $parameters);
     }
 
     /**
-     * util function: current nonce
+     * pretty much a helper function to set up the request
+     *
+     * @param OAuthConsumer   $consumer
+     * @param OAuthToken|null $token
+     * @param string          $httpmethod
+     * @param string          $httpurl
+     * @param array|null      $parameters
+     *
+     * @return OAuthRequest
      */
-    private static function generate_nonce() {
-        $mt = microtime();
-        $rand = mt_rand();
+    public static function from_consumer_and_token(
+        OAuthConsumer $consumer,
+        $token,
+        $httpmethod,
+        $httpurl,
+        $parameters = null
+    ) {
 
-        return md5($mt . $rand);
+        $parameters = ($parameters) ? $parameters : [];
+        $defaults = [
+            'oauth_version'      => self::$version,
+            'oauth_nonce'        => self::generate_nonce(),
+            'oauth_timestamp'    => self::generate_timestamp(),
+            'oauth_consumer_key' => $consumer->key
+        ];
+        if ($token) {
+            $defaults['oauth_token'] = $token->key;
+        }
+
+        $parameters = array_merge($defaults, $parameters);
+
+        return new OAuthRequest($httpmethod, $httpurl, $parameters);
+
     }
 
     /**
-     * util function: current timestamp
+     * set_parameter
+     *
+     * @param string $name
+     * @param mixed  $value
+     * @param bool   $allowduplicates
      */
-    private static function generate_timestamp() {
-        return time();
+    public function set_parameter($name, $value, $allowduplicates = true) {
+
+        if ($allowduplicates && isset($this->parameters[$name])) {
+            // We have already added parameter(s) with this name, so add to the list.
+            if (is_scalar($this->parameters[$name])) {
+                // This is the first duplicate, so transform scalar (string)
+                // into an array so we can add the duplicates.
+                $this->parameters[$name] = [$this->parameters[$name]];
+            }
+
+            $this->parameters[$name][] = $value;
+        } else {
+            $this->parameters[$name] = $value;
+        }
     }
 
     /**
@@ -119,7 +190,7 @@ class OAuthRequest {
      *
      * @param string $name
      *
-     * @return null
+     * @return mixed|null
      */
     public function get_parameter($name) {
         return isset($this->parameters[$name]) ? $this->parameters[$name] : null;
@@ -144,25 +215,50 @@ class OAuthRequest {
     }
 
     /**
+     * The request parameters, sorted and concatenated into a normalized string.
+     *
+     * @return string
+     */
+    public function get_signable_parameters() {
+
+        // Grab all parameters.
+        $params = $this->parameters;
+
+        // Remove oauth_signature if present.
+        if (isset($params['oauth_signature'])) {
+            unset($params['oauth_signature']);
+        }
+
+        return OAuthUtil::build_http_query($params);
+
+    }
+
+    /**
      * Returns the base string of this request
      *
      * The base string defined as the method, the url
      * and the parameters (normalized), each urlencoded
      * and the concated with &.
+     *
+     * @return string
      */
     public function get_signature_base_string() {
         $parts = [
             $this->get_normalized_http_method(),
             $this->get_normalized_http_url(),
-            $this->get_signable_parameters(),
+            $this->get_signable_parameters()
         ];
+
         $parts = OAuthUtil::urlencode_rfc3986($parts);
 
         return implode('&', $parts);
+
     }
 
     /**
      * just uppercases the http method
+     *
+     * @return string
      */
     public function get_normalized_http_method() {
         return strtoupper($this->httpmethod);
@@ -171,100 +267,34 @@ class OAuthRequest {
     /**
      * parses the url and rebuilds it to be
      * scheme://host/path
+     *
+     * @return string
      */
     public function get_normalized_http_url() {
+
         $parts = parse_url($this->httpurl);
-        $port = @$parts['port'];
-        $scheme = isset($parts['scheme']) ? $parts['scheme'] : false;
-        $host = isset($parts['host']) ? $parts['host'] : false;
-        $path = @$parts['path'];
-        $port or $port = ($scheme == 'https') ? '443' : '80';
+
+        $scheme = (isset($parts['scheme'])) ? $parts['scheme'] : 'http';
+        $port = (isset($parts['port'])) ? $parts['port'] : (($scheme == 'https') ? '443' : '80');
+        $host = (isset($parts['host'])) ? strtolower($parts['host']) : '';
+        $path = (isset($parts['path'])) ? $parts['path'] : '';
+
         if (($scheme == 'https' && $port != '443')
-            || ($scheme == 'http' && $port != '80')
-        ) {
+            || ($scheme == 'http' && $port != '80')) {
             $host = "$host:$port";
         }
 
         return "$scheme://$host$path";
-    }
 
-    /**
-     * The request parameters, sorted and concatenated into a normalized string.
-     *
-     * @return string
-     */
-    public function get_signable_parameters() {
-        // Grab all parameters.
-        $params = $this->parameters;
-        // Remove oauth_signature if present
-        // Ref: Spec: 9.1.1 ("The oauth_signature parameter MUST be excluded.") .
-        if (isset($params['oauth_signature'])) {
-            unset($params['oauth_signature']);
-        }
-
-        return OAuthUtil::build_http_query($params);
-    }
-
-    /**
-     * Set to header
-     *
-     * @return string
-     * @throws OAuthException
-     */
-    public function to_header() {
-        return $this->to_header_internal('Authorization: OAuth realm=""');
-    }
-
-    /**
-     * builds the Authorization: header
-     *
-     * @param mixed $start
-     */
-    public function to_header_internal($start) {
-        $out = $start;
-        $comma = ',';
-
-        foreach ($this->parameters as $k => $v) {
-            if (substr($k, 0, 5) != "oauth") {
-                continue;
-            }
-            if (is_array($v)) {
-                throw new OAuthException('Arrays not supported in headers');
-            }
-            $out .= $comma .
-                OAuthUtil::urlencode_rfc3986($k) .
-                '="' .
-                OAuthUtil::urlencode_rfc3986($v) .
-                '"';
-            $comma = ',';
-        }
-
-        return $out;
-    }
-
-    /**
-     * Set alternate header
-     *
-     * @return string
-     * @throws OAuthException
-     */
-    public function to_alternate_header() {
-        return $this->to_header_internal('X-Oauth1-Authorization: OAuth realm=""');
-    }
-
-    /**
-     * To string
-     *
-     * @return string
-     */
-    public function __toString() {
-        return $this->to_url();
     }
 
     /**
      * builds a url usable for a GET request
+     *
+     * @return string
      */
     public function to_url() {
+
         $postdata = $this->to_postdata();
         $out = $this->get_normalized_http_url();
         if ($postdata) {
@@ -276,19 +306,68 @@ class OAuthRequest {
 
     /**
      * builds the data one would send in a POST request
+     *
+     * @return string
      */
     public function to_postdata() {
         return OAuthUtil::build_http_query($this->parameters);
     }
 
     /**
-     * Sign request
+     * builds the Authorization: header
+     *
+     * @param string|null $realm
+     *
+     * @return string
+     * @throws OAuthException
+     */
+    public function to_header($realm = null) {
+
+        $first = true;
+        if ($realm) {
+            $out = 'Authorization: OAuth realm="' . OAuthUtil::urlencode_rfc3986($realm) . '"';
+            $first = false;
+        } else {
+            $out = 'Authorization: OAuth';
+        }
+
+        foreach ($this->parameters as $k => $v) {
+            if (substr($k, 0, 5) != "oauth") {
+                continue;
+            }
+            if (is_array($v)) {
+                throw new OAuthException('Arrays not supported in headers');
+            }
+            $out .= ($first) ? ' ' : ',';
+            $out .= OAuthUtil::urlencode_rfc3986($k) .
+                '="' .
+                OAuthUtil::urlencode_rfc3986($v) .
+                '"';
+            $first = false;
+        }
+
+        return $out;
+
+    }
+
+    /**
+     * String representation of current class
+     *
+     * @return string
+     */
+    public function __toString() {
+        return $this->to_url();
+    }
+
+    /**
+     * sign_request
      *
      * @param OAuthSignatureMethod $signaturemethod
-     * @param object               $consumer
-     * @param mixed                $token
+     * @param OAuthConsumer        $consumer
+     * @param OAuthToken           $token
      */
     public function sign_request(OAuthSignatureMethod $signaturemethod, $consumer, $token) {
+
         $this->set_parameter(
             "oauth_signature_method",
             $signaturemethod->get_name(),
@@ -299,34 +378,13 @@ class OAuthRequest {
     }
 
     /**
-     * Set parameter
-     *
-     * @param string $name
-     * @param mixed  $value
-     * @param bool   $allowduplicates
-     */
-    public function set_parameter($name, $value, $allowduplicates = true) {
-        if ($allowduplicates && isset($this->parameters[$name])) {
-            // We have already added parameter(s) with this name, so add to the list.
-            if (is_scalar($this->parameters[$name])) {
-                // This is the first duplicate, so transform scalar (string)
-                // into an array so we can add the duplicates.
-                $this->parameters[$name] = [$this->parameters[$name]];
-            }
-            $this->parameters[$name][] = $value;
-        } else {
-            $this->parameters[$name] = $value;
-        }
-    }
-
-    /**
-     * Build signature
+     * build_signature
      *
      * @param OAuthSignatureMethod $signaturemethod
-     * @param object               $consumer
-     * @param mixed                $token
+     * @param OAuthConsumer        $consumer
+     * @param OAuthToken           $token
      *
-     * @return mixed
+     * @return string
      */
     public function build_signature(OAuthSignatureMethod $signaturemethod, $consumer, $token) {
         $signature = $signaturemethod->build_signature($this, $consumer, $token);
@@ -335,17 +393,23 @@ class OAuthRequest {
     }
 
     /**
-     * Encode url
+     * util function: current timestamp
      *
-     * @param mixed $s
-     *
-     * @return mixed
+     * @return int
      */
-    public function urlencode($s) {
-        if ($s === false) {
-            return $s;
-        } else {
-            return str_replace('%7E', '~', rawurlencode($s));
-        }
+    private static function generate_timestamp() {
+        return time();
+    }
+
+    /**
+     * util function: current nonce
+     *
+     * @return string
+     */
+    private static function generate_nonce() {
+        $mt = microtime();
+        $rand = mt_rand();
+
+        return md5($mt . $rand);
     }
 }

@@ -1,3 +1,5 @@
+dist: xenial
+
 language: php
 
 # Behat no longer passes when false.
@@ -5,8 +7,6 @@ sudo: required
 
 notifications:
   email: false
-
-dist: xenial
 
 services:
   - mysql
@@ -18,9 +18,6 @@ cache:
 
 addons:
   postgresql: "9.6"
-  apt:
-    packages:
-      - openjdk-8-jre-headless
 
 php:
   - "7.0"
@@ -31,12 +28,8 @@ env:
   matrix:
     - DB=pgsql MOODLE_BRANCH=MOODLE_34_STABLE
     - DB=mysqli MOODLE_BRANCH=MOODLE_34_STABLE
-    - DB=pgsql MOODLE_BRANCH=MOODLE_35_STABLE
-    - DB=mysqli MOODLE_BRANCH=MOODLE_35_STABLE
-    - DB=pgsql MOODLE_BRANCH=MOODLE_36_STABLE
-    - DB=mysqli MOODLE_BRANCH=MOODLE_36_STABLE
-    - DB=pgsql MOODLE_BRANCH=MOODLE_37_STABLE
-    - DB=mysqli MOODLE_BRANCH=MOODLE_37_STABLE
+    - DB=pgsql MOODLE_BRANCH=MOODLE_38_STABLE
+    - DB=mysqli MOODLE_BRANCH=MOODLE_38_STABLE
 
 matrix:
   include:  # Moodle 3.3 minimum PHP 5.6.5 maximum 7.1
@@ -50,9 +43,9 @@ matrix:
       env: DB=mysqli MOODLE_BRANCH=MOODLE_33_STABLE
   exclude:   # Moodle 3.7 minimum PHP 7.1
     - php: "7.0"
-      env: DB=pgsql MOODLE_BRANCH=MOODLE_37_STABLE
+      env: DB=pgsql MOODLE_BRANCH=MOODLE_38_STABLE
     - php: "7.0"
-      env: DB=mysqli MOODLE_BRANCH=MOODLE_37_STABLE
+      env: DB=mysqli MOODLE_BRANCH=MOODLE_38_STABLE
 
 before_install:
   - phpenv config-rm xdebug.ini
@@ -75,7 +68,8 @@ script:
   - moodle-plugin-ci codechecker
   - moodle-plugin-ci validate
   - moodle-plugin-ci savepoints
-  - moodle-plugin-ci mustache
-  - moodle-plugin-ci grunt
+#  - moodle-plugin-ci mustache
+  - moodle-plugin-ci grunt || [ "$MOODLE_BRANCH" = 'MOODLE_38_STABLE' ]
+  - moodle-plugin-ci phpdoc
   - moodle-plugin-ci phpunit
   - moodle-plugin-ci behat

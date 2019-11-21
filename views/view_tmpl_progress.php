@@ -44,23 +44,31 @@ if (!$iterator) {
         'requires' => ['json'],
     ];
 
-    $PAGE->requires->js_init_call('M.plagiarismUnicheck.init', [$linkarray['cmid']], true, $jsmodule);
+    $PAGE->requires->js_init_call('M.plagiarismUnicheck.init', [(int) $linkarray['cmid']], true, $jsmodule);
 }
 
-$htmlparts = [sprintf('<div class="un_detect_result fid-%1$s"><div class="un_data">{"fid":"%1$s"}</div>', $fileobj->id)];
-$htmlparts[] = sprintf('<img  class="un_progress un_tooltip" src="%1$s" alt="%2$s" title="%2$s" />',
-    $OUTPUT->image_url('loader', UNICHECK_PLAGIN_NAME),
-    plagiarism_unicheck::trans('processing')
-);
+$fileid = (int) $fileobj->id;
+$loaderurl = $OUTPUT->image_url('loader', UNICHECK_PLAGIN_NAME);
+$loadertext = plagiarism_unicheck::trans('processing');
+$isuploading = false;
+$progresspercent = null;
+$progresstext = null;
 
 if ($fileobj->state === unicheck_file_state::UPLOADING) {
-    $htmlparts[] = sprintf('%s', plagiarism_unicheck::trans('uploading'));
+    $isuploading = true;
+    $progresstext = plagiarism_unicheck::trans('uploading');
 } else {
-    $htmlparts[] = sprintf('%s: <span class="un_progress-val" >%d%%</span>',
-        plagiarism_unicheck::trans('progress'), intval($fileobj->progress)
-    );
+    $progresstext = plagiarism_unicheck::trans('progress');
+    $progresspercent = intval($fileobj->progress);
 }
 
-$htmlparts[] = '</div>';
+$context = [
+    'fileid'          => $fileid,
+    'isuploading'     => $isuploading,
+    'loaderurl'       => (string) $loaderurl,
+    'loadertext'      => s($loadertext),
+    'progresstext'    => s($progresstext),
+    'progresspercent' => s($progresspercent),
+];
 
-return implode('', $htmlparts);
+return $OUTPUT->render_from_template('plagiarism_unicheck/progress', $context);

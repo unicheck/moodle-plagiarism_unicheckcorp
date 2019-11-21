@@ -4,23 +4,47 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.5.0] - 2019-11-21
+### Added
+- Moodle 3.8 support
+- mustache templates
+
+### Changed
+- cheating detect block design
+- css class names
+- remove relative includes starting with "../"
+- don't query the database in loops in some locations
+
+### Fixed
+-  string definition for cachedef_debugging/plagiarism_unicheck
+-  environment test (php_extension:rar)
+
+### Removed
+- ttl value from db/caches.php
+
+### Security
+- capability checks in track_progress endpoint
+- parameterize sql code
+- clean data output in various locations
+- OAuth verify of Unicheck callback requests
+
 ## [2.4.3] - 2019-09-30
 ### Changed
 - Avoid the use of PARAM_RAW
 - Use $OUTPUT->image_icon() instead of $OUTPUT->pix_icon()
 
-### Removed 
+### Removed
 - Unused functions
 
 ## [2.4.2] - 2019-06-20
-### Added 
+### Added
 - Unicheck Availability Status in debugging tab
 - Pagination and filter in debugging table
 - Unicheck API Region select in plugin settings tab
 - MOODLE_37_STABLE in .travis.yml matrix
 
-### Changed 
-- The students do not see any mention about the service Unicheck when both settings 
+### Changed
+- The students do not see any mention about the service Unicheck when both settings
 `Show similarity scores to student` and `Show similarity reports to student` within the meaning of **NO**
 - resource_id in Unicheck callbacks can be NULL
 
@@ -29,7 +53,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - `Please use file_data parameter` when the file cannot be read from the file system
 
 ## [2.4.1] - 2019-02-21
-### Added 
+### Added
 - Handle SIMILARITY.CHECK.RECALCULATED event for live recalculating in moodle plugin from Unicheck service
 - Saving all Unicheck callbacks in the database
 
@@ -38,7 +62,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - The similarity report is sent to at the correct email address after the student has changed his email address.
 
 ## [2.4.0] - 2019-01-22
-### Added 
+### Added
 - Show cheating indicator
 - The ability to run scans on online text submissions in an assign that was already submitted before unicheck plugin was turned on
 - Privacy API
@@ -76,7 +100,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Self-plagiarism excluding
 
-### Changed 
+### Changed
 - RAR,ZIP archive supporting is now OPTIONAL
 
 ### Fixed
@@ -87,7 +111,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Incorrect processing of large files
 - Error handled trigger
 
-### Changed 
+### Changed
 - Skipping files larger than 70 MB (Unicheck max file upload size)
 - Event observe validation
 
@@ -162,6 +186,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Change validation mode
 - Massive refactoring comparing to Unplag plugin
 
+[2.5.0]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.5.0
 [2.4.3]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.4.3
 [2.4.2]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.4.2
 [2.4.1]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.4.1

@@ -2,10 +2,6 @@
 <COMPATIBILITY_MATRIX>
     <PLUGIN name="plagiarism_unicheck">
         <PHP_EXTENSIONS>
-            <PHP_EXTENSION name="rar" level="optional">
-            </PHP_EXTENSION>
-        </PHP_EXTENSIONS>
-        <PHP_EXTENSIONS>
             <PHP_EXTENSION name="zip" level="optional">
             </PHP_EXTENSION>
         </PHP_EXTENSIONS>
