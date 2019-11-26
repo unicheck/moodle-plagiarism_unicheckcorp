@@ -32,6 +32,7 @@ use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\unicheck_api;
 use plagiarism_unicheck\classes\unicheck_core;
 use plagiarism_unicheck\classes\unicheck_plagiarism_entity;
+use stdClass;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -251,12 +252,12 @@ class unicheck_file_provider {
     /**
      * set_cheating_info
      *
-     * @param \stdClass $plagiarismfile
-     * @param \stdClass $cheating
+     * @param stdClass $plagiarismfile
+     * @param array    $cheating
      *
      * @return bool
      */
-    public static function set_cheating_info($plagiarismfile, array $cheating) {
+    public static function set_cheating_info(stdClass $plagiarismfile, array $cheating) {
         $cheatinginfo = [];
         $hascheating = false;
         if (isset($cheating['char_replacement_count']) && $cheating['char_replacement_count']) {
