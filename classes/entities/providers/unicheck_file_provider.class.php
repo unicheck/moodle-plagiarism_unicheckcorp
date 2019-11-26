@@ -27,6 +27,7 @@ namespace plagiarism_unicheck\classes\entities\providers;
 
 use plagiarism_unicheck\classes\helpers\unicheck_check_helper;
 use plagiarism_unicheck\classes\services\storage\file_error_code;
+use plagiarism_unicheck\classes\services\storage\unicheck_file_metadata;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\unicheck_api;
 use plagiarism_unicheck\classes\unicheck_core;
@@ -245,6 +246,60 @@ class unicheck_file_provider {
         $fileobj->metadata = json_encode($metadata);
 
         return self::save($fileobj);
+    }
+
+    /**
+     * set_cheating_info
+     *
+     * @param \stdClass $plagiarismfile
+     * @param \stdClass $cheating
+     *
+     * @return bool
+     */
+    public static function set_cheating_info($plagiarismfile, array $cheating) {
+        $cheatinginfo = [];
+        $hascheating = false;
+        if (isset($cheating['char_replacement_count']) && $cheating['char_replacement_count']) {
+            $hascheating = true;
+            $cheatinginfo[unicheck_file_metadata::CHEATING_CHAR_REPLACEMENTS_COUNT] = (int) $cheating['char_replacement_count'];
+        }
+
+        if (isset($cheating['char_replacement_words_count']) && $cheating['char_replacement_words_count']) {
+            $cheatinginfo[unicheck_file_metadata::CHEATING_CHAR_REPLACEMENTS_WORDS_COUNT]
+                = (int) $cheating['char_replacement_words_count'];
+        }
+
+        if (isset($cheating['total_pages_count']) && $cheating['total_pages_count']) {
+            $hascheating = true;
+            $cheatingpages = (int) $cheating['total_pages_count'];
+            $cheatinginfo[unicheck_file_metadata::CHEATING_TOTAL_PAGES_COUNT] = $cheatingpages;
+        }
+
+        if (isset($cheating['suspicious_pages_count']) && $cheating['suspicious_pages_count']) {
+            $cheatinginfo[unicheck_file_metadata::CHEATING_SUSPICIOUS_PAGES_COUNT] = (int) $cheating['suspicious_pages_count'];
+        }
+
+        if (isset($cheating['is_similarity_affected']) && $cheating['is_similarity_affected']) {
+            $cheatinginfo[unicheck_file_metadata::CHEATING_IS_SIMILARITY_AFFECTED] = (bool) $cheating['is_similarity_affected'];
+        }
+
+        if ($hascheating) {
+            $cheatinginfo[unicheck_file_metadata::CHEATING_EXIST] = $hascheating;
+        }
+
+        if (empty($cheatinginfo)) {
+            return true;
+        }
+
+        $result = self::add_metadata($plagiarismfile->id, $cheatinginfo);
+
+        if ($plagiarismfile->parent_id && $hascheating) {
+            self::add_metadata($plagiarismfile->parent_id, [
+                unicheck_file_metadata::CHEATING_EXIST => $hascheating
+            ]);
+        }
+
+        return $result;
     }
 
     /**
