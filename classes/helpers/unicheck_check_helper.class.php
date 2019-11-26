@@ -91,15 +91,11 @@ class unicheck_check_helper {
                     archive_files_checked::create_from_plagiarismfile($plagiarismfile)->trigger();
                     break;
                 default:
-                    $charreplcount = (int) $check->report->cheating->char_replacement_count;
-                    $charreplwordscount = (int) $check->report->cheating->char_replacement_words_count;
-
                     unicheck_file_provider::add_metadata($plagiarismfile->id, [
-                        unicheck_file_metadata::CHAR_COUNT                             => (int) $check->report->char_count,
-                        unicheck_file_metadata::CHEATING_CHAR_REPLACEMENTS_COUNT       => $charreplcount,
-                        unicheck_file_metadata::CHEATING_CHAR_REPLACEMENTS_WORDS_COUNT => $charreplwordscount,
-
+                        unicheck_file_metadata::CHAR_COUNT => (int) $check->report->char_count,
                     ]);
+
+                    unicheck_file_provider::set_cheating_info($plagiarismfile, (array)$check->report->cheating);
 
                     file_similarity_check_completed::create_from_plagiarismfile($plagiarismfile)->trigger();
                     break;

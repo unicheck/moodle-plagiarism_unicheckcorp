@@ -119,8 +119,12 @@ if (!empty($cid) && !empty($fileobj->reporturl) || !empty($fileobj->similaritysc
             }
         }
 
-        if ($fileobj->type !== unicheck_plagiarism_entity::TYPE_ARCHIVE) {
-            if (isset($metadata[unicheck_file_metadata::CHEATING_CHAR_REPLACEMENTS_COUNT])) {
+        if ($canvieweditreport) {
+            if (isset($metadata[unicheck_file_metadata::CHEATING_EXIST])) {
+                $hascheating = (bool) $metadata[unicheck_file_metadata::CHEATING_EXIST];
+            }
+
+            if (!$hascheating && isset($metadata[unicheck_file_metadata::CHEATING_CHAR_REPLACEMENTS_COUNT])) {
                 $cheatingchars = (int) $metadata[unicheck_file_metadata::CHEATING_CHAR_REPLACEMENTS_COUNT];
                 if ($cheatingchars > 0) {
                     $hascheating = true;

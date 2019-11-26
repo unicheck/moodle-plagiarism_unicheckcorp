@@ -63,9 +63,9 @@ function xmldb_plagiarism_unicheck_upgrade($oldversion) {
             $sql = "UPDATE {{$table}}
                 SET state = (
                     CASE
-                        WHEN statuscode = 200 THEN 'CHECKED'
-                        WHEN statuscode = 202 AND check_id IS NOT NULL THEN 'CHECKING'
-                        WHEN statuscode = 202 AND check_id IS NULL THEN 'UPLOADED'
+                        WHEN statuscode = '200' THEN 'CHECKED'
+                        WHEN statuscode = '202' AND check_id IS NOT NULL THEN 'CHECKING'
+                        WHEN statuscode = '202' AND check_id IS NULL THEN 'UPLOADED'
                         WHEN statuscode = 'pending' THEN 'CREATED'
                         ELSE 'HAS_ERROR'
                     END

@@ -26,6 +26,7 @@
 namespace plagiarism_unicheck\classes;
 
 use plagiarism_unicheck\classes\entities\providers\callback_provider;
+use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\helpers\unicheck_check_helper;
 use plagiarism_unicheck\classes\helpers\unicheck_response;
 use plagiarism_unicheck\classes\helpers\unicheck_stored_file;
@@ -131,6 +132,24 @@ class unicheck_callback {
         $internalfile = unicheck_stored_file::get_plagiarism_file_by_identifier($identifier);
 
         unicheck_response::process_after_upload($body, $internalfile);
+    }
+
+    /**
+     * file_cheating_detected
+     *
+     * @param \stdClass $body
+     * @param string    $identifier
+     *
+     * @throws \InvalidArgumentException
+     */
+    private function file_cheating_detected(\stdClass $body, $identifier) {
+        if (!isset($body->file)) {
+            throw new \InvalidArgumentException('File data does not exist');
+        }
+
+        $plagiarismfile = unicheck_stored_file::get_plagiarism_file_by_identifier($identifier);
+
+        unicheck_file_provider::set_cheating_info($plagiarismfile, (array) $body->file->metadata->cheating);
     }
 
     /**
