@@ -59,8 +59,7 @@ function xmldb_plagiarism_unicheck_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
 
-            $table = 'plagiarism_unicheck_files';
-            $sql = "UPDATE {{$table}}
+            $sql = "UPDATE {plagiarism_unicheck_files}
                 SET state = (
                     CASE
                         WHEN statuscode = '200' THEN 'CHECKED'
