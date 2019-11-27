@@ -145,21 +145,30 @@ class unicheck_progress {
 
         if ($progresses->result) {
             foreach ($trackedfiles as $recordid => $recordparams) {
-                $progress = 0;
+                // Progresses of single file or sum of archive contents.
+                $fileprogress = 0;
                 $checks = $recordparams['checks'];
                 $childscount = count($checks);
+                $plagiarismfile = null;
 
-                foreach ($progresses->progress as $checkid => $val) {
+                foreach ($progresses->progress as $checkid => $checkprogress) {
                     if (in_array($checkid, $checks)) {
-                        $progress += ($progresses->progress->{$checkid} * 100);
-                        self::update_file_progress_by_check($checkid, $val);
+                        $checkprogress = $checkprogress * 100;
+                        $fileprogress += $checkprogress;
+                        $checkedfile = self::update_file_progress_by_check($checkid, $checkprogress);
+                        if ($checkedfile->id == $recordid) {
+                            $plagiarismfile = $checkedfile;
+                        }
                     }
                 }
 
-                $progress = floor($progress / $childscount);
-                $fileobj = self::update_parent_progress($recordid, $progress);
-                $resp[$recordid]['progress'] = $progress;
-                $resp[$recordid]['content'] = self::gen_row_content_score($cmid, $fileobj);
+                if ($childscount > 1) {
+                    $fileprogress = floor($fileprogress / $childscount);
+                    $plagiarismfile = self::update_parent_progress($recordid, $fileprogress);
+                }
+
+                $resp[$recordid]['progress'] = $fileprogress;
+                $resp[$recordid]['content'] = self::gen_row_content_score($cmid, $plagiarismfile);
             }
         }
 
@@ -207,19 +216,19 @@ class unicheck_progress {
     /**
      * update_file_progress
      *
-     * @param int $id
+     * @param int $checkid
      * @param int $progress
      *
      * @return object
      * @throws unicheck_exception
      */
-    private static function update_file_progress_by_check($id, $progress) {
-        $record = unicheck_file_provider::find_by_check_id($id);
+    private static function update_file_progress_by_check($checkid, $progress) {
+        $record = unicheck_file_provider::find_by_check_id($checkid);
         if ($record->progress < $progress) {
             $record->progress = $progress;
 
             if ($record->progress === 100) {
-                $resp = unicheck_api::instance()->get_check_data($id);
+                $resp = unicheck_api::instance()->get_check_data($checkid);
                 if (!$resp->result) {
                     $errors = array_shift($resp->errors);
                     throw new unicheck_exception($errors->message);
