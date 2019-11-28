@@ -118,7 +118,8 @@ class unicheck_linkarray {
                 $tmpl = 'view_tmpl_invalid_response.php';
                 break;
             case unicheck_file_state::CREATED:
-                if (self::is_pending($cm, $fileobj) && self::is_submission_submitted($linkarray)) {
+                $submission = unicheck_assign::get_user_submission_by_cmid($linkarray['cmid'], $linkarray['userid']);
+                if ($submission && self::is_pending($cm, $fileobj)) {
                     $tmpl = 'view_tmpl_can_check.php';
                     $inciterator = true;
                 }
@@ -150,19 +151,6 @@ class unicheck_linkarray {
      * @return bool
      */
     private static function is_pending($cm, $fileobj) {
-        return $cm->modname == UNICHECK_MODNAME_ASSIGN && empty($fileobj->check_id);
-    }
-
-    /**
-     * Check is submission submitted
-     *
-     * @param array $linkarray
-     *
-     * @return bool
-     */
-    private static function is_submission_submitted($linkarray) {
-        $submission = unicheck_assign::get_user_submission_by_cmid($linkarray['cmid'], $linkarray['userid']);
-
-        return $submission->status == 'submitted';
+        return $cm->modname == UNICHECK_MODNAME_ASSIGN && empty($fileobj->external_file_uuid);
     }
 }

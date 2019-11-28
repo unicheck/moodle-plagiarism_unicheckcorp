@@ -72,13 +72,11 @@ $startchecktitle = plagiarism_unicheck::trans('check_file');
 $unicheckurl = new moodle_url(UNICHECK_DOMAIN);
 $unichecklogourl = $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME);
 $pluginname = plagiarism_unicheck::trans('pluginname');
-$errormessage = plagiarism_unicheck::error_resp_handler($fileobj->errorresponse);
 
 $context = [
     'unicheckurl'     => (string) $unicheckurl,
     'unichecklogourl' => (string) $unichecklogourl,
     'pluginname'      => s($pluginname),
-    'errormessage'    => format_text($errormessage, FORMAT_HTML),
     'startcheckurl'   => (string) $startcheckurl,
     'startchecktitle' => s($startchecktitle)
 ];

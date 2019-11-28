@@ -86,7 +86,7 @@ abstract class abstract_observer {
             return true;
         }
 
-        return ($submission->status !== 'submitted');
+        return ($submission->status !== ASSIGN_SUBMISSION_STATUS_SUBMITTED);
     }
 
     /**
@@ -130,5 +130,29 @@ abstract class abstract_observer {
      */
     protected function add_after_handle_task(stored_file $file) {
         array_push($this->tasks, $file);
+    }
+
+    /**
+     * all_users_confirm_submition
+     *
+     * @param \stdClass $assign
+     *
+     * @return bool
+     */
+    protected function all_users_confirm_submition($assign) {
+        global $USER;
+
+        list($course, $cm) = get_course_and_cm_from_instance($assign, 'assign');
+
+        $assign = new \assign(\context_module::instance($cm->id), $cm, $course);
+
+        $submgroup = $assign->get_submission_group($USER->id);
+        if (!$submgroup) {
+            return false;
+        }
+
+        $notsubmitted = $assign->get_submission_group_members_who_have_not_submitted($submgroup->id, true);
+
+        return count($notsubmitted) == 0;
     }
 }
