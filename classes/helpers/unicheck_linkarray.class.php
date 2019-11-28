@@ -118,6 +118,10 @@ class unicheck_linkarray {
                 $tmpl = 'view_tmpl_invalid_response.php';
                 break;
             case unicheck_file_state::CREATED:
+                if ($cm->modname != UNICHECK_MODNAME_ASSIGN) {
+                    break;
+                }
+
                 $submission = unicheck_assign::get_user_submission_by_cmid($linkarray['cmid'], $linkarray['userid']);
                 if ($submission && self::is_pending($cm, $fileobj)) {
                     $tmpl = 'view_tmpl_can_check.php';
