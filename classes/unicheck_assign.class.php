@@ -54,22 +54,30 @@ class unicheck_assign {
     /**
      * get_user_submission_by_cmid
      *
-     * @param int  $cmid
-     * @param null $userid
+     * @param int      $cmid
+     * @param int|null $userid
      *
-     * @return bool|\stdClass
+     * @return null|\stdClass
      */
     public static function get_user_submission_by_cmid($cmid, $userid = null) {
-        global $USER;
-
         try {
             $modulecontext = context_module::instance($cmid);
             $assign = new assign($modulecontext, false, false);
         } catch (\Exception $ex) {
-            return false;
+            return null;
         }
 
-        return ($assign->get_user_submission(($userid !== null) ? $userid : $USER->id, false));
+        if ($assign->get_instance()->teamsubmission) {
+            $submission = $assign->get_group_submission($userid, 0, false);
+        } else {
+            $submission = $assign->get_user_submission($userid, false);
+        }
+
+        if ($submission && $submission->status == ASSIGN_SUBMISSION_STATUS_SUBMITTED) {
+            return $submission;
+        }
+
+        return null;
     }
 
     /**

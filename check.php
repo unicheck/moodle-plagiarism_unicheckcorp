@@ -60,10 +60,8 @@ switch ($cm->modname) {
     case UNICHECK_MODNAME_ASSIGN:
         $redirect = new moodle_url('/mod/assign/view.php', ['id' => $cmid, 'action' => 'grading']);
         if ($submissiontype == 'onlinetext' && null == $pf) {
-            $assign = unicheck_assign::get_assign_by_cm($modulecontext);
-            $submission = $assign->get_user_submission($uid, false);
+            $submission = unicheck_assign::get_user_submission_by_cmid($cmid, $uid);
             $onlinetextsubmission = unicheck_assign::get_onlinetext_submission($submission->id);
-            $user = $DB->get_record("user", ["id" => $uid], '*', MUST_EXIST);
 
             $storedfile = $ucore->create_file_from_content(
                 trim($onlinetextsubmission->onlinetext),

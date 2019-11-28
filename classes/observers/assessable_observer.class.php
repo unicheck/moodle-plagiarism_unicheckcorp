@@ -55,6 +55,20 @@ class assessable_observer extends abstract_observer {
      */
     public function submitted(unicheck_core $core, base $event) {
         $submission = unicheck_assign::get_user_submission_by_cmid($event->contextinstanceid);
+        if (!$submission) {
+            return;
+        }
+
+        $assign = unicheck_assign::get($submission->assignment);
+        if ((bool) $assign->teamsubmission) {
+            /* All users of group must confirm submission */
+            if ((bool) $assign->requireallteammemberssubmit && !$this->all_users_confirm_submition($assign)) {
+                return;
+            }
+
+            $core->enable_teamsubmission();
+        }
+
         $submissionid = (!empty($submission->id) ? $submission->id : false);
 
         $ufiles = plagiarism_unicheck::get_area_files($event->contextid, UNICHECK_DEFAULT_FILES_AREA, $submissionid);
