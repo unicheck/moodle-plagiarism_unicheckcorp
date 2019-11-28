@@ -27,6 +27,7 @@ namespace plagiarism_unicheck\classes\observers;
 
 use core\event\base;
 use plagiarism_unicheck\classes\exception\unicheck_exception;
+use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\unicheck_adhoc;
 use plagiarism_unicheck\classes\unicheck_assign;
 use plagiarism_unicheck\classes\unicheck_core;
@@ -112,6 +113,10 @@ abstract class abstract_observer {
             }
 
             $internalfile = $plagiarismentity->get_internal_file();
+            if ($internalfile->state == unicheck_file_state::HAS_ERROR) {
+                continue;
+            }
+
             if (!isset($internalfile->external_file_uuid)) {
                 unicheck_adhoc::upload($storedfile, $ucore);
                 continue;
