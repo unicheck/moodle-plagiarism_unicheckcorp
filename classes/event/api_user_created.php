@@ -32,7 +32,8 @@ if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
-require_once(dirname(__FILE__) . '/../../locallib.php');
+global $CFG;
+require_once($CFG->dirroot . '/plagiarism/unicheck/lib.php');
 
 /**
  * Class api_user_created
@@ -73,7 +74,9 @@ class api_user_created extends base {
      * @return string
      */
     public function get_description() {
-        return "API user with external ID '{$this->other['external_user_id']}'";
+        $userid = (int) $this->other['external_user_id'];
+
+        return "API user with external ID '{$userid}'";
     }
 
     /**

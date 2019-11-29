@@ -29,7 +29,9 @@ namespace plagiarism_unicheck\classes;
 use plagiarism_unicheck\classes\services\api\api_regions;
 use plagiarism_unicheck\event\api_called;
 use plagiarism_unicheck\library\OAuth\OAuthConsumer;
+use plagiarism_unicheck\library\OAuth\OAuthException;
 use plagiarism_unicheck\library\OAuth\OAuthRequest;
+use plagiarism_unicheck\library\OAuth\OAuthToken;
 use plagiarism_unicheck\library\OAuth\Signature\OAuthSignatureMethod_HMAC_SHA1;
 
 if (!defined('MOODLE_INTERNAL')) {
@@ -54,10 +56,6 @@ class unicheck_api_request {
      * @var  string|array
      */
     private $requestdata;
-    /**
-     * @var string
-     */
-    private $tokensecret = '';
     /**
      * @var  string
      */
@@ -110,7 +108,7 @@ class unicheck_api_request {
      * @param array  $data
      *
      * @return \stdClass
-     * @throws \coding_exception
+     * @throws OAuthException
      */
     public function request($method, $data) {
         $this->set_request_data($data);
@@ -187,6 +185,7 @@ class unicheck_api_request {
      * Generate oauth headers
      *
      * @return string
+     * @throws OAuthException
      */
     private function gen_oauth_headers() {
         $oauthdata = [];
@@ -201,10 +200,11 @@ class unicheck_api_request {
             unicheck_settings::get_settings('api_secret')
         );
 
+        $oauthtoken = new OAuthToken($oauthconsumer, '');
         $oauthreq = OAuthRequest::from_consumer_and_token(
-            $oauthconsumer, $this->get_token_secret(), $this->httpmethod, $this->get_url(), $oauthdata
+            $oauthconsumer, $oauthtoken, $this->httpmethod, $this->get_url(), $oauthdata
         );
-        $oauthreq->sign_request(new OAuthSignatureMethod_HMAC_SHA1(), $oauthconsumer, $this->get_token_secret());
+        $oauthreq->sign_request(new OAuthSignatureMethod_HMAC_SHA1(), $oauthconsumer, $oauthtoken);
 
         return $oauthreq->to_header();
     }
@@ -225,15 +225,6 @@ class unicheck_api_request {
      */
     public function get_request_data() {
         return $this->requestdata;
-    }
-
-    /**
-     * get_token_secret
-     *
-     * @return string
-     */
-    public function get_token_secret() {
-        return $this->tokensecret;
     }
 
     /**

@@ -40,17 +40,6 @@ if (!defined('MOODLE_INTERNAL')) {
  */
 class unicheck_stored_file extends \stored_file {
     /**
-     * Get file pathname
-     *
-     * @param \stored_file $file
-     *
-     * @return string
-     */
-    public static function get_protected_pathname(\stored_file $file) {
-        return $file->get_pathname_by_contenthash();
-    }
-
-    /**
      * Get file childs
      *
      * @param int $id
@@ -67,6 +56,7 @@ class unicheck_stored_file extends \stored_file {
      * get_plagiarism_file_by_identifier
      *
      * @param string $identifier
+     *
      * @return mixed
      */
     public static function get_plagiarism_file_by_identifier($identifier) {

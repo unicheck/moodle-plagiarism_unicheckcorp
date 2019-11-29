@@ -25,7 +25,9 @@
 
 namespace plagiarism_unicheck\library\OAuth\Signature;
 
+use plagiarism_unicheck\library\OAuth\OAuthConsumer;
 use plagiarism_unicheck\library\OAuth\OAuthRequest;
+use plagiarism_unicheck\library\OAuth\OAuthToken;
 use plagiarism_unicheck\library\OAuth\OAuthUtil;
 
 if (!defined('MOODLE_INTERNAL')) {
@@ -52,9 +54,9 @@ class OAuthSignatureMethod_HMAC_SHA1 extends OAuthSignatureMethod {
     /**
      * Build signature
      *
-     * @param OAuthRequest $request
-     * @param object       $consumer
-     * @param mixed        $token
+     * @param OAuthRequest  $request
+     * @param OAuthConsumer $consumer
+     * @param OAuthToken    $token
      *
      * @return string
      */
@@ -62,10 +64,10 @@ class OAuthSignatureMethod_HMAC_SHA1 extends OAuthSignatureMethod {
         $basestring = $request->get_signature_base_string();
         $request->basestring = $basestring;
 
-        $keyparts = array(
+        $keyparts = [
             $consumer->secret,
-            ($token) ? $token->secret : "",
-        );
+            ($token) ? $token->secret : ""
+        ];
 
         $keyparts = OAuthUtil::urlencode_rfc3986($keyparts);
         $key = implode('&', $keyparts);

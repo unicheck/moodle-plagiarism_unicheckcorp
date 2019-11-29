@@ -29,8 +29,6 @@ if (!defined('MOODLE_INTERNAL')) {
 
 global $CFG;
 
-require_once($CFG->dirroot . '/plagiarism/unicheck/classes/services/storage/unicheck_file_state.class.php');
-
 /**
  * Class plagiarism_unicheck_basic_testcase
  *

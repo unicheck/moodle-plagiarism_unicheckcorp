@@ -59,11 +59,12 @@ trait unicheck_translate {
      * @return string
      */
     private static function api_trans($error) {
+        global $CFG;
         static $translates;
 
         if (empty($translates)) {
             $lang = current_language();
-            $path = UNICHECK_PROJECT_PATH . "lang/$lang/api_translates.json";
+            $path = "{$CFG->dirroot}/plagiarism/unicheck/lang/{$lang}/api_translates.json";
             if (file_exists($path)) {
                 $translates = json_decode(file_get_contents($path));
             }

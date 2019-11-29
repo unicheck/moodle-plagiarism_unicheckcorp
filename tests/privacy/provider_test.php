@@ -111,6 +111,9 @@ class plagiarism_unicheck_privacy_provider_testcase extends provider_testcase {
 
     /**
      * _get_contexts_for_userid
+     *
+     * @throws dml_exception
+     * @throws coding_exception
      */
     public function test_get_contexts_for_userid() {
         $this->resetAfterTest();
@@ -135,6 +138,11 @@ class plagiarism_unicheck_privacy_provider_testcase extends provider_testcase {
 
     /**
      * test_export_plagiarism_user_data
+     *
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws file_exception
+     * @throws stored_file_creation_exception
      */
     public function test_export_plagiarism_user_data() {
         $this->resetAfterTest();
@@ -165,6 +173,9 @@ class plagiarism_unicheck_privacy_provider_testcase extends provider_testcase {
 
     /**
      * test_delete_plagiarism_for_context
+     *
+     * @throws coding_exception
+     * @throws dml_exception
      */
     public function test_delete_plagiarism_for_context() {
         $this->resetAfterTest();
@@ -191,6 +202,9 @@ class plagiarism_unicheck_privacy_provider_testcase extends provider_testcase {
 
     /**
      * test_delete_plagiarism_for_user
+     *
+     * @throws dml_exception
+     * @throws coding_exception
      */
     public function test_delete_plagiarism_for_user() {
         $this->resetAfterTest();
@@ -212,6 +226,9 @@ class plagiarism_unicheck_privacy_provider_testcase extends provider_testcase {
 
     /**
      * test_delete_plagiarism_for_users
+     *
+     * @throws coding_exception
+     * @throws dml_exception
      */
     public function test_delete_plagiarism_for_users() {
         $this->resetAfterTest();
@@ -249,6 +266,8 @@ class plagiarism_unicheck_privacy_provider_testcase extends provider_testcase {
      * @param null             $cm
      *
      * @return stdClass
+     * @throws coding_exception
+     * @throws dml_exception
      */
     protected function create_plagiarism_unicheck_file($student, stored_file $storedfile = null, $cm = null) {
         /** @var plagiarism_unicheck_generator $generator */

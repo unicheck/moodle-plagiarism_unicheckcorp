@@ -32,7 +32,8 @@ if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
-require_once(dirname(__FILE__) . '/../../locallib.php');
+global $CFG;
+require_once($CFG->dirroot . '/plagiarism/unicheck/lib.php');
 
 /**
  * Class archive_unpacked
@@ -72,6 +73,9 @@ class archive_files_unpacked extends abstract_file_event {
      * @return string
      */
     public function get_description() {
-        return "User archive '{$this->other['fileid']}' files unpacked in course module '{$this->contextinstanceid}'";
+        $fileid = s($this->other['fileid']);
+        $cmid = (int) $this->contextinstanceid;
+
+        return "Archive file with identifier '{$fileid}' unpacked for the course module with id '{$cmid}'";
     }
 }

@@ -36,8 +36,6 @@ define('UNICHECK_API_URL', 'https://corpapi.unicheck.com/api/v2/');
 define('UNICHECK_EU_API_URL', 'https://corpapi.eu.unicheck.com/api/v2/');
 define('UNICHECK_CALLBACK_URL', '/plagiarism/unicheck/callback.php');
 
-define('UNICHECK_PROJECT_PATH', dirname(__FILE__) . '/');
-
 define('UNICHECK_DEFAULT_FILES_AREA', 'assign_submission');
 define('UNICHECK_WORKSHOP_FILES_AREA', 'workshop_submissions');
 define('UNICHECK_FORUM_FILES_AREA', 'forum_posts');
@@ -54,11 +52,6 @@ define('UNICHECK_CHECK_TYPE_MY_LIBRARY', 'my_library');
 define('UNICHECK_CHECK_TYPE_WEB__LIBRARY', 'web_and_my_library');
 define('UNICHECK_CHECK_TYPE_EXTERNAL_DB', 'external_database');
 define('UNICHECK_CHECK_TYPE_WEB__MY_LIB__EXTERNAL_DB', 'web_and_my_lib_and_external_db');
-
-define('UNICHECK_WORKSHOP_SETUP_PHASE', 10);
-define('UNICHECK_WORKSHOP_SUBMISSION_PHASE', 20);
-define('UNICHECK_WORKSHOP_ASSESSMENT_PHASE', 30);
-define('UNICHECK_WORKSHOP_GRADING_PHASE', 40);
 
 define('UNICHECK_MODNAME_WORKSHOP', 'workshop');
 define('UNICHECK_MODNAME_FORUM', 'forum');
