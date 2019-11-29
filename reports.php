@@ -32,8 +32,8 @@ use plagiarism_unicheck\classes\services\storage\unicheck_file_metadata;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\unicheck_plagiarism_entity;
 
-require_once(dirname(dirname(__FILE__)) . '/../config.php');
-require_once(dirname(__FILE__) . '/lib.php');
+require(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/lib.php');
 
 global $PAGE, $CFG, $OUTPUT, $USER;
 
@@ -53,7 +53,7 @@ if ($cpf !== null) {
     $currenttab = 'unicheck_file_id_' . $current->id;
     $pageparams['cpf'] = $cpf;
 } else {
-    $currenttab = 'un_files_info';
+    $currenttab = 'unicheck-files_info';
 }
 
 $PAGE->set_pagelayout('report');
@@ -66,21 +66,21 @@ $tabs = [];
 $fileinfos = [];
 $canvieweditreport = capability::user_can(capability::VIEW_EDIT_REPORT, $cmid, $USER->id);
 foreach ($childs as $child) {
-
+    $childid = (int) $child->id;
+    $childfilename = s($child->filename);
     switch ($child->state) {
         case unicheck_file_state::CHECKED:
 
             $url = new \moodle_url('/plagiarism/unicheck/reports.php', [
                 'cmid' => $cmid,
                 'pf'   => $pf,
-                'cpf'  => $child->id,
+                'cpf'  => $childid,
             ]);
 
             if ($child->check_id !== null && $child->progress == 100) {
+                $tabs[] = new tabobject('unicheck_file_id_' . $childid, $url->out(), $childfilename, '', false);
 
-                $tabs[] = new tabobject('unicheck_file_id_' . $child->id, $url->out(), $child->filename, '', false);
-
-                $link = html_writer::link($url, $child->filename);
+                $link = html_writer::link($url, $childfilename);
                 $fileinfos[] = [
                     'filename' => html_writer::tag('div', $link, ['class' => 'edit-link']),
                     'status'   => $OUTPUT->image_icon('i/valid', plagiarism_unicheck::trans('reportready')) .
@@ -90,9 +90,9 @@ foreach ($childs as $child) {
             break;
         case unicheck_file_state::HAS_ERROR :
 
-            $erroresponse = plagiarism_unicheck::error_resp_handler($child->errorresponse);
+            $erroresponse = s(plagiarism_unicheck::error_resp_handler($child->errorresponse));
             $fileinfos[] = [
-                'filename' => $child->filename,
+                'filename' => $childfilename,
                 'status'   => $OUTPUT->image_icon('i/invalid', $erroresponse) . $erroresponse,
             ];
             break;
@@ -105,7 +105,7 @@ $generalinfourl = new \moodle_url('/plagiarism/unicheck/reports.php', [
 ]);
 
 array_unshift($tabs,
-    new tabobject('un_files_info', $generalinfourl->out(), plagiarism_unicheck::trans('generalinfo'), '', false));
+    new tabobject('unicheck-files_info', $generalinfourl->out(), plagiarism_unicheck::trans('generalinfo'), '', false));
 
 print_tabs([$tabs], $currenttab);
 
@@ -118,7 +118,7 @@ if ($cpf !== null) {
         $link = $reporturl->get_edit_url($cmid);
     }
 
-    echo '<iframe src="' . $link . '" frameborder="0" id="_un_report_frame" style="width: 100%; height: 750px;"></iframe>';
+    echo '<iframe src="' . $link . '" frameborder="0" id="_unicheck_report_frame" style="width: 100%; height: 750px;"></iframe>';
 } else {
     $table = new html_table();
     $table->head = ['Filename', 'Status'];
@@ -148,7 +148,7 @@ if ($cpf !== null) {
 
             if ($archivefilescount > $extractedfilescount) {
                 $params = new stdClass();
-                $params->filename = $fileobj->filename;
+                $params->filename = s($fileobj->filename);
                 $params->max_supported_count = $extractedfilescount;
 
                 echo html_writer::span(plagiarism_unicheck::trans('archive:limitreachedfulldescription', $params), 'text-danger');

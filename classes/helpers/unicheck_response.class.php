@@ -59,6 +59,7 @@ class unicheck_response {
      *
      * @param \stdClass $response
      * @param \stdClass $plagiarismfile
+     *
      * @return bool
      */
     public static function handle_check_response(\stdClass $response, \stdClass $plagiarismfile) {
@@ -86,6 +87,7 @@ class unicheck_response {
      *
      * @param \stdClass $response
      * @param \stdClass $plagiarismfile
+     *
      * @return bool
      */
     public static function process_after_upload(\stdClass $response, \stdClass $plagiarismfile) {
@@ -107,6 +109,7 @@ class unicheck_response {
      * @param array     $errors
      * @param \stdClass $plagiarismfile
      * @param string    $resourcetype
+     *
      * @return bool
      */
     public static function store_errors(array $errors, \stdClass $plagiarismfile, $resourcetype) {
@@ -122,7 +125,9 @@ class unicheck_response {
         self::trigger_failed_event($plagiarismfile, $resourcetype);
 
         if ($plagiarismfile->parent_id) {
-            $hasgoodchild = $DB->count_records_select(UNICHECK_FILES_TABLE, "parent_id = ? AND state not in (?)",
+            $hasgoodchild = $DB->count_records_select(
+                UNICHECK_FILES_TABLE,
+                "parent_id = ? AND state != ?",
                 [$plagiarismfile->parent_id, unicheck_file_state::HAS_ERROR]
             );
 

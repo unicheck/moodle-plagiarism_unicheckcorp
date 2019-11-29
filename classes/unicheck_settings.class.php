@@ -26,6 +26,7 @@
 
 namespace plagiarism_unicheck\classes;
 
+use plagiarism_unicheck\classes\entities\unicheck_archive;
 use plagiarism_unicheck\classes\permissions\capability;
 use plagiarism_unicheck\classes\services\api\api_regions;
 
@@ -304,5 +305,38 @@ class unicheck_settings {
      */
     public static function get_setting_type($setting) {
         return isset(self::$settingstypemap[$setting]) ? self::$settingstypemap[$setting] : PARAM_ALPHAEXT;
+    }
+
+    /**
+     * get_sanitized_value
+     *
+     * @param string $settingname
+     * @param mixed  $settingvalue
+     * @param null   $defaultvalue
+     *
+     * @return int|null
+     */
+    public static function get_sanitized_value($settingname, $settingvalue, $defaultvalue = null) {
+        switch ($settingname) {
+            case self::SENSITIVITY_SETTING_NAME;
+                if (!is_numeric($settingvalue) || $settingvalue < 0 || $settingvalue > 100) {
+                    if (!is_null($defaultvalue)) {
+                        return $defaultvalue;
+                    }
+
+                    $settingvalue = 0;
+                }
+                break;
+            case self::MAX_SUPPORTED_ARCHIVE_FILES_COUNT:
+                if (!is_numeric($settingvalue) || $settingvalue < 0 || $settingvalue > 100) {
+                    if (!is_null($defaultvalue)) {
+                        return $defaultvalue;
+                    }
+
+                    $settingvalue = unicheck_archive::DEFAULT_SUPPORTED_FILES_COUNT;;
+                }
+        }
+
+        return s($settingvalue);
     }
 }

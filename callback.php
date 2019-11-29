@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * ajax.php
+ * callback.php
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
@@ -25,40 +25,50 @@
  */
 
 define('AJAX_SCRIPT', true);
+define('NO_MOODLE_COOKIES', true);
 
-require_once(dirname(__FILE__) . '/../../config.php');
-require_once(dirname(__FILE__) . '/locallib.php');
+require(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/locallib.php');
 
 use plagiarism_unicheck\classes\unicheck_callback;
 use plagiarism_unicheck\classes\unicheck_core;
 use plagiarism_unicheck\classes\unicheck_settings;
 use plagiarism_unicheck\event\callback_accepted;
+use plagiarism_unicheck\library\OAuth\OAuthBody;
 
-$token = optional_param('token', '', PARAM_RAW);
-if (!$token) {
-    require_login();
-    require_sesskey();
-}
-
-$body = unicheck_core::parse_json(file_get_contents('php://input'));
-if (!is_object($body)) {
-    http_response_code(400);
-    echo 'Invalid callback body';
-
-    die;
-}
-
-$callback = new unicheck_callback();
 try {
+    $token = required_param('token', PARAM_ALPHANUMEXT);
+    if (!$token) {
+        header('HTTP/1.1 403 Token is absent');
+        die;
+    }
+
+    $rawbody = file_get_contents('php://input');
+    $oauthconsumerkey = unicheck_settings::get_settings('client_id');
+    $oauthconsumersecret = unicheck_settings::get_settings('api_secret');
+
+    $verifiedrawbody = OAuthBody::handle_oauth_body_post($oauthconsumerkey, $oauthconsumersecret, $rawbody);
+
+    $body = unicheck_core::parse_json($verifiedrawbody);
+    if (!is_object($body)) {
+        http_response_code(400);
+        echo 'Invalid callback body';
+
+        die;
+    }
+
+    $callback = new unicheck_callback();
+
     $isapiloggingenable = unicheck_settings::get_settings('enable_api_logging');
     if ($isapiloggingenable) {
         callback_accepted::create_log_message($body, $token)->trigger();
     }
 
     $callback->handle($body, $token);
-} catch (\Exception $exception) {
+
+    echo 'OK';
+} catch (Exception $exception) {
     http_response_code(400);
+
     throw $exception;
 }
-
-die;

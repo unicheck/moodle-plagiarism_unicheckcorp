@@ -45,9 +45,13 @@ class unicheck_exception extends \Exception {
      */
     const ARCHIVE_IS_EMPTY = 'Archive is empty or contains document(s) with no text';
     /**
-     * ARCHIVE_CANT_BE_OPEN
+     * ZIP_ARCHIVE_CANT_BE_OPEN
      */
-    const ARCHIVE_CANT_BE_OPEN = 'Can not open archive';
+    const ZIP_ARCHIVE_CANT_BE_OPEN = 'Can not open zip archive';
+    /**
+     * RAR_ARCHIVE_CANT_BE_OPEN
+     */
+    const RAR_ARCHIVE_CANT_BE_OPEN = 'Can not open rar archive';
     /**
      * UNSUPPORTED_MIMETYPE
      */

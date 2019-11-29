@@ -43,7 +43,6 @@ if (!empty($fileobj->check_id)) {
     return '';
 }
 
-$htmlparts = [];
 $modname = $PAGE->cm->modname;
 
 if (!in_array($modname, [UNICHECK_MODNAME_ASSIGN])) {
@@ -62,37 +61,24 @@ if (!empty($fileobj->id)) {
 }
 
 $submissiontype = 'file';
-$content = '';
-
 if (isset($linkarray['content'])) {
     $submissiontype = 'onlinetext';
-    $content = $linkarray['content'];
 }
 
 $params['submissiontype'] = $submissiontype;
+$startcheckurl = new moodle_url('/plagiarism/unicheck/check.php', $params);
+$startchecktitle = plagiarism_unicheck::trans('check_file');
 
-$htmlparts[] = '<div class="un_detect_result">';
-$htmlparts[] = sprintf(
-    '<a href="%s" class="un_link" target="_blank">' .
-    '<img width="69" src="%s" alt="%s">' .
-    '</a>',
-    new moodle_url(UNICHECK_DOMAIN),
-    $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME),
-    plagiarism_unicheck::trans('pluginname')
-);
+$unicheckurl = new moodle_url(UNICHECK_DOMAIN);
+$unichecklogourl = $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME);
+$pluginname = plagiarism_unicheck::trans('pluginname');
 
-$url = new moodle_url('/plagiarism/unicheck/check.php', $params);
-$htmlparts[] = sprintf(
-    '<div class="un-report">' .
-    '<a href="%1$s" class="un-start-scan-link" title="%2$s">' .
-    '<span class="un_start_scan_text">%2$s</span>' .
-    '</a>' .
-    '</div>',
-    $url,
-    plagiarism_unicheck::trans('check_file'),
-    $content
-);
+$context = [
+    'unicheckurl'     => (string) $unicheckurl,
+    'unichecklogourl' => (string) $unichecklogourl,
+    'pluginname'      => s($pluginname),
+    'startcheckurl'   => (string) $startcheckurl,
+    'startchecktitle' => s($startchecktitle)
+];
 
-$htmlparts[] = '</div>';
-
-return implode('', $htmlparts);
+return $OUTPUT->render_from_template('plagiarism_unicheck/can_check', $context);

@@ -24,17 +24,17 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use plagiarism_unicheck\classes\entities\providers\config_provider;
 use plagiarism_unicheck\classes\forms\module_form;
 use plagiarism_unicheck\classes\unicheck_notification;
 use plagiarism_unicheck\classes\unicheck_settings;
 
-require_once(dirname(dirname(__FILE__)) . '/../config.php');
-require_once(dirname(__FILE__) . '/lib.php');
+require(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/lib.php');
 
 global $CFG, $DB, $OUTPUT;
 
 require_once($CFG->libdir . '/adminlib.php');
-require_once($CFG->libdir . '/plagiarismlib.php');
 
 require_login();
 admin_externalpage_setup('plagiarismunicheck');
@@ -42,46 +42,58 @@ admin_externalpage_setup('plagiarismunicheck');
 $context = context_system::instance();
 
 $mform = new module_form(null);
-// The cmid(0) is the default list.
-$defaults = $DB->get_records_menu(UNICHECK_CONFIG_TABLE, ['cm' => 0], '', 'name, value');
-if (!empty($defaults)) {
-    $mform->set_data($defaults);
+
+$defaultconfigs = config_provider::get_configs(0);
+$formdata = [];
+if (!empty($defaultconfigs)) {
+    $formdata = [];
+    foreach ($defaultconfigs as $configname => $defaultconfig) {
+        $formdata[$configname] = s($defaultconfig['value']);
+    }
+
+    $mform->set_data($formdata);
 }
+
 echo $OUTPUT->header();
 $currenttab = 'unicheckdefaults';
-require_once(dirname(__FILE__) . '/views/view_tabs.php');
+require_once(__DIR__ . '/views/view_tabs.php');
 
 if (($data = $mform->get_data()) && confirm_sesskey()) {
     $plagiarismelements = plagiarism_plugin_unicheck::config_options();
+    $updates = [];
+    $inserts = [];
     foreach ($plagiarismelements as $element) {
-        if (isset($data->{$element})) {
-            if ($element == unicheck_settings::SENSITIVITY_SETTING_NAME
-                && (!is_numeric($data->{$element})
-                    || $data->{$element} < 0
-                    || $data->{$element} > 100)) {
-                if (isset($defaults[$element])) {
-                    continue;
-                }
-
-                $data->{$element} = 0;
-            }
-
-            $newelement = new Stdclass();
-            $newelement->cm = 0;
-            $newelement->name = $element;
-            $newelement->value = $data->{$element};
-
-            if (isset($defaults[$element])) {
-                $newelement->id = $DB->get_field(UNICHECK_CONFIG_TABLE, 'id', (['cm' => 0, 'name' => $element]));
-                $DB->update_record(UNICHECK_CONFIG_TABLE, $newelement);
-            } else {
-                $DB->insert_record(UNICHECK_CONFIG_TABLE, $newelement);
-            }
+        if (!isset($data->{$element})) {
+            continue;
         }
+
+        $defaultconfigvalue = isset($defaultconfigs[$element]) ? $defaultconfigs[$element]['value'] : null;
+        $newconfigvalue = unicheck_settings::get_sanitized_value($element, $data->{$element}, $defaultconfigvalue);
+
+        $configrow = new Stdclass();
+        $configrow->cm = 0;
+        $configrow->name = $element;
+        $configrow->value = $newconfigvalue;
+
+        if (isset($defaultconfigs[$element])) {
+            $configrow->id = $defaultconfigs[$element]['id'];
+            $updates[] = $configrow;
+        } else {
+            $inserts[] = $configrow;
+        }
+    }
+
+    if (!empty($updates)) {
+        config_provider::update_configs($updates);
+    }
+
+    if (!empty($inserts)) {
+        config_provider::insert_configs($inserts);
     }
 
     unicheck_notification::success('defaultupdated', true);
 }
+
 echo $OUTPUT->box(plagiarism_unicheck::trans('defaultsdesc'));
 
 $mform->display();

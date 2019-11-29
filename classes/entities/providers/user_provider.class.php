@@ -29,6 +29,10 @@ if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
+global $CFG;
+
+require_once("$CFG->dirroot/mod/assign/locallib.php");
+
 /**
  * Class user_provider
  *
@@ -78,5 +82,25 @@ class user_provider {
         global $DB;
 
         return $DB->insert_record(UNICHECK_USER_DATA_TABLE, $user);
+    }
+
+    /**
+     * get_users_by_group
+     *
+     * @param int $groupid
+     *
+     * @return array
+     */
+    public static function get_users_by_group($groupid) {
+        global $DB;
+
+        $groupmembers = $DB->get_fieldset_select(
+            'groups_members',
+            'userid',
+            'groupid = :groupid',
+            ['groupid' => $groupid]
+        );
+
+        return $groupmembers;
     }
 }

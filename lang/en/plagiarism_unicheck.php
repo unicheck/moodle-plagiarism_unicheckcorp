@@ -128,7 +128,7 @@ $string['web_and_my_library'] = 'Internet + Library';
 $string['external_database'] = 'External database';
 $string['web_and_my_lib_and_external_db'] = 'Internet + Library + External database';
 $string['reportready'] = 'Report ready';
-$string['ui:reportlink'] = '<span class="only-xxl-width">Open&nbsp;</span>Report';
+$string['ui:reportlink'] = '<span class="unicheck-only-xxl-width">Open&nbsp;</span>Report';
 $string['generalinfo'] = 'General information';
 $string['similarity_sensitivity'] = 'Exclude sources with a match less than (%)';
 $string['similarity_sensitivity_help'] = 'Sources which have less than specified similarity % will not be included in the total similarity score.';
@@ -144,10 +144,12 @@ $string['no_index_files'] = 'Add submissions to Institutional Library';
 $string['no_index_files_help'] = 'Student submissions are added to private Institutional Library only when this option is enabled. New student submissions are compared with works stored in this Institutional Library, in addition to Internet. This library consists only from papers submitted by students of this institution and is not shared with other institutions.';
 $string['min_30_words'] = 'At least 30 words are required';
 $string['max_100000_words'] = 'File(s) should have no more than 100 000 words and be not larger than 70MB';
+$string['max_125000_words'] = 'File(s) should have no more than 125 000 words and be not larger than 70MB';
 $string['max_supported_archive_files_count'] = 'Maximum number of files to be checked in archive';
 $string['max_supported_archive_files_count_help'] = 'Specify maximum number of files to be reviewed by Unicheck. System will pick only file types supported by Unicheck and will process files one by one. Supported formats: ZIP, RAR.';
 $string['uploading'] = 'Uploading';
-$string['ui:possiblecheating'] = 'Possible Cheating';
+$string['ui:cheatingtitle'] = 'Attention';
+$string['ui:cheatingtooltip'] = 'Potential cheating detected. View the Attention tab.';
 // Capabilities.
 $string['unicheck:enable'] = 'Allow to enable/disable Unicheck inside an activity';
 $string['unicheck:resetfile'] = 'Allow to resubmit the file to Unicheck after an error occurred';
@@ -237,6 +239,7 @@ $string['privacy:export:plagiarism_unicheck:plagiarismpath'] = 'Plagiarism detec
 $string['privacy:export:plagiarism_unicheck:reportfiledescription'] = 'Unicheck similarity detection result for submitted file with pathnamehash {$a}';
 $string['privacy:export:plagiarism_unicheck:reportcontentdescription'] = 'Unicheck similarity detection result for online text';
 // Debugging.
+$string['cachedef_debugging'] = 'Plugin debugging test results';
 $string['unicheckdebug'] = 'Debugging';
 $string['debugging:statustable:header'] = 'Unicheck status checks';
 $string['debugging:statustable:checkunicheck_host'] = 'Test Unicheck Host availability';

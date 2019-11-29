@@ -30,12 +30,9 @@ if (!defined('MOODLE_INTERNAL')) {
 global $CFG;
 
 require_once($CFG->dirroot . '/plagiarism/unicheck/tests/advanced_test.php');
-require_once($CFG->dirroot . '/plagiarism/unicheck/classes/task/unicheck_abstract_task.class.php');
-require_once($CFG->dirroot . '/plagiarism/unicheck/classes/task/unicheck_upload_task.class.php');
-require_once($CFG->dirroot . '/plagiarism/unicheck/classes/services/storage/unicheck_file_state.class.php');
-require_once($CFG->dirroot . '/plagiarism/unicheck/classes/entities/providers/unicheck_file_provider.class.php');
 
 use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
+use plagiarism_unicheck\classes\exception\unicheck_exception;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\task\unicheck_upload_task;
 
@@ -56,8 +53,11 @@ class plagiarism_unicheck_upload_task_testcase extends plagiarism_unicheck_advan
      * @param string $filepath
      *
      * @dataProvider filepath_provider
+     * @throws coding_exception
+     * @throws unicheck_exception
      */
     public function test_execute($filepath) {
+        /** @var plagiarism_unicheck_generator $generator */
         $generator = $this->getDataGenerator()->get_plugin_generator('plagiarism_unicheck');
         $ucore = $generator->create_ucore($this->assign->get_course_module()->id, $this->students[0]->id);
         /** @var stored_file $file */
@@ -91,7 +91,7 @@ class plagiarism_unicheck_upload_task_testcase extends plagiarism_unicheck_advan
         $this->assertEquals('UPLOADING', $plagiarismfile->state);
 
         if ($plagiarismfile->type == 'archive') {
-            $childfiles = unicheck_file_provider::get_file_list_by_parent_id($plagiarismfile->id);
+            $childfiles = unicheck_file_provider::get_files_by_parent_id($plagiarismfile->id);
             $this->assertEquals(0, $plagiarismfile->attempt);
             foreach ($childfiles as $childfile) {
                 $this->assertEquals($ucore->cmid, $childfile->cm);

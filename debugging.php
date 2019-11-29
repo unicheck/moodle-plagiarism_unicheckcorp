@@ -34,15 +34,13 @@ use plagiarism_unicheck\classes\unicheck_notification;
 use plagiarism_unicheck\classes\unicheck_settings;
 use plagiarism_unicheck\classes\user\preferences;
 
-require_once(dirname(__FILE__) . '/../../config.php');
-require_once(dirname(__FILE__) . '/lib.php');
-require_once(dirname(__FILE__) . '/constants.php');
+require(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/lib.php');
 
-global $CFG, $DB, $OUTPUT;
+global $CFG, $OUTPUT;
 
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/tablelib.php');
-require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->libdir . '/datalib.php');
 
 require_login();
@@ -54,7 +52,7 @@ $urlwithquery = clone $currenturl;
 $context = context_system::instance();
 
 $id = optional_param('id', 0, PARAM_INT);
-$action = optional_param('action', 'tableview', PARAM_TEXT);
+$action = optional_param('action', 'tableview', PARAM_ALPHA);
 $downloadformat = optional_param('download', '', PARAM_ALPHA);
 
 $exportfilename = 'DebugOutput';
@@ -119,7 +117,7 @@ if (!$filestable->is_downloading()) {
     $PAGE->requires->js_init_call('M.plagiarismUnicheck.init_debugging_table', [], true, $jsmodule);
 
     $currenttab = 'unicheckdebug';
-    require_once(dirname(__FILE__) . '/views/view_tabs.php');
+    require_once(__DIR__ . '/views/view_tabs.php');
 
     // Unicheck status table.
     echo $OUTPUT->heading(plagiarism_unicheck::trans('debugging:statustable:header'));

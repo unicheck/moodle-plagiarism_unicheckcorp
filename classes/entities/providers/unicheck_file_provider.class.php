@@ -27,10 +27,12 @@ namespace plagiarism_unicheck\classes\entities\providers;
 
 use plagiarism_unicheck\classes\helpers\unicheck_check_helper;
 use plagiarism_unicheck\classes\services\storage\file_error_code;
+use plagiarism_unicheck\classes\services\storage\unicheck_file_metadata;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\unicheck_api;
 use plagiarism_unicheck\classes\unicheck_core;
 use plagiarism_unicheck\classes\unicheck_plagiarism_entity;
+use stdClass;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -113,6 +115,38 @@ class unicheck_file_provider {
     }
 
     /**
+     * Find plagiarism files by ids for context
+     *
+     * @param array      $ids
+     * @param int        $cmid
+     * @param array|null $userids
+     *
+     * @return array
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public static function find_by_ids_for_context(array $ids, $cmid, array $userids = null) {
+        global $DB;
+
+        list($idssql, $idparams) = $DB->get_in_or_equal($ids);
+        $params = $idparams;
+
+        $sql = "id $idssql
+                AND cm = ?";
+
+        $params[] = $cmid;
+
+        if ($userids) {
+            list($useridssql, $useridparams) = $DB->get_in_or_equal($userids);
+
+            $sql .= " AND userid $useridssql";
+            $params = array_merge($params, $useridparams);
+        }
+
+        return $DB->get_records_select(UNICHECK_FILES_TABLE, $sql, $params);
+    }
+
+    /**
      * Can start check
      *
      * @param \stdClass $plagiarismfile
@@ -166,16 +200,37 @@ class unicheck_file_provider {
     }
 
     /**
-     * Get file list by parent id
+     * Get files list by parent id
      *
      * @param int $parentid
      *
      * @return array
      */
-    public static function get_file_list_by_parent_id($parentid) {
+    public static function get_files_by_parent_id($parentid) {
         global $DB;
 
         return $DB->get_records_list(UNICHECK_FILES_TABLE, 'parent_id', [$parentid]);
+    }
+
+    /**
+     * Get files list by parent id and states list
+     *
+     * @param int   $parentid
+     *
+     * @param array $states
+     *
+     * @param bool  $statesequel IN or NOT IN states
+     *
+     * @return array
+     */
+    public static function get_files_by_parent_id_in_states($parentid, array $states, $statesequel = true) {
+        global $DB;
+
+        $params = [$parentid];
+        list($instatessql, $instatesparams) = $DB->get_in_or_equal($states, SQL_PARAMS_QM, 'param', $statesequel);
+        $params = array_merge($params, $instatesparams);
+
+        return $DB->get_records_select(UNICHECK_FILES_TABLE, "parent_id = ? AND state {$instatessql}", $params);
     }
 
     /**
@@ -195,6 +250,60 @@ class unicheck_file_provider {
     }
 
     /**
+     * set_cheating_info
+     *
+     * @param stdClass $plagiarismfile
+     * @param array    $cheating
+     *
+     * @return bool
+     */
+    public static function set_cheating_info(stdClass $plagiarismfile, array $cheating) {
+        $cheatinginfo = [];
+        $hascheating = false;
+        if (isset($cheating['char_replacement_count']) && $cheating['char_replacement_count']) {
+            $hascheating = true;
+            $cheatinginfo[unicheck_file_metadata::CHEATING_CHAR_REPLACEMENTS_COUNT] = (int) $cheating['char_replacement_count'];
+        }
+
+        if (isset($cheating['char_replacement_words_count']) && $cheating['char_replacement_words_count']) {
+            $cheatinginfo[unicheck_file_metadata::CHEATING_CHAR_REPLACEMENTS_WORDS_COUNT]
+                = (int) $cheating['char_replacement_words_count'];
+        }
+
+        if (isset($cheating['total_pages_count']) && $cheating['total_pages_count']) {
+            $hascheating = true;
+            $cheatingpages = (int) $cheating['total_pages_count'];
+            $cheatinginfo[unicheck_file_metadata::CHEATING_TOTAL_PAGES_COUNT] = $cheatingpages;
+        }
+
+        if (isset($cheating['suspicious_pages_count']) && $cheating['suspicious_pages_count']) {
+            $cheatinginfo[unicheck_file_metadata::CHEATING_SUSPICIOUS_PAGES_COUNT] = (int) $cheating['suspicious_pages_count'];
+        }
+
+        if (isset($cheating['is_similarity_affected']) && $cheating['is_similarity_affected']) {
+            $cheatinginfo[unicheck_file_metadata::CHEATING_IS_SIMILARITY_AFFECTED] = (bool) $cheating['is_similarity_affected'];
+        }
+
+        if ($hascheating) {
+            $cheatinginfo[unicheck_file_metadata::CHEATING_EXIST] = $hascheating;
+        }
+
+        if (empty($cheatinginfo)) {
+            return true;
+        }
+
+        $result = self::add_metadata($plagiarismfile->id, $cheatinginfo);
+
+        if ($plagiarismfile->parent_id && $hascheating) {
+            self::add_metadata($plagiarismfile->parent_id, [
+                unicheck_file_metadata::CHEATING_EXIST => $hascheating
+            ]);
+        }
+
+        return $result;
+    }
+
+    /**
      * Get all frozen documents fron database
      *
      * @return array
@@ -202,16 +311,17 @@ class unicheck_file_provider {
     public static function get_frozen_files() {
         global $DB;
 
-        $querywhere = "(state <> '"
-            . unicheck_file_state::CHECKED
-            . "'AND state <> '"
-            . unicheck_file_state::HAS_ERROR
-            . "') AND UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 DAY)) > timesubmitted "
-            . "AND external_file_uuid IS NOT NULL";
+        $querywhere = "(state <> :checked_state AND state <> :error_state)
+                        AND UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 DAY)) > timesubmitted
+                        AND external_file_uuid IS NOT NULL";
 
         return $DB->get_records_select(
             UNICHECK_FILES_TABLE,
-            $querywhere
+            $querywhere,
+            [
+                'checked_state' => unicheck_file_state::CHECKED,
+                'error_state'   => unicheck_file_state::HAS_ERROR
+            ]
         );
     }
 
@@ -223,19 +333,18 @@ class unicheck_file_provider {
     public static function get_frozen_archive() {
         global $DB;
 
-        $querywhere = "(state <> '"
-            . unicheck_file_state::CHECKED
-            . "'AND state <> '"
-            . unicheck_file_state::HAS_ERROR
-            . "'
-            ) AND UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 DAY )) > timesubmitted "
-            . "AND type = '"
-            . unicheck_plagiarism_entity::TYPE_ARCHIVE
-            . "'";
+        $querywhere = "(state <> :checked_state AND state <> :error_state)
+                        AND UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 DAY )) > timesubmitted
+                        AND type = :archive_type";
 
         return $DB->get_records_select(
             UNICHECK_FILES_TABLE,
-            $querywhere
+            $querywhere,
+            [
+                'checked_state' => unicheck_file_state::CHECKED,
+                'error_state'   => unicheck_file_state::HAS_ERROR,
+                'archive_type'  => unicheck_plagiarism_entity::TYPE_ARCHIVE
+            ]
         );
     }
 
@@ -265,21 +374,12 @@ class unicheck_file_provider {
         if (empty($ids)) {
             return;
         }
-        $allrecordssql = implode(',', $ids);
-        $DB->delete_records_select(UNICHECK_FILES_TABLE, "id IN ($allrecordssql) OR parent_id IN ($allrecordssql)");
-    }
 
-    /**
-     * Get min value from the field
-     *
-     * @param string $field
-     *
-     * @return mixed|null
-     */
-    public static function get_min_value($field) {
-        global $DB;
+        list($select, $params) = $DB->get_in_or_equal($ids);
+        // We are going to use select twice so double the params.
+        $params = array_merge($params, $params);
 
-        return $DB->get_field_sql("SELECT MIN({$field}) FROM {plagiarism_unicheck_files}");
+        $DB->delete_records_select(UNICHECK_FILES_TABLE, "id {$select} OR parent_id {$select}", $params);
     }
 
     /**

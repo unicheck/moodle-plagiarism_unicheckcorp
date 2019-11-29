@@ -26,6 +26,7 @@
 namespace plagiarism_unicheck\classes\observers;
 
 use core\event\base;
+use plagiarism_unicheck;
 use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\entities\unicheck_archive;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
@@ -47,17 +48,13 @@ if (!defined('MOODLE_INTERNAL')) {
  */
 class submission_observer extends abstract_observer {
     /**
-     * DRAFT_STATUS
-     */
-    const DRAFT_STATUS = 'draft';
-
-    /**
      * handle_event
      *
      * @param unicheck_core $core
      * @param base          $event
      *
      * @return bool
+     * @throws \coding_exception
      */
     public function status_updated(unicheck_core $core, base $event) {
         if (!isset($event->other['newstatus'])) {
@@ -70,7 +67,7 @@ class submission_observer extends abstract_observer {
             $core->userid = $event->relateduserid;
         }
 
-        if ($newstatus == self::DRAFT_STATUS) {
+        if ($newstatus == ASSIGN_SUBMISSION_STATUS_DRAFT) {
             $unfiles = \plagiarism_unicheck::get_area_files($event->contextid, UNICHECK_DEFAULT_FILES_AREA, $event->objectid);
             $assignfiles = unicheck_assign::get_area_files($event->contextid, $event->objectid);
 
@@ -104,23 +101,27 @@ class submission_observer extends abstract_observer {
         $assign = unicheck_assign::get($submission->assignment);
 
         /* Only for team submission */
-        if ($submission->status == self::DRAFT_STATUS || !(bool)$assign->teamsubmission) {
+        if ($submission->status == ASSIGN_SUBMISSION_STATUS_DRAFT || !(bool) $assign->teamsubmission) {
             return;
         }
 
         /* All users of group must confirm submission */
-        if ((bool)$assign->requireallteammemberssubmit && !$this->all_users_confirm_submition($assign)) {
+        if ((bool) $assign->requireallteammemberssubmit && !$this->all_users_confirm_submition($assign)) {
             return;
         }
 
         $core->enable_teamsubmission();
 
-        $assignfiles = unicheck_assign::get_area_files($event->contextid);
+        $ufiles = plagiarism_unicheck::get_area_files($event->contextid, UNICHECK_DEFAULT_FILES_AREA, $submission->id);
+        $assignfiles = unicheck_assign::get_area_files($event->contextid, $submission->id);
+
+        /** @var \stored_file[] $assignfiles */
+        $assignfiles = array_merge($ufiles, $assignfiles);
         foreach ($assignfiles as $assignfile) {
             $plagiarismentity = $core->get_plagiarism_entity($assignfile);
             $internalfile = $plagiarismentity->get_internal_file();
 
-            if ($internalfile->state == unicheck_file_state::CHECKED || $internalfile->check_id) {
+            if ($internalfile->state != unicheck_file_state::CREATED) {
                 continue;
             }
 
@@ -141,28 +142,5 @@ class submission_observer extends abstract_observer {
         }
 
         $this->after_handle_event($core);
-    }
-
-    /**
-     * all_users_confirm_submition
-     *
-     * @param \stdClass $assign
-     * @return bool
-     */
-    private function all_users_confirm_submition($assign) {
-        global $USER;
-
-        list($course, $cm) = get_course_and_cm_from_instance($assign, 'assign');
-
-        $assign = new \assign(\context_module::instance($cm->id), $cm, $course);
-
-        $submgroup = $assign->get_submission_group($USER->id);
-        if (!$submgroup) {
-            return false;
-        }
-
-        $notsubmitted = $assign->get_submission_group_members_who_have_not_submitted($submgroup->id, true);
-
-        return count($notsubmitted) == 0;
     }
 }
