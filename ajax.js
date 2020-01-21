@@ -108,7 +108,7 @@ M.plagiarismUnicheck.init = function(Y, contextid) {
  * @copyright UKU Group, LTD, https://www.unicheck.com
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-/** global: M,Y */
+/** global: M */
 /**
  * @param {Object} Y YUI
  */
