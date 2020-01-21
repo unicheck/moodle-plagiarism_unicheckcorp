@@ -69,7 +69,7 @@ script:
   - moodle-plugin-ci validate
   - moodle-plugin-ci savepoints
 #  - moodle-plugin-ci mustache
-  - moodle-plugin-ci grunt || [ "$MOODLE_BRANCH" = 'MOODLE_38_STABLE' ]
+  - moodle-plugin-ci grunt || [ "$MOODLE_BRANCH" != 'MOODLE_38_STABLE' ]
   - moodle-plugin-ci phpdoc
   - moodle-plugin-ci phpunit
   - moodle-plugin-ci behat

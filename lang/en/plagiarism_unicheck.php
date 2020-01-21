@@ -42,6 +42,7 @@ $string['api_region'] = 'Unicheck API region';
 $string['api_region_help'] = 'The region where client data is stored and processed. Ask your Unicheck account manager which region is used for your account.';
 $string['apiregion:us-east-1'] = 'United States';
 $string['apiregion:eu-central-1'] = 'Europe';
+$string['apiregion:ap-southeast-2'] = 'Australia';
 $string['enable_plugin'] = 'Enable Unicheck Plagiarism Service';
 $string['enable_plugin_help'] = 'Check this box to enable Unicheck Plagiarism Service in this Moodle instance.';
 $string['use_assign_desc_param'] = 'To unlock Unicheck settings';
