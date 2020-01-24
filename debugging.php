@@ -114,7 +114,7 @@ if (!$filestable->is_downloading()) {
         'plagiarism_unicheck'
     );
 
-    $PAGE->requires->js_init_call('M.plagiarismUnicheck.init_debugging_table', [], true, $jsmodule);
+    $PAGE->requires->js_init_call('M.plagiarismUnicheck.initDebuggingTable', [], true, $jsmodule);
 
     $currenttab = 'unicheckdebug';
     require_once(__DIR__ . '/views/view_tabs.php');

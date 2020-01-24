@@ -109,7 +109,10 @@ M.plagiarismUnicheck.init = function(Y, contextid) {
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 /** global: M */
-M.plagiarismUnicheck.init_debugging_table = function(Y) {
+/**
+ * @param {Object} Y YUI
+ */
+M.plagiarismUnicheck.initDebuggingTable = function(Y) {
     Y.use('node', function(Y) {
         var checkboxes = Y.all('td.c0 input');
         checkboxes.each(function(node) {
@@ -156,7 +159,6 @@ M.plagiarismUnicheck.init_debugging_table = function(Y) {
                 }
             });
         }
-
         var batchform = Y.one('form.debuggingbatchoperationsform');
         if (batchform) {
             batchform.on('submit', function(e) {
@@ -171,6 +173,7 @@ M.plagiarismUnicheck.init_debugging_table = function(Y) {
                 var operation = Y.one('#id_operation');
                 var usersinput = Y.one('input.selectedfiles');
                 usersinput.set('value', selectedfiles.join(','));
+                /* eslint-disable no-alert, no-confirm */
                 if (selectedfiles.length === 0) {
                     alert(M.util.get_string('debugging:batchoperations:nofilesselected', 'plagiarism_unicheck'));
                     e.preventDefault();
