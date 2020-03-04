@@ -1,5 +1,7 @@
 language: php
 
+dist: trusty
+
 # Behat no longer passes when false.
 sudo: true
 
