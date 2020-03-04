@@ -32,14 +32,15 @@ require_once($CFG->dirroot . '/plagiarism/unicheck/lib.php');
 
 use core\event\base;
 use plagiarism_unicheck\classes\observers\assessable_observer;
+use plagiarism_unicheck\classes\observers\course_observer;
 use plagiarism_unicheck\classes\observers\event_validator;
 use plagiarism_unicheck\classes\observers\file_observer;
 use plagiarism_unicheck\classes\observers\online_text_observer;
 use plagiarism_unicheck\classes\observers\submission_observer;
+use plagiarism_unicheck\classes\observers\user_observer;
 use plagiarism_unicheck\classes\observers\workshop_observer;
 use plagiarism_unicheck\classes\services\storage\pluginfile_url;
 use plagiarism_unicheck\classes\unicheck_core;
-use plagiarism_unicheck\classes\observers\user_observer;
 
 /**
  * Class plagiarism_unicheck_observer
@@ -186,9 +187,20 @@ class plagiarism_unicheck_observer {
     }
 
     /**
+     * core_event_course_module_viewed
+     *
+     * @param base $event
+     */
+    public static function core_event_course_viewed(base $event) {
+
+        course_observer::instance()->course_viewed($event);
+    }
+
+    /**
      * get_core
      *
      * @param base $event
+     *
      * @return unicheck_core
      */
     private static function get_core(base $event) {
@@ -201,6 +213,7 @@ class plagiarism_unicheck_observer {
      * can_observe
      *
      * @param base $event
+     *
      * @return bool
      */
     private static function can_observe(base $event) {

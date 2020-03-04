@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.5.2] - 2020-03-04
+### Fixed
+- The similarity report uses the role that is defined in the course context
+
 ## [2.5.1] - 2020-01-21
 ### Added
 - Australia region support
@@ -190,6 +194,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Change validation mode
 - Massive refactoring comparing to Unplag plugin
 
+[2.5.2]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.5.2
 [2.5.1]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.5.1
 [2.5.0]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.5.0
 [2.4.3]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.4.3
