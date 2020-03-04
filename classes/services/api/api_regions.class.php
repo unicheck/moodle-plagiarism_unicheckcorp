@@ -40,13 +40,17 @@ if (!defined('MOODLE_INTERNAL')) {
  */
 class api_regions {
     /**
-     * US_EAST_1
+     * US East (N. Virginia)
      */
     const US_EAST_1 = 'us-east-1';
     /**
-     * EU_CENTRAL_1
+     * Europe (Frankfurt)
      */
     const EU_CENTRAL_1 = 'eu-central-1';
+    /**
+     * Asia Pacific (Sydney)
+     */
+    const AP_SOUTHEAST_2 = 'ap-southeast-2';
 
     /**
      * API base url mapped by regions
@@ -54,8 +58,9 @@ class api_regions {
      * @var array
      */
     private static $regionsapibaseurls = [
-        self::US_EAST_1    => UNICHECK_API_URL,
-        self::EU_CENTRAL_1 => UNICHECK_EU_API_URL
+        self::US_EAST_1      => UNICHECK_API_URL,
+        self::EU_CENTRAL_1   => UNICHECK_EU_API_URL,
+        self::AP_SOUTHEAST_2 => UNICHECK_AU_API_URL
     ];
 
     /**
@@ -64,8 +69,9 @@ class api_regions {
      * @var array
      */
     private static $regionsbaseurls = [
-        self::US_EAST_1    => UNICHECK_CORP_DOMAIN,
-        self::EU_CENTRAL_1 => UNICHECK_CORP_EU_DOMAIN
+        self::US_EAST_1      => UNICHECK_CORP_DOMAIN,
+        self::EU_CENTRAL_1   => UNICHECK_CORP_EU_DOMAIN,
+        self::AP_SOUTHEAST_2 => UNICHECK_CORP_AU_DOMAIN
     ];
 
     /**
