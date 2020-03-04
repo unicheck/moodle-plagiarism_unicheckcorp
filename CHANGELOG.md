@@ -4,14 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.3.8] - 2020-03-04
+### Fixed
+- The similarity report uses the role that is defined in the course context
+
 ## [1.3.7] - 2019-06-20
-### Added 
+### Added
 - Unicheck Availability Status in debugging tab
 - Pagination and filter in debugging table
 - Unicheck API Region select in plugin settings tab
 
-### Changed 
-- The students do not see any mention about the service Unicheck when both settings 
+### Changed
+- The students do not see any mention about the service Unicheck when both settings
 `Show similarity scores to student` and `Show similarity reports to student` within the meaning of **NO**
 - resource_id in Unicheck callbacks can be NULL
 
@@ -19,7 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - `Please use file_data parameter` when the file cannot be read from the file system
 
 ## [1.3.6] - 2019-02-21
-### Added 
+### Added
 - Handle SIMILARITY.CHECK.RECALCULATED event for live recalculating in moodle plugin from Unicheck service
 - Saving all Unicheck callbacks in the database
 
@@ -52,7 +56,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Permissions to change plugin settings
 - Show a notification if there is a limitation in the archive
 
-###Changed 
+###Changed
 - RAR,ZIP archive supporting is now OPTIONAL
 - Rename settings
 - Event observers
@@ -67,7 +71,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Incorrect processing of large files
 - Error handled trigger
 
-### Changed 
+### Changed
 - Skipping files larger than 70 MB (Unicheck max file upload size)
 - Event observe validation
 - Show Unicheck ID new the student file

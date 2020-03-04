@@ -287,15 +287,20 @@ class unicheck_api {
      *
      * @param string $externaltoken
      * @param object $moodleuser
+     * @param string $scope
      *
      * @return \stdClass
      */
-    public function user_update($externaltoken, $moodleuser) {
+    public function user_update($externaltoken, $moodleuser, $scope = null) {
         $postdata = [
             'email'     => $moodleuser->email,
             'firstname' => $moodleuser->firstname,
             'lastname'  => $moodleuser->lastname
         ];
+
+        if (!is_null($scope) && in_array($scope, [self::ACCESS_SCOPE_WRITE, self::ACCESS_SCOPE_READ])) {
+            $postdata['scope'] = $scope;
+        }
 
         return unicheck_api_request::instance()->http_post()->request(
             str_replace('{utoken}', $externaltoken, self::USER_UPDATE),
