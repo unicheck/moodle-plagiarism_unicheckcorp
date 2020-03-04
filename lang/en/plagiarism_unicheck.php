@@ -42,6 +42,7 @@ $string['api_region'] = 'Unicheck API region';
 $string['api_region_help'] = 'The region where client data is stored and processed. Ask your Unicheck account manager which region is used for your account.';
 $string['apiregion:us-east-1'] = 'United States';
 $string['apiregion:eu-central-1'] = 'Europe';
+$string['apiregion:ap-southeast-2'] = 'Australia';
 $string['enable_plugin'] = 'Enable Unicheck Plagiarism Service';
 $string['enable_plugin_help'] = 'Check this box to enable Unicheck Plagiarism Service in this Moodle instance.';
 $string['use_assign_desc_param'] = 'To unlock Unicheck settings';
@@ -143,6 +144,7 @@ $string['no_index_files'] = 'Add submissions to Institutional Library';
 $string['no_index_files_help'] = 'Student submissions are added to private Institutional Library only when this option is enabled. New student submissions are compared with works stored in this Institutional Library, in addition to Internet. This library consists only from papers submitted by students of this institution and is not shared with other institutions.';
 $string['min_30_words'] = 'At least 30 words are required';
 $string['max_100000_words'] = 'File(s) should have no more than 100 000 words and be not larger than 70MB';
+$string['max_125000_words'] = 'File(s) should have no more than 125 000 words and be not larger than 70MB';
 $string['max_supported_archive_files_count'] = 'Maximum number of files to be checked in archive';
 $string['max_supported_archive_files_count_help'] = 'Specify maximum number of files to be reviewed by Unicheck. System will pick only file types supported by Unicheck and will process files one by one. Supported formats: ZIP, RAR.';
 $string['uploading'] = 'Uploading';
@@ -190,6 +192,7 @@ $string['upload_error'] = 'File upload error';
 // Validation rules.
 $string['validation:min_numeric_value'] = 'Number could not be less than {$a}';
 // Debugging.
+$string['cachedef_debugging'] = 'Plugin debugging test results';
 $string['unicheckdebug'] = 'Debugging';
 $string['debugging:statustable:header'] = 'Unicheck status checks';
 $string['debugging:statustable:checkunicheck_host'] = 'Test Unicheck Host availability';

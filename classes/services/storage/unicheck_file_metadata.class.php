@@ -52,6 +52,10 @@ class unicheck_file_metadata {
      */
     const CHAR_COUNT = 'char_count';
     /**
+     * CHEATING_EXIST
+     */
+    const CHEATING_EXIST = 'cheating_exist';
+    /**
      * CHEATING_CHAR_REPLACEMENTS_COUNT
      */
     const CHEATING_CHAR_REPLACEMENTS_COUNT = 'cheating_char_replacements_count';
@@ -59,4 +63,16 @@ class unicheck_file_metadata {
      * CHEATING_CHAR_REPLACEMENTS_WORDS_COUNT
      */
     const CHEATING_CHAR_REPLACEMENTS_WORDS_COUNT = 'cheating_char_replacements_words_count';
+    /**
+     * CHEATING_IS_SIMILARITY_AFFECTED
+     */
+    const CHEATING_IS_SIMILARITY_AFFECTED = 'cheating_is_similarity_affected';
+    /**
+     * CHEATING_SUSPICIOUS_PAGES_COUNT
+     */
+    const CHEATING_SUSPICIOUS_PAGES_COUNT = 'cheating_suspicious_pages_count';
+    /**
+     * CHEATING_TOTAL_PAGES_COUNT
+     */
+    const CHEATING_TOTAL_PAGES_COUNT = 'cheating_total_pages_count';
 }
