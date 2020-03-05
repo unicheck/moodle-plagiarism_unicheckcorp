@@ -26,6 +26,7 @@
 
 namespace plagiarism_unicheck\classes\permissions;
 
+use context_course;
 use context_module;
 use plagiarism_unicheck\classes\unicheck_settings;
 
@@ -117,13 +118,27 @@ class capability {
      * Check user capability
      *
      * @param string $capability
-     * @param int    $cmid
+     * @param int    $instanceid
      * @param int    $userid
+     * @param int    $contextlevel
      *
      * @return bool
+     * @throws \coding_exception
      */
-    public static function user_can($capability, $cmid, $userid) {
-        return has_capability($capability, context_module::instance($cmid), $userid);
+    public static function user_can($capability, $instanceid, $userid, $contextlevel = CONTEXT_MODULE) {
+
+        switch ($contextlevel) {
+            case CONTEXT_MODULE:
+                $context = context_module::instance($instanceid);
+                break;
+            case CONTEXT_COURSE:
+                $context = context_course::instance($instanceid);
+                break;
+            default:
+                return false;
+        }
+
+        return has_capability($capability, $context, $userid);
     }
 
     /**
