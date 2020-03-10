@@ -1,9 +1,8 @@
-dist: xenial
-
 language: php
 
-# Behat no longer passes when false.
-sudo: required
+os: linux
+
+dist: xenial
 
 notifications:
   email: false
@@ -25,13 +24,13 @@ php:
   - "7.2"
 
 env:
-  matrix:
+  jobs:
     - DB=pgsql MOODLE_BRANCH=MOODLE_34_STABLE
     - DB=mysqli MOODLE_BRANCH=MOODLE_34_STABLE
     - DB=pgsql MOODLE_BRANCH=MOODLE_38_STABLE
     - DB=mysqli MOODLE_BRANCH=MOODLE_38_STABLE
 
-matrix:
+jobs:
   include:  # Moodle 3.3 minimum PHP 5.6.5 maximum 7.1
     - php: "5.6"
       env: DB=pgsql MOODLE_BRANCH=MOODLE_33_STABLE

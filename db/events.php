@@ -68,5 +68,9 @@ $observers = [
     [
         'eventname' => '\core\event\user_updated',
         'callback'  => 'plagiarism_unicheck_observer::core_event_user_updated',
+    ],
+    [
+        'eventname' => '\core\event\course_viewed',
+        'callback'  => 'plagiarism_unicheck_observer::core_event_course_viewed',
     ]
 ];
