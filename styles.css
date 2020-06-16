@@ -3,7 +3,7 @@
 div.unicheck-detect_result {
     display: flex;
     flex-direction: column;
-    width: 69px;
+    width: 100px;
 }
 
 div.unicheck-detect_result span.rank1 {
@@ -60,7 +60,7 @@ div.unicheck-detect_result div:first-child {
     display: flex;
     flex-direction: column;
     width: 100%;
-    margin-bottom: 6px;
+    margin-bottom: 10px;
 }
 
 .unicheck-report_id {
@@ -74,14 +74,26 @@ div.unicheck-detect_result div:first-child {
 .unicheck-report {
     box-sizing: border-box;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    justify-content: center;
-    width: 69px;
+    justify-content: flex-start;
+    width: 77px;
+    flex-wrap: wrap;
+}
+
+.unicheck-report-link,
+.unicheck-report-without-score-link {
+    display: flex;
+    flex-direction: row;
+    padding: 8px;
+    background: #424CFD;
     border-radius: 4px;
-    background-color: #929fb0;
-    padding: 2px 4px;
-    transition: background-color ease-in-out 0.3s;
+
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 19px;
+    color: #FFFFFF;
+    margin-top: 10px;
 }
 
 .unicheck-mt5 {
@@ -94,10 +106,8 @@ div.unicheck-detect_result div:first-child {
     width: inherit;
 }
 
-.unicheck-report .unicheck-report-link:hover,
 .unicheck-report .unicheck-reset-link:hover,
-.unicheck-report .unicheck-start-scan-link:hover,
-.unicheck-report .unicheck-report-without-score-link:hover {
+.unicheck-report .unicheck-start-scan-link:hover {
     background-color: #67768a;
 }
 
@@ -112,13 +122,13 @@ div.unicheck-detect_result div:first-child {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 65px;
-    height: 30px;
-    padding: 5px 2px;
     box-sizing: border-box;
-    background: #fff;
-    border-radius: 2px;
-    font-size: 16px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.unicheck-cheating + .unicheck-report_percentage {
+    color: #F76262;
 }
 
 .unicheck-report_text,
@@ -135,6 +145,12 @@ div.unicheck-detect_result div:first-child {
     border-radius: 2px;
     font-size: 14px;
     color: #fff;
+}
+
+.unicheck-report_text,
+.unicheck-report-without-score-text {
+    height: auto;
+    border-radius: none;
 }
 
 .unicheck-processing_error {
@@ -170,9 +186,9 @@ div.unicheck-detect_result div:first-child {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    max-width: 69px;
-    min-height: 18px;
+    width: 14px;
+    height: 14px;
+    margin-right: 8px;
     text-align: center;
     line-height: 11px;
     background-color: #f76262;
@@ -180,7 +196,6 @@ div.unicheck-detect_result div:first-child {
     font-size: 10px;
     font-weight: 600;
     border-radius: 12px;
-    margin-top: 4px;
     font-family: 'Open Sans', sans-serif;
     transition: all ease-in-out 0.3s;
     position: relative;
@@ -197,33 +212,32 @@ div.unicheck-detect_result div:first-child {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #ff495c;
-    background-color: #fff;
+    color: #fff;
     font-family: "Open Sans", sans-serif;
     font-size: 10px;
     font-weight: 700;
     line-height: 12px;
     position: absolute;
-    left: 2px;
-    top: 2px;
+    left: 0;
+    top: 0;
 }
 
 .unicheck-cheating__tooltip {
     position: absolute;
-    min-width: 190px;
+    min-width: 219px;
     top: 100%;
     left: 50%;
     margin-top: 6px;
     transform: translate(-50%);
     box-shadow: 0 5px 10px rgba(103, 118, 138, 0.3);
     background-color: #f76262;
-    padding: 14px;
+    padding: 8px;
     z-index: 1;
     color: #fff;
     font-family: "Open Sans", sans-serif;
     font-size: 12px;
     font-weight: 400;
-    line-height: 1.4;
+    line-height: 18px;
     text-align: left;
     border-radius: 3px;
     box-sizing: border-box;
@@ -253,65 +267,54 @@ div.unicheck-detect_result div:first-child {
 
 @media screen and (min-width: 1600px) {
     div.unicheck-detect_result {
-        width: 135px;
+        width: 170px;
+    }
+
+    .unicheck-link {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .unicheck-report_id {
+        margin-left: 5px;
+        margin-top: 2px;
     }
 
     .unicheck-report {
-        width: 135px;
-        justify-content: space-between;
-        flex-direction: row;
-        padding: 2px;
+        width: 100%;
+        align-items: center;
     }
 
-    .unicheck-report.unicheck-report_without_link {
-        width: max-content;
-        width: -moz-max-content; /* stylelint-disable-line */
+    .unicheck-report-link,
+    .unicheck-report-without-score-link {
+        margin-top: 0;
     }
 
-    .unicheck-report-link {
-        width: calc(100% - 65px);
-        padding: 0;
+    .unicheck-report_percentage {
+        margin-right: 8px;
     }
+
+    .unicheck-report .unicheck-report-without-score-link {
+        width: auto;
+    }
+
 
     .unicheck-only-xl-width {
-        display: inline;
-    }
-
-    .unicheck-report-without-score-text .unicheck-only-xxl-width {
         display: inline;
     }
 }
 
 @media screen and (max-width: 1600px) {
     .unicheck-start_scan_text,
-    .unicheck-reset-text,
-    .unicheck-report-without-score-text {
+    .unicheck-reset-text {
         height: 40px;
     }
 }
 
 @media screen and (min-width: 2200px) {
     div.unicheck-detect_result {
-        width: 176px;
-    }
-
-    .unicheck-report {
-        width: 176px;
-        flex-direction: row;
-        padding: 2px;
-    }
-
-    .unicheck-report.unicheck-report_without_link {
-        width: max-content;
-    }
-
-    .unicheck-link {
-        flex-direction: row;
-        height: 14px;
-    }
-
-    .unicheck-report_id {
-        margin: 0 0 0 5px;
+        width: 200px;
     }
 
     .unicheck-only-xxl-width {
