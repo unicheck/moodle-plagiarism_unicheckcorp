@@ -26,11 +26,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\entities\unicheck_archive;
-use plagiarism_unicheck\classes\helpers\unicheck_progress;
 use plagiarism_unicheck\classes\helpers\unicheck_translate;
-use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\unicheck_core;
 use plagiarism_unicheck\classes\unicheck_settings;
 
@@ -38,8 +35,8 @@ global $CFG;
 
 require_once($CFG->libdir . '/filelib.php');
 
-require_once(dirname(__FILE__) . '/constants.php');
-require_once(dirname(__FILE__) . '/autoloader.php');
+require_once(__DIR__ . '/constants.php');
+require_once(__DIR__ . '/autoloader.php');
 
 /**
  * Class plagiarism_unicheck
@@ -145,29 +142,6 @@ class plagiarism_unicheck {
     }
 
     /**
-     * Convert object to array
-     *
-     * @param object $obj
-     *
-     * @return array
-     */
-    public static function object_to_array($obj) {
-        if (is_object($obj)) {
-            $obj = (array) $obj;
-        }
-        if (is_array($obj)) {
-            $new = [];
-            foreach ($obj as $key => $val) {
-                $new[$key] = self::object_to_array($val);
-            }
-        } else {
-            $new = $obj;
-        }
-
-        return $new;
-    }
-
-    /**
      * Get list of files for current context
      *
      * @param int    $contextid
@@ -175,6 +149,7 @@ class plagiarism_unicheck {
      * @param null   $itemid
      *
      * @return stored_file[]
+     * @throws coding_exception
      */
     public static function get_area_files($contextid, $filearea = UNICHECK_DEFAULT_FILES_AREA, $itemid = null) {
 
@@ -189,6 +164,7 @@ class plagiarism_unicheck {
      * Check whether the plugin is enabled
      *
      * @return null|false
+     * @throws coding_exception
      */
     public static function is_plugin_enabled() {
         return unicheck_settings::get_settings('use');
@@ -225,54 +201,5 @@ class plagiarism_unicheck {
         }
 
         return $error;
-    }
-
-    /**
-     * Track current file status
-     *
-     * @param string $data
-     *
-     * @return string
-     */
-    public function track_progress($data) {
-        $data = unicheck_core::parse_json($data);
-        $resp = [];
-        $records = unicheck_file_provider::find_by_ids($data->ids);
-        if (!empty($records)) {
-            $checkstatusforids = [];
-            try {
-                foreach ($records as $record) {
-                    switch ($record->state) {
-                        case unicheck_file_state::UPLOADING:
-                            unicheck_progress::track_upload($record);
-                            break;
-                        case unicheck_file_state::HAS_ERROR:
-                            $resp[$record->id] = [
-                                'file_id' => $record->id,
-                                'state'   => $record->state,
-                                'content' => unicheck_progress::gen_row_content_score($data->cid, $record),
-                            ];
-                            break;
-                        default:
-                            $progressinfo = unicheck_progress::get_check_progress_info($record, $data->cid, $checkstatusforids);
-                            if ($progressinfo) {
-                                $resp[$record->id] = $progressinfo;
-                            }
-
-                            if (!empty($checkstatusforids)) {
-                                unicheck_progress::get_real_check_progress($data->cid, $checkstatusforids, $resp);
-                            }
-
-                            break;
-                    }
-                }
-
-            } catch (\Exception $ex) {
-                header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
-                $resp['error'] = $ex->getMessage();
-            }
-        }
-
-        return unicheck_core::json_response($resp);
     }
 }

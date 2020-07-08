@@ -91,15 +91,11 @@ class unicheck_check_helper {
                     archive_files_checked::create_from_plagiarismfile($plagiarismfile)->trigger();
                     break;
                 default:
-                    $charreplcount = (int) $check->report->cheating->char_replacement_count;
-                    $charreplwordscount = (int) $check->report->cheating->char_replacement_words_count;
-
                     unicheck_file_provider::add_metadata($plagiarismfile->id, [
-                        unicheck_file_metadata::CHAR_COUNT                             => (int) $check->report->char_count,
-                        unicheck_file_metadata::CHEATING_CHAR_REPLACEMENTS_COUNT       => $charreplcount,
-                        unicheck_file_metadata::CHEATING_CHAR_REPLACEMENTS_WORDS_COUNT => $charreplwordscount,
-
+                        unicheck_file_metadata::CHAR_COUNT => (int) $check->report->char_count,
                     ]);
+
+                    unicheck_file_provider::set_cheating_info($plagiarismfile, (array)$check->report->cheating);
 
                     file_similarity_check_completed::create_from_plagiarismfile($plagiarismfile)->trigger();
                     break;
@@ -112,8 +108,12 @@ class unicheck_check_helper {
 
         if ($plagiarismfile->parent_id !== null) {
             $parentrecord = $DB->get_record(UNICHECK_FILES_TABLE, ['id' => $plagiarismfile->parent_id]);
-            $childs = $DB->get_records_select(UNICHECK_FILES_TABLE, "parent_id = ? AND state not in (?)",
-                [$plagiarismfile->parent_id, unicheck_file_state::HAS_ERROR]);
+
+            $childs = unicheck_file_provider::get_files_by_parent_id_in_states(
+                $plagiarismfile->parent_id,
+                [unicheck_file_state::HAS_ERROR],
+                false
+            );
 
             $similarity = 0;
             $parentprogress = 0;
@@ -128,15 +128,15 @@ class unicheck_check_helper {
                 'pf'   => $parentrecord->id,
             ]);
 
-            $parentcheck = [
-                'report' => [
+            // The similarity result of the archive is created from the similarity results of its contents.
+            $parentcheck = (object) [
+                'report' => (object) [
                     'similarity'    => round($similarity / count($childs), 2, PHP_ROUND_HALF_DOWN),
                     'view_url'      => (string) $reporturl->out_as_local_url(),
                     'view_edit_url' => (string) $reporturl->out_as_local_url(),
                 ],
             ];
 
-            $parentcheck = json_decode(json_encode($parentcheck));
             self::check_complete($parentrecord, $parentcheck, $parentprogress);
         }
 
@@ -170,8 +170,11 @@ class unicheck_check_helper {
 
         if ($plagiarismfile->parent_id !== null) {
             $parentrecord = $DB->get_record(UNICHECK_FILES_TABLE, ['id' => $plagiarismfile->parent_id]);
-            $childs = $DB->get_records_select(UNICHECK_FILES_TABLE, "parent_id = ? AND state not in (?)",
-                [$plagiarismfile->parent_id, unicheck_file_state::HAS_ERROR]);
+            $childs = unicheck_file_provider::get_files_by_parent_id_in_states(
+                $plagiarismfile->parent_id,
+                [unicheck_file_state::HAS_ERROR],
+                false
+            );
 
             $similarity = 0;
 
@@ -179,13 +182,13 @@ class unicheck_check_helper {
                 $similarity += $child->similarityscore;
             }
 
-            $parentcheck = [
-                'report' => [
+            // The similarity result of the archive is created from the similarity results of its contents.
+            $parentcheck = (object) [
+                'report' => (object) [
                     'similarity' => round($similarity / count($childs), 2, PHP_ROUND_HALF_DOWN),
                 ]
             ];
 
-            $parentcheck = json_decode(json_encode($parentcheck));
             self::check_recalculated($parentrecord, $parentcheck);
         }
 
@@ -212,7 +215,8 @@ class unicheck_check_helper {
         } else {
             $error = unicheck_core::parse_json($plagiarismfile->errorresponse);
             if (isset($error[0]) && is_object($error[0])) {
-                unicheck_notification::error('Can\'t run check: ' . $error[0]->message, false);
+                $errormessage = format_text($error[0]->message, FORMAT_HTML);
+                unicheck_notification::error("Can't run check: $errormessage", false);
             }
         }
     }

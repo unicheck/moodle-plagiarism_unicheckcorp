@@ -26,6 +26,8 @@
 namespace plagiarism_unicheck\classes\observers;
 
 use core\event\base;
+use plagiarism_unicheck\classes\exception\unicheck_exception;
+use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\unicheck_adhoc;
 use plagiarism_unicheck\classes\unicheck_assign;
 use plagiarism_unicheck\classes\unicheck_core;
@@ -34,6 +36,9 @@ use stored_file;
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
+
+global $CFG;
+require_once($CFG->dirroot . '/mod/assign/locallib.php');
 
 /**
  * Class unicheck_abstract_event
@@ -73,26 +78,24 @@ abstract class abstract_observer {
      * @return bool
      */
     public static function is_submition_draft(base $event) {
-        global $CFG;
-
         if ($event->objecttable != 'assign_submission') {
             return false;
         }
-
-        require_once($CFG->dirroot . '/mod/assign/locallib.php');
 
         $submission = unicheck_assign::get_user_submission_by_cmid($event->contextinstanceid);
         if (!$submission) {
             return true;
         }
 
-        return ($submission->status !== 'submitted');
+        return ($submission->status !== ASSIGN_SUBMISSION_STATUS_SUBMITTED);
     }
 
     /**
      * after_handle_event
      *
      * @param unicheck_core $ucore
+     *
+     * @throws unicheck_exception
      */
     protected function after_handle_event(unicheck_core $ucore) {
         if (empty($this->tasks)) {
@@ -110,6 +113,10 @@ abstract class abstract_observer {
             }
 
             $internalfile = $plagiarismentity->get_internal_file();
+            if ($internalfile->state == unicheck_file_state::HAS_ERROR) {
+                continue;
+            }
+
             if (!isset($internalfile->external_file_uuid)) {
                 unicheck_adhoc::upload($storedfile, $ucore);
                 continue;
@@ -128,5 +135,29 @@ abstract class abstract_observer {
      */
     protected function add_after_handle_task(stored_file $file) {
         array_push($this->tasks, $file);
+    }
+
+    /**
+     * all_users_confirm_submition
+     *
+     * @param \stdClass $assign
+     *
+     * @return bool
+     */
+    protected function all_users_confirm_submition($assign) {
+        global $USER;
+
+        list($course, $cm) = get_course_and_cm_from_instance($assign, 'assign');
+
+        $assign = new \assign(\context_module::instance($cm->id), $cm, $course);
+
+        $submgroup = $assign->get_submission_group($USER->id);
+        if (!$submgroup) {
+            return false;
+        }
+
+        $notsubmitted = $assign->get_submission_group_members_who_have_not_submitted($submgroup->id, true);
+
+        return count($notsubmitted) == 0;
     }
 }

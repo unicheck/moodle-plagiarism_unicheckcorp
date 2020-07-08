@@ -233,7 +233,7 @@ class availability_check_results {
      */
     public function str_to_report($string, $class) {
         if (!empty($string)) {
-            return '<p class="' . $class . '">' . $string . '</p>';
+            return '<p class="' . s($class) . '">' . s($string) . '</p>';
         } else {
             return '';
         }

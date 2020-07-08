@@ -29,8 +29,6 @@ if (!defined('MOODLE_INTERNAL')) {
 
 global $CFG;
 
-require_once($CFG->dirroot . '/plagiarism/unicheck/classes/unicheck_core.class.php');
-
 use plagiarism_unicheck\classes\unicheck_core;
 
 /**
@@ -51,6 +49,7 @@ class plagiarism_unicheck_generator extends testing_data_generator {
      * @param int $userid
      *
      * @return unicheck_core
+     * @throws coding_exception
      */
     public function create_ucore($cmid, $userid) {
         $cm = get_coursemodule_from_id('', $cmid, 0, false, MUST_EXIST);
@@ -65,6 +64,9 @@ class plagiarism_unicheck_generator extends testing_data_generator {
      * @param object $owner
      *
      * @return stored_file
+     * @throws dml_exception
+     * @throws file_exception
+     * @throws stored_file_creation_exception
      */
     public function create_file_from_pathname($filepath, $owner) {
         $syscontext = context_system::instance();
@@ -91,6 +93,8 @@ class plagiarism_unicheck_generator extends testing_data_generator {
      * @param null             $cm
      *
      * @return stdClass
+     * @throws coding_exception
+     * @throws dml_exception
      */
     public function create_plagiarism_unicheck_file(
         $user = null,

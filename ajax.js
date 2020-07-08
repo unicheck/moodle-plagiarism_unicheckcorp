@@ -29,7 +29,7 @@ M.plagiarismUnicheck = {
 
 M.plagiarismUnicheck.init = function(Y, contextid) {
     var handleRecord = function(record) {
-        var existing = Y.one('.un_detect_result.fid-' + record.file_id);
+        var existing = Y.one('.unicheck-detect_result.fid-' + record.file_id);
         if (!existing) {
             return;
         }
@@ -48,7 +48,7 @@ M.plagiarismUnicheck.init = function(Y, contextid) {
             return;
         }
 
-        var url = M.cfg.wwwroot + '/plagiarism/unicheck/ajax.php';
+        var url = M.cfg.wwwroot + '/plagiarism/unicheck/track_progress.php';
 
         var callback = {
             method: 'get',
@@ -57,10 +57,8 @@ M.plagiarismUnicheck.init = function(Y, contextid) {
             data: {
                 'action': 'track_progress',
                 'sesskey': M.cfg.sesskey,
-                'data': Y.JSON.stringify({
-                    ids: items,
-                    cid: contextid
-                })
+                'cmid': contextid,
+                'fileids': items.join(',')
             },
             on: {
                 success: function(tid, response) {
@@ -81,7 +79,7 @@ M.plagiarismUnicheck.init = function(Y, contextid) {
     };
 
     var collectItems = function() {
-        Y.all('.un_detect_result .un_data').each(function(row) {
+        Y.all('.unicheck-detect_result .unicheck-data').each(function(row) {
             var jsondata = Y.JSON.parse(row.getHTML());
             M.plagiarismUnicheck.items.push(jsondata.fid);
         });
@@ -92,9 +90,10 @@ M.plagiarismUnicheck.init = function(Y, contextid) {
         collectItems();
 
         if (M.plagiarismUnicheck.items.length) {
+            trackProgress(Y, M.plagiarismUnicheck.items, contextid);
             M.plagiarismUnicheck.interval = setInterval(function() {
                 trackProgress(Y, M.plagiarismUnicheck.items, contextid);
-            }, 3000);
+            }, 10000);
         }
     };
 
@@ -110,7 +109,10 @@ M.plagiarismUnicheck.init = function(Y, contextid) {
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 /** global: M */
-M.plagiarismUnicheck.init_debugging_table = function(Y) {
+/**
+ * @param {Object} Y YUI
+ */
+M.plagiarismUnicheck.initDebuggingTable = function(Y) {
     Y.use('node', function(Y) {
         var checkboxes = Y.all('td.c0 input');
         checkboxes.each(function(node) {
@@ -157,7 +159,6 @@ M.plagiarismUnicheck.init_debugging_table = function(Y) {
                 }
             });
         }
-
         var batchform = Y.one('form.debuggingbatchoperationsform');
         if (batchform) {
             batchform.on('submit', function(e) {
@@ -172,11 +173,14 @@ M.plagiarismUnicheck.init_debugging_table = function(Y) {
                 var operation = Y.one('#id_operation');
                 var usersinput = Y.one('input.selectedfiles');
                 usersinput.set('value', selectedfiles.join(','));
+                /* eslint-disable no-alert, no-confirm */
                 if (selectedfiles.length === 0) {
                     alert(M.util.get_string('debugging:batchoperations:nofilesselected', 'plagiarism_unicheck'));
                     e.preventDefault();
                 } else {
-                    var confirmmessage = M.util.get_string('debugging:batchoperations:confirm' + operation.get('value'), 'plagiarism_unicheck');
+                    var confirmmessage = M.util.get_string(
+                        'debugging:batchoperations:confirm' + operation.get('value'), 'plagiarism_unicheck'
+                    );
                     if (!confirm(confirmmessage)) {
                         e.preventDefault();
                     }

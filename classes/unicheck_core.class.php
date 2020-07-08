@@ -339,13 +339,14 @@ class unicheck_core {
     /**
      * is_teacher
      *
-     * @param int $cmid
+     * @param int $instanceid
      * @param int $userid
+     * @param int $contextlevel
      *
      * @return bool
      */
-    public static function is_teacher($cmid, $userid) {
-        return capability::user_can('moodle/grade:edit', $cmid, $userid);
+    public static function is_teacher($instanceid, $userid, $contextlevel = CONTEXT_MODULE) {
+        return capability::user_can('moodle/grade:edit', $instanceid, $userid, $contextlevel);
     }
 
     /**

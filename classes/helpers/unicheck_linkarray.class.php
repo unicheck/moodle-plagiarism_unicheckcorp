@@ -98,6 +98,7 @@ class unicheck_linkarray {
      * @return mixed
      */
     public static function get_output_for_linkarray(\stdClass $fileobj, $cm, $linkarray) {
+        global $CFG;
         static $iterator; // This iterator for one-time start-up.
 
         $tmpl = null;
@@ -117,7 +118,12 @@ class unicheck_linkarray {
                 $tmpl = 'view_tmpl_invalid_response.php';
                 break;
             case unicheck_file_state::CREATED:
-                if (self::is_pending($cm, $fileobj) && self::is_submission_submitted($linkarray)) {
+                if ($cm->modname != UNICHECK_MODNAME_ASSIGN) {
+                    break;
+                }
+
+                $submission = unicheck_assign::get_user_submission_by_cmid($linkarray['cmid'], $linkarray['userid']);
+                if ($submission && self::is_pending($cm, $fileobj)) {
                     $tmpl = 'view_tmpl_can_check.php';
                     $inciterator = true;
                 }
@@ -127,7 +133,11 @@ class unicheck_linkarray {
                 break;
         }
 
-        $output = is_null($tmpl) ? '' : require(dirname(__FILE__) . '/../../views/' . $tmpl);
+        if (is_null($tmpl)) {
+            $output = '';
+        } else {
+            $output = require($CFG->dirroot . '/plagiarism/unicheck/views/' . $tmpl);
+        }
 
         if ($inciterator) {
             $iterator++;
@@ -145,19 +155,6 @@ class unicheck_linkarray {
      * @return bool
      */
     private static function is_pending($cm, $fileobj) {
-        return $cm->modname == UNICHECK_MODNAME_ASSIGN && empty($fileobj->check_id);
-    }
-
-    /**
-     * Check is submission submitted
-     *
-     * @param array $linkarray
-     *
-     * @return bool
-     */
-    private static function is_submission_submitted($linkarray) {
-        $submission = unicheck_assign::get_user_submission_by_cmid($linkarray['cmid'], $linkarray['userid']);
-
-        return $submission->status == 'submitted';
+        return $cm->modname == UNICHECK_MODNAME_ASSIGN && empty($fileobj->external_file_uuid);
     }
 }

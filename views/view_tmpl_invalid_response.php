@@ -33,21 +33,16 @@ if (AJAX_SCRIPT) {
     $PAGE->set_context(null);
 }
 
-$htmlparts[] = '<div class="un_detect_result">';
-$htmlparts[] = sprintf(
-    '<a href="%s" class="un_link" target="_blank">' .
-    '<img width="69" src="%s" title="%s">' .
-    '</a>',
-    new moodle_url(UNICHECK_DOMAIN),
-    $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME),
-    plagiarism_unicheck::trans('pluginname')
-);
-$htmlparts[] = '</div>';
+$unicheckurl = new moodle_url(UNICHECK_DOMAIN);
+$unichecklogourl = $OUTPUT->image_url('logo', UNICHECK_PLAGIN_NAME);
+$pluginname = plagiarism_unicheck::trans('pluginname');
+$errormessage = plagiarism_unicheck::error_resp_handler($fileobj->errorresponse);
 
-$erroresponse = plagiarism_unicheck::error_resp_handler($fileobj->errorresponse);
-$htmlparts[] = sprintf(
-    '<div class="un_processing_error"><span>%s</span></div>',
-    $erroresponse
-);
+$context = [
+    'unicheckurl'     => (string) $unicheckurl,
+    'unichecklogourl' => (string) $unichecklogourl,
+    'pluginname'      => s($pluginname),
+    'errormessage'    => format_text($errormessage, FORMAT_HTML)
+];
 
-return implode('', $htmlparts);
+return $OUTPUT->render_from_template('plagiarism_unicheck/invalid_response', $context);

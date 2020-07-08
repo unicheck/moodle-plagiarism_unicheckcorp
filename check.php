@@ -24,7 +24,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(__FILE__) . '/../../config.php');
+require(__DIR__ . '/../../config.php');
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -35,7 +35,7 @@ use plagiarism_unicheck\classes\unicheck_assign;
 use plagiarism_unicheck\classes\unicheck_core;
 
 require_once($CFG->dirroot . '/mod/assign/locallib.php');
-require_once(dirname(__FILE__) . '/lib.php');
+require_once(__DIR__ . '/lib.php');
 
 $cmid = required_param('cmid', PARAM_INT); // Course Module ID
 $uid = required_param('uid', PARAM_INT); // User ID
@@ -43,13 +43,12 @@ $submissiontype = required_param('submissiontype', PARAM_TEXT); // submission ty
 $pf = optional_param('pf', null, PARAM_INT); // plagiarism file id.
 
 require_sesskey();
-require_login();
 
-$url = new moodle_url(dirname(__FILE__) . '/check.php');
 $cm = get_coursemodule_from_id('', $cmid, 0, false, MUST_EXIST);
-
-$PAGE->set_url($url);
 require_login($cm->course, true, $cm);
+
+$url = new moodle_url(__DIR__ . '/check.php');
+$PAGE->set_url($url);
 
 $modulecontext = context_module::instance($cmid);
 require_capability(capability::CHECK_FILE, $modulecontext);
@@ -61,10 +60,8 @@ switch ($cm->modname) {
     case UNICHECK_MODNAME_ASSIGN:
         $redirect = new moodle_url('/mod/assign/view.php', ['id' => $cmid, 'action' => 'grading']);
         if ($submissiontype == 'onlinetext' && null == $pf) {
-            $assign = unicheck_assign::get_assign_by_cm($modulecontext);
-            $submission = $assign->get_user_submission($uid, false);
+            $submission = unicheck_assign::get_user_submission_by_cmid($cmid, $uid);
             $onlinetextsubmission = unicheck_assign::get_onlinetext_submission($submission->id);
-            $user = $DB->get_record("user", ["id" => $uid], '*', MUST_EXIST);
 
             $storedfile = $ucore->create_file_from_content(
                 trim($onlinetextsubmission->onlinetext),

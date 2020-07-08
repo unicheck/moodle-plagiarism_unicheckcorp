@@ -27,9 +27,6 @@ if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
-require_once(dirname(__FILE__) . '/../constants.php');
-require_once(dirname(__FILE__) . '/../autoloader.php');
-
 /**
  * db plagiarism unicheck upgrade
  *
@@ -62,31 +59,18 @@ function xmldb_plagiarism_unicheck_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
 
-            $files = $DB->get_recordset('plagiarism_unicheck_files', null, 'id asc', '*');
-            foreach ($files as $file) {
-                switch ($file->statuscode) {
-                    case 200:
-                        $file->state = 'CHECKED';
-                        break;
-                    case 202:
-                        if ($file->check_id) {
-                            $file->state = 'CHECKING';
+            $sql = "UPDATE {plagiarism_unicheck_files}
+                SET state = (
+                    CASE
+                        WHEN statuscode = '200' THEN 'CHECKED'
+                        WHEN statuscode = '202' AND check_id IS NOT NULL THEN 'CHECKING'
+                        WHEN statuscode = '202' AND check_id IS NULL THEN 'UPLOADED'
+                        WHEN statuscode = 'pending' THEN 'CREATED'
+                        ELSE 'HAS_ERROR'
+                    END
+                )";
 
-                            break;
-                        }
-
-                        $file->state = 'UPLOADED';
-                        break;
-                    case 'pending':
-                        $file->state = 'CREATED';
-                        break;
-                    default:
-                        $file->state = 'HAS_ERROR';
-                        break;
-                }
-                $DB->update_record('plagiarism_unicheck_files', $file);
-            }
-            $files->close(); // Don't forget to close the recordset!
+            $DB->execute($sql);
         }
 
         $field = new xmldb_field('external_file_uuid', XMLDB_TYPE_CHAR, '63', null, null, null, null, 'state');

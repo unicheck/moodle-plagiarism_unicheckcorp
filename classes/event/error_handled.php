@@ -32,7 +32,8 @@ if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
-require_once(dirname(__FILE__) . '/../../locallib.php');
+global $CFG;
+require_once($CFG->dirroot . '/plagiarism/unicheck/lib.php');
 
 /**
  * Class error_handled
@@ -72,13 +73,16 @@ class error_handled extends base {
      * @return string
      */
     public function get_description() {
-        return "Error handled. Message '{$this->other['errormessage']}'";
+        $errormessage = format_text($this->other['errormessage'], FORMAT_HTML);
+
+        return "Error handled. Message '{$errormessage}'";
     }
 
     /**
      * Create from exception
      *
      * @param \Exception $exception
+     *
      * @return base
      */
     public static function create_from_exception(\Exception $exception) {

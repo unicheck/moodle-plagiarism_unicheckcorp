@@ -27,8 +27,6 @@ if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
-require_once(dirname(__FILE__) . '/../constants.php');
-
 /**
  * Installer
  *
@@ -45,17 +43,17 @@ function xmldb_plagiarism_unicheck_install() {
     $dbman = $DB->get_manager();
     $oldtable = 'plagiarism_unplag_files';
     if ($dbman->table_exists($oldtable)) {
-        $DB->insert_records(UNICHECK_FILES_TABLE, $DB->get_records($oldtable));
+        $DB->insert_records('plagiarism_unicheck_files', $DB->get_records($oldtable));
     }
 
     $oldtable = 'plagiarism_unplag_user_data';
     if ($dbman->table_exists($oldtable)) {
-        $DB->insert_records(UNICHECK_USER_DATA_TABLE, $DB->get_records($oldtable));
+        $DB->insert_records('plagiarism_unicheck_users', $DB->get_records($oldtable));
     }
 
     $oldtable = 'plagiarism_unplag_config';
     if ($dbman->table_exists($oldtable)) {
-        $DB->insert_records(UNICHECK_CONFIG_TABLE, $DB->get_records($oldtable));
+        $DB->insert_records('plagiarism_unicheck_config', $DB->get_records($oldtable));
     }
 
     return true;

@@ -65,7 +65,7 @@ class unicheck_rar_extractor implements unicheck_extractor_interface {
         global $CFG;
 
         if (!extension_loaded('rar')) {
-            throw new unicheck_exception(unicheck_exception::ARCHIVE_CANT_BE_OPEN);
+            throw new unicheck_exception(unicheck_exception::RAR_ARCHIVE_CANT_BE_OPEN);
         }
 
         $this->file = $file;
@@ -77,7 +77,7 @@ class unicheck_rar_extractor implements unicheck_extractor_interface {
         $this->rararch = \RarArchive::open($this->tmprarfile);
 
         if ($this->rararch === false) {
-            throw new unicheck_exception(unicheck_exception::ARCHIVE_CANT_BE_OPEN);
+            throw new unicheck_exception(unicheck_exception::RAR_ARCHIVE_CANT_BE_OPEN);
         }
     }
 
