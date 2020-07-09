@@ -42,10 +42,14 @@ jobs:
       env: DB=pgsql MOODLE_BRANCH=MOODLE_33_STABLE NODEJS=8.9
     - php: "7.1"
       env: DB=mysqli MOODLE_BRANCH=MOODLE_33_STABLE NODEJS=8.9
-  exclude:   # Moodle 3.7 minimum PHP 7.1
+  exclude:   # Moodle 3.9 minimum PHP 7.2
     - php: "7.0"
       env: DB=pgsql MOODLE_BRANCH=MOODLE_39_STABLE NODEJS=14.5
     - php: "7.0"
+      env: DB=mysqli MOODLE_BRANCH=MOODLE_39_STABLE NODEJS=14.5
+    - php: "7.1"
+      env: DB=pgsql MOODLE_BRANCH=MOODLE_39_STABLE NODEJS=14.5
+    - php: "7.1"
       env: DB=mysqli MOODLE_BRANCH=MOODLE_39_STABLE NODEJS=14.5
 
 before_install:
