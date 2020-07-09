@@ -77,13 +77,9 @@ class OAuthRequest {
      * @return OAuthRequest
      */
     public static function from_request($httpmethod = null, $httpurl = null, $parameters = null) {
-        $scheme = (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != "on")
-            ? 'http'
-            : 'https';
+        $scheme = (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != "on") ? 'http' : 'https';
 
-        $httpurl = ($httpurl)
-            ? $httpurl
-            : $scheme .
+        $httpurl = ($httpurl) ? $httpurl : $scheme .
             '://' . $_SERVER['SERVER_NAME'] .
             ':' .
             $_SERVER['SERVER_PORT'] .
