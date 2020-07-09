@@ -150,7 +150,7 @@ div.unicheck-detect_result div:first-child {
 .unicheck-report_text,
 .unicheck-report-without-score-text {
     height: auto;
-    border-radius: unset;
+    border-radius: 0;
 }
 
 .unicheck-processing_error {
