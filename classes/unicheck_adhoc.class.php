@@ -50,6 +50,7 @@ class unicheck_adhoc {
      *
      * @param \stored_file  $file
      * @param unicheck_core $ucore
+     *
      * @return bool
      */
     public static function upload(\stored_file $file, unicheck_core $ucore) {
@@ -61,7 +62,7 @@ class unicheck_adhoc {
 
         // Check if archive file already uploaded.
         if ($plagiarismfile->type === unicheck_plagiarism_entity::TYPE_ARCHIVE
-            && $plagiarismfile->state !== unicheck_file_state::CREATED) {
+            && !in_array($plagiarismfile->state, [unicheck_file_state::CREATED, unicheck_file_state::HAS_ERROR])) {
             return false;
         }
 
@@ -80,6 +81,7 @@ class unicheck_adhoc {
      * Add task to check queue
      *
      * @param \stdClass $plagiarismfile
+     *
      * @return bool
      */
     public static function check(\stdClass $plagiarismfile) {

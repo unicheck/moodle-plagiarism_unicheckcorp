@@ -144,17 +144,22 @@ class unicheck_archive {
     public function restart_check() {
         $internalfile = $this->core->get_plagiarism_entity($this->file)->get_internal_file();
         $childs = unicheck_file_provider::get_files_by_parent_id($internalfile->id);
+
         if (count($childs)) {
+            $childids = [];
             foreach ((object) $childs as $child) {
+                $childids[] = $child->id;
                 if ($child->check_id) {
                     unicheck_api::instance()->delete_check($child);
                 }
             }
 
-            unicheck_notification::success('plagiarism_run_success', true);
-
-            $this->upload();
+            unicheck_file_provider::delete_by_ids($childids);
         }
+
+        unicheck_notification::success('plagiarism_run_success', true);
+
+        $this->upload();
     }
 
     /**

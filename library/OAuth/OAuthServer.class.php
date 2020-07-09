@@ -183,8 +183,7 @@ class OAuthServer {
      */
     private function get_signature_method($request) {
 
-        $signaturemethod = $request instanceof OAuthRequest
-            ? $request->get_parameter('oauth_signature_method') : null;
+        $signaturemethod = $request instanceof OAuthRequest ? $request->get_parameter('oauth_signature_method') : null;
 
         if (!$signaturemethod) {
             // According to chapter 7 ("Accessing Protected Ressources") the signature-method
@@ -215,8 +214,7 @@ class OAuthServer {
      */
     private function get_consumer($request) {
 
-        $consumerkey = $request instanceof OAuthRequest
-            ? $request->get_parameter('oauth_consumer_key') : null;
+        $consumerkey = $request instanceof OAuthRequest ? $request->get_parameter('oauth_consumer_key') : null;
 
         if (!$consumerkey) {
             throw new OAuthException('Invalid consumer key');
@@ -243,8 +241,7 @@ class OAuthServer {
      */
     private function get_token($request, $consumer, $tokentype = "access") {
 
-        $tokenfield = $request instanceof OAuthRequest
-            ? $request->get_parameter('oauth_token') : null;
+        $tokenfield = $request instanceof OAuthRequest ? $request->get_parameter('oauth_token') : null;
 
         $token = $this->datastore->lookup_token($consumer, $tokentype, $tokenfield);
         if (!$token) {
@@ -268,12 +265,8 @@ class OAuthServer {
     private function check_signature($request, $consumer, $token) {
 
         // This should probably be in a different method.
-        $timestamp = $request instanceof OAuthRequest
-            ? $request->get_parameter('oauth_timestamp')
-            : null;
-        $nonce = $request instanceof OAuthRequest
-            ? $request->get_parameter('oauth_nonce')
-            : null;
+        $timestamp = $request instanceof OAuthRequest ? $request->get_parameter('oauth_timestamp') : null;
+        $nonce = $request instanceof OAuthRequest ? $request->get_parameter('oauth_nonce') : null;
 
         $this->check_timestamp($timestamp);
         $this->check_nonce($consumer, $token, $nonce, $timestamp);
