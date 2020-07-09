@@ -22,35 +22,37 @@ php:
   - "7.0"
   - "7.1"
   - "7.2"
+  - "7.3"
+  - "7.4"
 
 env:
   jobs:
-    - DB=pgsql MOODLE_BRANCH=MOODLE_34_STABLE
-    - DB=mysqli MOODLE_BRANCH=MOODLE_34_STABLE
-    - DB=pgsql MOODLE_BRANCH=MOODLE_38_STABLE
-    - DB=mysqli MOODLE_BRANCH=MOODLE_38_STABLE
+    - DB=pgsql MOODLE_BRANCH=MOODLE_34_STABLE NODEJS=8.9
+    - DB=mysqli MOODLE_BRANCH=MOODLE_34_STABLE NODEJS=8.9
+    - DB=pgsql MOODLE_BRANCH=MOODLE_39_STABLE NODEJS=14.5
+    - DB=mysqli MOODLE_BRANCH=MOODLE_39_STABLE NODEJS=14.5
 
 jobs:
   include:  # Moodle 3.3 minimum PHP 5.6.5 maximum 7.1
     - php: "5.6"
-      env: DB=pgsql MOODLE_BRANCH=MOODLE_33_STABLE
+      env: DB=pgsql MOODLE_BRANCH=MOODLE_33_STABLE NODEJS=8.9
     - php: "5.6"
-      env: DB=mysqli MOODLE_BRANCH=MOODLE_33_STABLE
+      env: DB=mysqli MOODLE_BRANCH=MOODLE_33_STABLE NODEJS=8.9
     - php: "7.1"
-      env: DB=pgsql MOODLE_BRANCH=MOODLE_33_STABLE
+      env: DB=pgsql MOODLE_BRANCH=MOODLE_33_STABLE NODEJS=8.9
     - php: "7.1"
-      env: DB=mysqli MOODLE_BRANCH=MOODLE_33_STABLE
+      env: DB=mysqli MOODLE_BRANCH=MOODLE_33_STABLE NODEJS=8.9
   exclude:   # Moodle 3.7 minimum PHP 7.1
     - php: "7.0"
-      env: DB=pgsql MOODLE_BRANCH=MOODLE_38_STABLE
+      env: DB=pgsql MOODLE_BRANCH=MOODLE_39_STABLE NODEJS=14.5
     - php: "7.0"
-      env: DB=mysqli MOODLE_BRANCH=MOODLE_38_STABLE
+      env: DB=mysqli MOODLE_BRANCH=MOODLE_39_STABLE NODEJS=14.5
 
 before_install:
   - phpenv config-rm xdebug.ini
   - pecl install rar
-  - nvm install 8.9
-  - nvm use 8.9
+  - nvm install $NODEJS
+  - nvm use $NODEJS
   - cd ../..
   - composer selfupdate
   - if [ -n "$GITHUB_APITOKEN" ]; then composer global config github-oauth.github.com $GITHUB_APITOKEN; fi
