@@ -54,7 +54,6 @@ jobs:
 
 before_install:
   - phpenv config-rm xdebug.ini
-  - pecl install rar
   - nvm install $NODEJS
   - nvm use $NODEJS
   - cd ../..
@@ -74,7 +73,7 @@ script:
   - moodle-plugin-ci validate
   - moodle-plugin-ci savepoints
 #  - moodle-plugin-ci mustache
-  - moodle-plugin-ci grunt || [ "$MOODLE_BRANCH" != 'MOODLE_38_STABLE' ]
+  - moodle-plugin-ci grunt || [ "$MOODLE_BRANCH" != 'MOODLE_39_STABLE' ]
   - moodle-plugin-ci phpdoc
   - moodle-plugin-ci phpunit
   - moodle-plugin-ci behat
