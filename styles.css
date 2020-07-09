@@ -86,13 +86,13 @@ div.unicheck-detect_result div:first-child {
     display: flex;
     flex-direction: row;
     padding: 8px;
-    background: #424CFD;
+    background: #424cfd;
     border-radius: 4px;
 
     font-weight: 600;
     font-size: 14px;
     line-height: 19px;
-    color: #FFFFFF;
+    color: #fff;
     margin-top: 10px;
 }
 
@@ -128,7 +128,7 @@ div.unicheck-detect_result div:first-child {
 }
 
 .unicheck-cheating + .unicheck-report_percentage {
-    color: #F76262;
+    color: #f76262;
 }
 
 .unicheck-report_text,
@@ -150,7 +150,7 @@ div.unicheck-detect_result div:first-child {
 .unicheck-report_text,
 .unicheck-report-without-score-text {
     height: auto;
-    border-radius: none;
+    border-radius: unset;
 }
 
 .unicheck-processing_error {
