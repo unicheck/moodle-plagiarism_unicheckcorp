@@ -407,6 +407,10 @@ class unicheck_file_provider {
         foreach ($plagiarismfiles as $plagiarismfile) {
             switch ($plagiarismfile->state) {
                 case unicheck_file_state::CHECKING:
+                    if (!$plagiarismfile->check_id) {
+                        break;
+                    }
+
                     $response = unicheck_api::instance()->get_check_data($plagiarismfile->check_id);
                     if ($response->result) {
                         unicheck_check_helper::check_complete($plagiarismfile, $response->check);
