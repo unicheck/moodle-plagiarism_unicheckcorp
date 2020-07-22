@@ -30,7 +30,6 @@
     * reporttitle - similarity report URL full title
     * uireportlinktitle - similarity report URL short title
     * hascheating - cheating mark
-    * cheatingtitle - cheating block title
     * bigarchive - big archive mark
     * bigarchivetitle - big archive block title
 
@@ -47,12 +46,10 @@
       "reporttitle": "View full report",
       "uireportlinktitle": "Open Report",
       "hascheating": "false",
-      "cheatingtitle": "Cheating",
       "bigarchive": "false",
       "bigarchivetitle": "Not all documents were analyzed"
     }
 }}
-
 
 <div class="unicheck-detect_result">
     <a href="{{{unicheckurl}}}" class="unicheck-link" target="_blank">
@@ -65,15 +62,46 @@
         {{#canviewsimilarity}}
             {{#reporturl}}
                 <div class="unicheck-report">
+                    {{#hascheating}}
+                        {{#reporturl}}
+                            <a title="{{reporttitle}}" href="{{{reporturl}}}" target="_blank" class="unicheck-cheating">
+                                <span class="unicheck-cheating__tooltip">{{cheatingtooltip}}</span>
+                            </a>
+                        {{/reporturl}}
+                        {{^reporturl}}
+                            <div class="unicheck-cheating">
+                                <span class="unicheck-cheating__tooltip">{{cheatingtooltip}}</span>
+                            </div>
+                        {{/reporturl}}
+                    {{/hascheating}}
                     <span class="unicheck-report_percentage rank1 {{rankclass}}">{{similarityscore}}%</span>
                     <a title="{{reporttitle}}" href="{{{reporturl}}}" class="unicheck-report-link" target="_blank">
-                        <span class="unicheck-report_text">{{{uireportlinktitle}}}</span>
+                        <span class="unicheck-report_text">
+                            {{{uireportlinktitle}}}
+                            <svg style="margin-left: 10px;" width="5" height="9" viewBox="0 0 5 9" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path d="M0.292893 2.20711C-0.097631 1.81658 -0.0976311 1.18342 0.292893 0.792893C0.683417 0.402369 1.31658 0.402369 1.70711 0.792893L4.70711 3.79289C5.09763 4.18342 5.09763 4.81658 4.70711 5.20711L1.70711 8.20711C1.31658 8.59763 0.683418 8.59763 0.292893 8.20711C-0.097631 7.81658 -0.0976311 7.18342 0.292893 6.79289L2.58579 4.5L0.292893 2.20711Z"
+                                      fill="white"/>
+                            </svg>
+                        </span>
                     </a>
                 </div>
             {{/reporturl}}
 
             {{^reporturl}}
                 <div class="unicheck-report unicheck-report_without_link">
+                    {{#hascheating}}
+                        {{#reporturl}}
+                            <a title="{{reporttitle}}" href="{{{reporturl}}}" target="_blank" class="unicheck-cheating">
+                                <span class="unicheck-cheating__tooltip">{{cheatingtooltip}}</span>
+                            </a>
+                        {{/reporturl}}
+                        {{^reporturl}}
+                            <div class="unicheck-cheating">
+                                <span class="unicheck-cheating__tooltip">{{cheatingtooltip}}</span>
+                            </div>
+                        {{/reporturl}}
+                    {{/hascheating}}
                     <span class="unicheck-report_percentage rank1 {{rankclass}}">{{similarityscore}}%</span>
                 </div>
             {{/reporturl}}
@@ -82,28 +110,32 @@
         {{^canviewsimilarity}}
             {{#reporturl}}
                 <div class="unicheck-report">
-                    <a title="{{reporttitle}}" href="{{{reporturl}}}" class="unicheck-report-without-score-link" target="_blank">
-                        <span class="unicheck-report-without-score-text">{{{uireportlinktitle}}}</span>
+                    {{#hascheating}}
+                        {{#reporturl}}
+                            <a title="{{reporttitle}}" href="{{{reporturl}}}" target="_blank" class="unicheck-cheating">
+                                <span class="unicheck-cheating__tooltip">{{cheatingtooltip}}</span>
+                            </a>
+                        {{/reporturl}}
+                        {{^reporturl}}
+                            <div class="unicheck-cheating">
+                                <span class="unicheck-cheating__tooltip">{{cheatingtooltip}}</span>
+                            </div>
+                        {{/reporturl}}
+                    {{/hascheating}}
+                    <a title="{{reporttitle}}" href="{{{reporturl}}}" class="unicheck-report-without-score-link"
+                       target="_blank">
+                        <span class="unicheck-report-without-score-text">
+                            {{{uireportlinktitle}}}
+                            <svg style="margin-left: 10px;" width="5" height="9" viewBox="0 0 5 9" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path d="M0.292893 2.20711C-0.097631 1.81658 -0.0976311 1.18342 0.292893 0.792893C0.683417 0.402369 1.31658 0.402369 1.70711 0.792893L4.70711 3.79289C5.09763 4.18342 5.09763 4.81658 4.70711 5.20711L1.70711 8.20711C1.31658 8.59763 0.683418 8.59763 0.292893 8.20711C-0.097631 7.81658 -0.0976311 7.18342 0.292893 6.79289L2.58579 4.5L0.292893 2.20711Z"
+                                      fill="white"/>
+                            </svg>
+                        </span>
                     </a>
                 </div>
             {{/reporturl}}
         {{/canviewsimilarity}}
-
-        {{#hascheating}}
-            {{#reporturl}}
-                <a title="{{reporttitle}}" href="{{{reporturl}}}" target="_blank" class="unicheck-cheating ">
-                    <span>{{cheatingtitle}}</span>
-                    <span class="unicheck-cheating__tooltip">{{cheatingtooltip}}</span>
-                </a>
-            {{/reporturl}}
-
-            {{^reporturl}}
-                <div class="unicheck-cheating">
-                    <span>{{cheatingtitle}}</span>
-                    <span class="unicheck-cheating__tooltip">{{cheatingtooltip}}</span>
-                </div>
-            {{/reporturl}}
-        {{/hascheating}}
     {{/similarityscore}}
 
     {{#bigarchive}}

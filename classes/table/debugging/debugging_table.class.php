@@ -311,7 +311,7 @@ class debugging_table extends table_sql {
 
         if ($this->is_downloading()) {
             $operations = ['delete'];
-            if ($row->type == unicheck_plagiarism_entity::TYPE_DOCUMENT && !file_error_code::is_consider_file_issue($errorcode)) {
+            if ($row->type == !file_error_code::is_consider_file_issue($errorcode)) {
                 $operations[] = 'resubmit';
             }
 
@@ -336,7 +336,7 @@ class debugging_table extends table_sql {
         };
 
         $operations = [$builddebuglink((int) $row->id, 'delete')];
-        if ($row->type == unicheck_plagiarism_entity::TYPE_DOCUMENT && !file_error_code::is_consider_file_issue($errorcode)) {
+        if ($row->type == !file_error_code::is_consider_file_issue($errorcode)) {
             $operations[] = $builddebuglink((int) $row->id, 'resubmit');
         }
 
