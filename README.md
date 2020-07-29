@@ -30,15 +30,24 @@ Copyright: UKU Group, LTD, https://www.unicheck.com
 
 #### Requirements
 
- - Unicheck plugin requires Moodle cron to be properly configured. See [documentation](https://docs.moodle.org/33/en/Cron).
+ * Unicheck plugin requires Moodle cron to be properly configured. See [documentation](https://docs.moodle.org/39/en/Cron).
  We recommend scheduling cron as often as possible (more often than once per hour).
 
- - For supporting RAR archives you have to install php-ext using command
-`pecl install rar`. Find more info on [php.net](http://php.net/manual/en/rar.installation.php).
-
- - We use URL `https://<moodle_server_domain>/plagiarism/unicheck/callback.php?token={token}>` as listener for HTTP callbacks
+ * We use URL `https://<moodle_server_domain>/plagiarism/unicheck/callback.php?token={token}>` as listener for HTTP callbacks
 that receive notification messages for events (FILE_UPLOAD_ERROR, etc). If this address is available only in private network,
-you must open it for the network _5.39.49.208/28_
+You must open it for the following IP addresses:
+    * US
+        * 34.230.125.90
+        * 3.211.200.10
+        * 34.226.189.77
+    * EU
+        * 18.194.14.147
+        * 52.29.163.23
+        * 35.156.154.69
+    * AU
+        * 13.237.249.27
+        * 13.238.234.1
+        * 3.24.161.242
 
 #### Upgrading from *Unplag Plagiarism plugin for Moodle*
 

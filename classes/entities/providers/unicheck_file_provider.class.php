@@ -306,9 +306,11 @@ class unicheck_file_provider {
     /**
      * Get all frozen documents fron database
      *
+     * @param int $limit
+     *
      * @return array
      */
-    public static function get_frozen_files() {
+    public static function get_frozen_files($limit  = 100) {
         global $DB;
 
         $querywhere = "(state <> :checked_state AND state <> :error_state)
@@ -321,7 +323,11 @@ class unicheck_file_provider {
             [
                 'checked_state' => unicheck_file_state::CHECKED,
                 'error_state'   => unicheck_file_state::HAS_ERROR
-            ]
+            ],
+            "id DESC",
+            '*',
+            0,
+            $limit
         );
     }
 
