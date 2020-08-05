@@ -114,9 +114,10 @@ class setup_form extends moodleform {
                 $addyesnoelem('unicheck_enable_mod_' . $mod, 'enable_mod_' . $mod);
             }
         }
+        $addyesnoelem('unicheck_exclude_self_plagiarism', 'exclude_self_plagiarism', false);
 
         $addyesnoelem('unicheck_enable_api_logging', 'enable_api_logging', false);
-        $addyesnoelem('unicheck_exclude_self_plagiarism', 'exclude_self_plagiarism', false);
+        $addyesnoelem('unicheck_api_callback_oauth_check', 'setting:apicallbackoauthcheck', false);
 
         $this->add_action_buttons(true);
     }

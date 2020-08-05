@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - validation for the number of words in the post message on the forum activity (for cyrillic)
 
+## [2.6.0] - 2020-07-29
+### Added
+- TROUBLESHOOTING.md
+- `Check API callbacks using OAuth` setting
+
+### Fixed 
+- sync_frozen_task processing
+
 ## [2.5.5] - 2020-07-22
 ### Added
 - validation for the number of words in the post message on the forum activity (if there are less than 30 words, then the similarity check will not be launched)
@@ -212,6 +220,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Massive refactoring comparing to Unplag plugin
 
 [2.6.1]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.6.1
+[2.6.0]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.6.0
 [2.5.5]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.5.5
 [2.5.4]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.5.4
 [2.5.2]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.5.2

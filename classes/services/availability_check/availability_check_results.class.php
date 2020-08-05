@@ -65,9 +65,9 @@ class availability_check_results {
      */
     public $feedbackstr;
     /**
-     * @var string String to show if some bypass has happened
+     * @var string String to show if some warning has happened
      */
-    public $bypassstr;
+    public $warningstr;
     /**
      * @var string String to show if some restrict has happened
      */
@@ -84,7 +84,7 @@ class availability_check_results {
         $this->errorcode = null;
         $this->info = '';
         $this->feedbackstr = '';
-        $this->bypassstr = '';
+        $this->warningstr = '';
         $this->restrictstr = '';
     }
 
@@ -131,15 +131,15 @@ class availability_check_results {
     }
 
     /**
-     * Set the bypass string
+     * Set the warning string
      *
-     * @param string $str the bypass string that will be fetched from the admin lang file.
+     * @param string $str the warning string that will be fetched from the admin lang file.
      *                    pass just the string or pass an array of params for get_string
      *                    You always should put your string in admin.php but a third param is useful
      *                    to pass an $a object / string to get_string
      */
-    public function set_bypassstr($str) {
-        $this->bypassstr = $str;
+    public function set_warningstr($str) {
+        $this->warningstr = $str;
     }
 
     /**
@@ -193,28 +193,25 @@ class availability_check_results {
     /**
      * Get the feedback string
      *
-     * @return mixed feedback string (can be an array of params for get_string or a single string to fetch from
-     *                  admin.php lang file).
+     * @return mixed feedback string.
      */
     public function get_feedbackstr() {
         return $this->feedbackstr;
     }
 
     /**
-     * Get the bypass string
+     * Get the warning string
      *
-     * @return mixed bypass string (can be an array of params for get_string or a single string to fetch from
-     *                  admin.php lang file).
+     * @return mixed warning string.
      */
-    public function get_bypassstr() {
-        return $this->bypassstr;
+    public function get_warningstr() {
+        return $this->warningstr;
     }
 
     /**
      * Get the restrict string
      *
-     * @return mixed restrict string (can be an array of params for get_string or a single string to fetch from
-     *                  admin.php lang file).
+     * @return mixed restrict string.
      */
     public function get_restrictstr() {
         return $this->restrictstr;

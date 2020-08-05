@@ -297,6 +297,17 @@ class unicheck_settings {
     }
 
     /**
+     * Check API callbacks using OAuth
+     *
+     * @return bool
+     */
+    public static function can_api_callback_oauth_check() {
+        $callbackoauthcheck = self::get_settings('api_callback_oauth_check');
+
+        return filter_var($callbackoauthcheck, FILTER_VALIDATE_BOOLEAN);
+    }
+
+    /**
      * Get setting type
      *
      * @param string $setting
