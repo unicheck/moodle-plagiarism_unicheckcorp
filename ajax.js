@@ -173,7 +173,7 @@ M.plagiarismUnicheck.initDebuggingTable = function(Y) {
                 var operation = Y.one('#id_operation');
                 var usersinput = Y.one('input.selectedfiles');
                 usersinput.set('value', selectedfiles.join(','));
-                /* eslint-disable no-alert, no-confirm */
+                /* eslint-disable no-alert */
                 if (selectedfiles.length === 0) {
                     alert(M.util.get_string('debugging:batchoperations:nofilesselected', 'plagiarism_unicheck'));
                     e.preventDefault();

@@ -49,19 +49,38 @@ class unicheck_check_api {
      *
      * @return array
      */
-    public function get_finished_check_by_ids($ids) {
-        $checklist = [];
+    public function get_checks_by_ids($ids) {
+        $completedchecks = [];
+        $errorchecks = [];
         $apirequest = new unicheck_api();
         $checkprogresslist = $apirequest->get_check_progress($ids);
-        if ($checkprogresslist->progress && $checkprogresslist->result) {
-            foreach ($ids as $checkid) {
-                if (isset($checkprogresslist->progress->$checkid) && ($checkprogresslist->progress->$checkid == 1)) {
-                    $check = $apirequest->get_check_data($checkid);
-                    array_push($checklist, $check);
+        if (!$checkprogresslist || !$checkprogresslist->result) {
+            return [];
+        }
+
+        if (!isset($checkprogresslist->progress)) {
+            return [];
+        }
+
+        foreach ($ids as $checkid) {
+            if (isset($checkprogresslist->progress->$checkid)) {
+                if ($checkprogresslist->progress->$checkid == 1) {
+                    $checkresponse = $apirequest->get_check_data($checkid);
+                    array_push($completedchecks, $checkresponse);
                 }
+
+                continue;
+            }
+
+            // If check not found set check to error state.
+            $checkresponse = $apirequest->get_check_data($checkid);
+            if (!$checkresponse->result && isset($checkresponse->errors[0]->error_code)) {
+                $check = (object) ['id' => $checkid];
+                $checkresponse->check = $check;
+                array_push($errorchecks, $checkresponse);
             }
         }
 
-        return $checklist;
+        return [$completedchecks, $errorchecks];
     }
 }

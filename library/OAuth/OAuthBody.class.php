@@ -64,16 +64,22 @@ class OAuthBody {
     /**
      * handle_oauth_body_post
      *
-     * @param string     $oauthconsumerkey
-     * @param string     $oauthconsumersecret
-     * @param string     $body
-     * @param array|null $requestheaders
+     * @param string            $oauthconsumerkey
+     * @param string            $oauthconsumersecret
+     * @param string            $body
+     * @param OAuthRequest|null $request
+     * @param array|null        $requestheaders
      *
      * @return mixed
      * @throws OAuthException
      */
-    public static function handle_oauth_body_post($oauthconsumerkey, $oauthconsumersecret, $body, $requestheaders = null) {
-
+    public static function handle_oauth_body_post(
+        $oauthconsumerkey,
+        $oauthconsumersecret,
+        $body,
+        $request = null,
+        $requestheaders = null
+    ) {
         if ($requestheaders == null) {
             $requestheaders = OAuthUtil::get_headers();
         }
@@ -104,7 +110,10 @@ class OAuthBody {
 
         $method = new OAuthSignatureMethod_HMAC_SHA1();
         $server->add_signature_method($method);
-        $request = OAuthRequest::from_request();
+
+        if ($request == null) {
+            $request = OAuthRequest::from_request();
+        }
 
         try {
             $server->verify_request($request);

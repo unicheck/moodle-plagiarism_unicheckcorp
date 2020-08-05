@@ -47,12 +47,14 @@ class online_text_observer extends abstract_observer {
     /**
      * handle_event
      *
-     * @param unicheck_core                 $core
-     * @param base                          $event
-     * @param pluginfile_url_interface|null $pluginfileurl
+     * @param  unicheck_core                  $core
+     * @param  base                           $event
+     * @param  pluginfile_url_interface|null  $pluginfileurl
+     *
+     * @throws \plagiarism_unicheck\classes\exception\unicheck_exception
      */
     public function assessable_uploaded(unicheck_core $core, base $event, pluginfile_url_interface $pluginfileurl = null) {
-        if (empty($event->other['content'])) {
+        if (empty($event->other['content']) || str_word_count(strip_tags($event->other['content'])) < 30) {
             return;
         }
 
