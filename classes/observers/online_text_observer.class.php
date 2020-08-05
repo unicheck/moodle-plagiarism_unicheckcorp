@@ -54,7 +54,7 @@ class online_text_observer extends abstract_observer {
      * @throws \plagiarism_unicheck\classes\exception\unicheck_exception
      */
     public function assessable_uploaded(unicheck_core $core, base $event, pluginfile_url_interface $pluginfileurl = null) {
-        if (empty($event->other['content']) || str_word_count(strip_tags($event->other['content'])) < 30) {
+        if (empty($event->other['content']) || count(preg_split('/\s+/', trim(strip_tags($event->other['content'])))) < 30) {
             return;
         }
 

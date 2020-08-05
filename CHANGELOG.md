@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.6.1] - 2020-08-05
+### Fixed
+- validation for the number of words in the post message on the forum activity (for cyrillic)
+
 ## [2.6.0] - 2020-07-29
 ### Added
 - TROUBLESHOOTING.md
@@ -215,6 +219,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Change validation mode
 - Massive refactoring comparing to Unplag plugin
 
+[2.6.1]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.6.1
 [2.6.0]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.6.0
 [2.5.5]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.5.5
 [2.5.4]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v2.5.4
