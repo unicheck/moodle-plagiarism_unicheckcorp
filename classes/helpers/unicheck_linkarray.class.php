@@ -70,8 +70,11 @@ class unicheck_linkarray {
                     break;
                 case UNICHECK_MODNAME_ASSIGN:
                     $submission = unicheck_assign::get_user_submission_by_cmid($linkarray['cmid'], $linkarray['userid']);
-                    $itemid = $submission ? $submission->id : null;
-                    $files = \plagiarism_unicheck::get_area_files($context->id, UNICHECK_DEFAULT_FILES_AREA, $itemid);
+                    if (!$submission) {
+                        return null;
+                    }
+
+                    $files = \plagiarism_unicheck::get_area_files($context->id, UNICHECK_DEFAULT_FILES_AREA, $submission->id);
                     $file = array_shift($files);
                     break;
                 default:

@@ -35,19 +35,30 @@ use plagiarism_unicheck\classes\unicheck_core;
 use plagiarism_unicheck\classes\unicheck_settings;
 use plagiarism_unicheck\event\callback_accepted;
 use plagiarism_unicheck\library\OAuth\OAuthBody;
+use plagiarism_unicheck\library\OAuth\OAuthRequest;
 
 try {
+    $rawbody = file_get_contents('php://input');
+    $oauthconsumerkey = unicheck_settings::get_settings('client_id');
+    $oauthconsumersecret = unicheck_settings::get_settings('api_secret');
+    $apicallbackoauthcheck = unicheck_settings::can_api_callback_oauth_check();
+
+    if ($apicallbackoauthcheck) {
+        $verifiedrawbody = OAuthBody::handle_oauth_body_post(
+            $oauthconsumerkey,
+            $oauthconsumersecret,
+            $rawbody,
+            OAuthRequest::from_request(null, $PAGE->url)
+        );
+    } else {
+        $verifiedrawbody = $rawbody;
+    }
+
     $token = required_param('token', PARAM_ALPHANUMEXT);
     if (!$token) {
         header('HTTP/1.1 403 Token is absent');
         die;
     }
-
-    $rawbody = file_get_contents('php://input');
-    $oauthconsumerkey = unicheck_settings::get_settings('client_id');
-    $oauthconsumersecret = unicheck_settings::get_settings('api_secret');
-
-    $verifiedrawbody = OAuthBody::handle_oauth_body_post($oauthconsumerkey, $oauthconsumersecret, $rawbody);
 
     $body = unicheck_core::parse_json($verifiedrawbody);
     if (!is_object($body)) {

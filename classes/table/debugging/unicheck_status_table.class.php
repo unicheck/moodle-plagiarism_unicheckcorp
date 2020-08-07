@@ -121,8 +121,8 @@ class unicheck_status_table extends \html_table {
                 $status = get_string('error');
                 $errorline = true;
             } else {
-                if ($checkresult->get_bypassstr() != '') {
-                    $status = get_string('bypassed');
+                if ($checkresult->get_warningstr() != '') {
+                    $status = get_string('check');
                     $warningline = true;
                 } else if ($checkresult->get_restrictstr() != '') {
                     $status = get_string('restricted');
@@ -145,8 +145,8 @@ class unicheck_status_table extends \html_table {
             $status = html_writer::span($status, 'label ' . $statusclass);
             // Append the feedback if there is some.
             $feedbacktext = $checkresult->str_to_report($checkresult->get_feedbackstr(), 'ok');
-            // Append the bypass if there is some.
-            $feedbacktext .= $checkresult->str_to_report($checkresult->get_bypassstr(), 'warn');
+            // Append the warning if there is some.
+            $feedbacktext .= $checkresult->str_to_report($checkresult->get_warningstr(), 'warn');
             // Append the restrict if there is some.
             $feedbacktext .= $checkresult->str_to_report($checkresult->get_restrictstr(), 'error');
 
@@ -168,6 +168,7 @@ class unicheck_status_table extends \html_table {
         global $CFG, $DB;
 
         $apiregion = unicheck_settings::get_current_region();
+        $callbackoauthcheck = unicheck_settings::can_api_callback_oauth_check();
         $apikey = unicheck_settings::get_settings('client_id');
         $apiurl = api_regions::get_api_base_url_by_region($apiregion);
         $callbackurl = sprintf(
@@ -201,11 +202,11 @@ class unicheck_status_table extends \html_table {
             }
 
             if ($lastcurl->getResponse()) {
-                $bypassstr = format_text(
+                $warningstr = format_text(
                     json_encode($lastcurl->getResponse(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
                     FORMAT_HTML
                 );
-                $unicheckhosttest->set_bypassstr($bypassstr);
+                $unicheckhosttest->set_warningstr($warningstr);
             }
 
             $unicheckhosttest->set_errorcode(availability_check_results::FAILED);
@@ -238,7 +239,7 @@ class unicheck_status_table extends \html_table {
                 $unicheckapikeytest->set_status(true);
             }
         } else {
-            $unicheckapikeytest->set_bypassstr(
+            $unicheckapikeytest->set_warningstr(
                 plagiarism_unicheck::trans('debugging:statustable:fixtest', $stoptestingby)
             );
         }
@@ -266,9 +267,14 @@ class unicheck_status_table extends \html_table {
                 $callbackurltest->set_restrictstr($restrictstr);
             } else {
                 $callbackurltest->set_status(true);
+                if (!$callbackoauthcheck) {
+                    $callbackurltest->set_warningstr(
+                        plagiarism_unicheck::trans('debugging:statustable:check' . $currenttest . 'oauth')
+                    );
+                }
             }
         } else {
-            $callbackurltest->set_bypassstr(
+            $callbackurltest->set_warningstr(
                 plagiarism_unicheck::trans('debugging:statustable:fixtest', $stoptestingby)
             );
         }
@@ -287,7 +293,7 @@ class unicheck_status_table extends \html_table {
                 $licensetest->set_status(true);
             }
         } else {
-            $licensetest->set_bypassstr(
+            $licensetest->set_warningstr(
                 plagiarism_unicheck::trans('debugging:statustable:fixtest', $stoptestingby)
             );
         }
@@ -311,7 +317,7 @@ class unicheck_status_table extends \html_table {
             $crontest->set_restrictstr(plagiarism_unicheck::trans('debugging:statustable:check' . $currenttest . 'bigqueue'));
             $crontest->set_status(false);
         } else if ($adhoctaskscount > 50) {
-            $crontest->set_bypassstr(plagiarism_unicheck::trans('debugging:statustable:check' . $currenttest . 'slowly'));
+            $crontest->set_warningstr(plagiarism_unicheck::trans('debugging:statustable:check' . $currenttest . 'slowly'));
         }
 
         if ($lastexecution > 0 && $lastexecution < time() - 3600) {
@@ -320,7 +326,7 @@ class unicheck_status_table extends \html_table {
             );
             $crontest->set_status(false);
         } else if ($lastexecution > 0 && $lastexecution < time() - 600) {
-            $crontest->set_bypassstr(
+            $crontest->set_warningstr(
                 plagiarism_unicheck::trans('debugging:statustable:check' . $currenttest . 'lastexecution', 10)
             );
         }

@@ -25,6 +25,7 @@
 namespace plagiarism_unicheck\task;
 
 use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
+use plagiarism_unicheck\classes\helpers\unicheck_response;
 use plagiarism_unicheck\classes\services\api\unicheck_check_api;
 use plagiarism_unicheck\classes\services\api\unicheck_file_api;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
@@ -80,7 +81,7 @@ class sync_frozen_task extends \core\task\scheduled_task {
             self::CHECK => []
         ];
 
-        $frozenfiles = unicheck_file_provider::get_frozen_files();
+        $frozenfiles = unicheck_file_provider::get_frozen_files(100);
 
         if ($frozenfiles) {
             foreach ($frozenfiles as $file) {
@@ -96,10 +97,13 @@ class sync_frozen_task extends \core\task\scheduled_task {
 
         if ($files[self::CHECK]) {
             $checkservice = new unicheck_check_api();
-            $cheklist = $checkservice->get_finished_check_by_ids(array_keys($files[self::CHECK]));
+            list($completedchecks, $errorchecks) = $checkservice->get_checks_by_ids(array_keys($files[self::CHECK]));
+            if ($completedchecks) {
+                $this->fix_check($completedchecks, $files[self::CHECK]);
+            }
 
-            if ($cheklist) {
-                $this->fix_check($cheklist, $files[self::CHECK]);
+            if ($errorchecks) {
+                $this->set_checks_to_error($errorchecks, $files[self::CHECK]);
             }
         }
 
@@ -127,6 +131,20 @@ class sync_frozen_task extends \core\task\scheduled_task {
                     $dbchecklist[$externalcheck->check->id],
                     $externalcheck->check
                 );
+            }
+        }
+    }
+
+    /**
+     * Set frozen checks to error
+     *
+     * @param array $errorcheckslist
+     * @param array $dbchecklist
+     */
+    protected function set_checks_to_error($errorcheckslist, $dbchecklist) {
+        foreach ($errorcheckslist as $errorcheck) {
+            if (isset($dbchecklist[$errorcheck->check->id])) {
+                unicheck_response::handle_check_response($errorcheck, $dbchecklist[$errorcheck->check->id]);
             }
         }
     }
@@ -190,7 +208,7 @@ class sync_frozen_task extends \core\task\scheduled_task {
                     }
                 }
                 if (($checkedcount == count($trackedfiles))
-                    OR ($checkedcount != 0 AND ($checkedcount + $haserrorcount) == count($trackedfiles))) {
+                    or ($checkedcount != 0 and ($checkedcount + $haserrorcount) == count($trackedfiles))) {
                     $reporturl = new \moodle_url('/plagiarism/unicheck/reports.php', [
                         'cmid' => $archive->cm,
                         'pf'   => $archive->id,
