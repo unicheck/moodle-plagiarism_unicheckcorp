@@ -65,9 +65,9 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
     public static function default_plugin_options() {
         return [
             'enabled',
-            'enable_mod_assign',
-            'enable_mod_forum',
-            'enable_mod_workshop',
+            'unicheck_enable_mod_assign',
+            'unicheck_enable_mod_forum',
+            'unicheck_enable_mod_workshop',
         ];
     }
 
@@ -139,7 +139,7 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
      */
     public static function is_enabled_module($modulename) {
         $plagiarismsettings = unicheck_settings::get_settings();
-        $modname = 'enable_mod_' . $modulename;
+        $modname = 'unicheck_enable_mod_' . $modulename;
 
         if (!$plagiarismsettings || empty($plagiarismsettings[$modname])) {
             return false; // Return if plugin is not enabled for the module.

@@ -169,9 +169,9 @@ function xmldb_plagiarism_unicheck_upgrade($oldversion) {
         foreach ($configs as $field => $value) {
             if (strpos($field, 'unicheck') === 0) {
                 if ($field === 'unicheck_use') {
+                    $DB->delete_records('config_plugins', ['name' => $field, 'plugin' => 'plagiarism']);
+
                     $field = 'enabled';
-                } else {
-                    $field = str_replace('unicheck_', '', $field);
                 }
 
                 set_config($field, $value, 'plagiarism_unicheck');

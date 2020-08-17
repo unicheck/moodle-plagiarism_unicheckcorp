@@ -230,6 +230,10 @@ class unicheck_settings {
             return $settings;
         }
 
+        if ($key !== 'enabled') {
+            $key = 'unicheck_' . $key;
+        }
+
         return isset($settings[$key]) ? $settings[$key] : null;
     }
 
