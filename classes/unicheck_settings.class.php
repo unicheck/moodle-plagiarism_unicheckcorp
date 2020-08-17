@@ -202,10 +202,10 @@ class unicheck_settings {
             return self::get_settings_item($settings, $key);
         }
 
-        $settings = (array) get_config('plagiarism');
+        $settings = (array) get_config('plagiarism_unicheck');
 
         // Check if enabled.
-        if (isset($settings['unicheck_use']) && $settings['unicheck_use']) {
+        if (isset($settings['enabled']) && $settings['enabled']) {
             // Now check to make sure required settings are set!
             if (empty($settings['unicheck_api_secret'])) {
                 throw new \coding_exception('API Secret not set!');
@@ -229,8 +229,6 @@ class unicheck_settings {
         if (is_null($key)) {
             return $settings;
         }
-
-        $key = 'unicheck_' . $key;
 
         return isset($settings[$key]) ? $settings[$key] : null;
     }
