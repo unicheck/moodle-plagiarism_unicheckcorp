@@ -220,8 +220,7 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
  *
  * @throws coding_exception
  */
-function plagiarism_unicheck_coursemodule_standard_elements($formwrapper, $mform)
-{
+function plagiarism_unicheck_coursemodule_standard_elements($formwrapper, $mform) {
     $context = context_course::instance($formwrapper->get_course()->id);
     $modulename = $formwrapper->get_current()->modulename;
 
