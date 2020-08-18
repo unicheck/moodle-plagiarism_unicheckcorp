@@ -213,6 +213,8 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
 }
 
 /**
+ * Hook to add plagiarism specific settings to a module settings page
+ *
  * @param $formwrapper
  * @param $mform
  *
@@ -267,6 +269,8 @@ function plagiarism_unicheck_coursemodule_standard_elements($formwrapper, $mform
 }
 
 /**
+ * Hook to save plagiarism specific settings on a module settings page
+ *
  * @param $data
  * @param $course
  *
