@@ -276,12 +276,14 @@ function plagiarism_unicheck_coursemodule_standard_elements($formwrapper, $mform
  * @throws coding_exception
  */
 function plagiarism_unicheck_coursemodule_edit_post_actions($data, $course) {
-    if (!plagiarism_unicheck::is_support_mod($data->modulename) || !isset($data->use_unicheck)) {
+    if (!plagiarism_unicheck::is_support_mod($data->modulename)) {
         return;
     }
 
+    $data->use_unicheck = plagiarism_unicheck::is_plugin_enabled();
+
     if (isset($data->submissiondrafts) && !$data->submissiondrafts) {
-        $data->use_unicheck = 0;
+        $data->use_unicheck = false;
     }
 
     // First get existing values.
@@ -317,7 +319,7 @@ function plagiarism_unicheck_coursemodule_edit_post_actions($data, $course) {
     }
 
     // Plugin is enabled.
-    if ($data->use_unicheck == 1) {
+    if ($data->use_unicheck) {
         if ($data->modulename == UNICHECK_MODNAME_ASSIGN && $data->check_all_submitted_assignments == 1) {
             $cm = get_coursemodule_from_id('', $data->coursemodule);
             unicheck_bulk_check_assign_files::add_task(
