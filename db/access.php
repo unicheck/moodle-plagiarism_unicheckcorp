@@ -165,6 +165,17 @@ $capabilities = [
             'coursecreator'  => CAP_ALLOW
         ],
     ],
+    'plagiarism/unicheck:changeexcludereferencessetting'                => [
+        'riskbitmask'  => RISK_CONFIG,
+        'captype'      => 'write',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes'   => [
+            'editingteacher' => CAP_ALLOW,
+            'teacher'        => CAP_ALLOW,
+            'manager'        => CAP_ALLOW,
+            'coursecreator'  => CAP_ALLOW
+        ],
+    ],
     'plagiarism/unicheck:changeshowstudentscoresetting'                => [
         'riskbitmask'  => RISK_CONFIG | RISK_SPAM,
         'captype'      => 'write',

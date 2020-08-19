@@ -73,6 +73,10 @@ class unicheck_settings {
      */
     const EXCLUDE_CITATIONS = 'exclude_citations';
     /**
+     * Exclude references
+     */
+    const EXCLUDE_REFERENCES = 'exclude_references';
+    /**
      * Show similarity scores to student
      */
     const SHOW_STUDENT_SCORE = 'show_student_score';
@@ -126,6 +130,7 @@ class unicheck_settings {
         self::SENSITIVITY_SETTING_NAME                       => capability::CHANGE_SENSITIVITY_PERCENTAGE_SETTING,
         self::WORDS_SENSITIVITY                              => capability::CHANGE_WORD_SENSITIVITY_SETTING,
         self::EXCLUDE_CITATIONS                              => capability::CHANGE_EXCLUDE_CITATIONS_SETTING,
+        self::EXCLUDE_REFERENCES                             => capability::CHANGE_EXCLUDE_REFERENCES_SETTING,
         self::SHOW_STUDENT_SCORE                             => capability::CHANGE_SHOW_STUDENT_SCORE_SETTING,
         self::SHOW_STUDENT_REPORT                            => capability::CHANGE_SHOW_STUDENT_REPORT_SETTING,
         self::MAX_SUPPORTED_ARCHIVE_FILES_COUNT              => capability::CHANGE_MAX_SUPPORTED_ARCHIVE_FILES_COUNT_SETTING,
