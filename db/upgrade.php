@@ -179,7 +179,7 @@ function xmldb_plagiarism_unicheck_upgrade($oldversion) {
         }
     }
 
-    if ($oldversion < 2018021549) {
+    if ($oldversion < 2018021550) {
         $rows = $DB->get_records('plagiarism_unicheck_config', ['name' => 'exclude_citations']);
 
         foreach ($rows as $row) {
@@ -190,7 +190,7 @@ function xmldb_plagiarism_unicheck_upgrade($oldversion) {
         }
 
         // Unicheck savepoint reached.
-        upgrade_plugin_savepoint(true, 2018021549, 'plagiarism', 'unicheck');
+        upgrade_plugin_savepoint(true, 2018021550, 'plagiarism', 'unicheck');
     }
 
     return true;
