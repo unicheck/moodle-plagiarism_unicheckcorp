@@ -215,8 +215,8 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
 /**
  * Hook to add plagiarism specific settings to a module settings page
  *
- * @param $formwrapper
- * @param $mform
+ * @param moodleform $formwrapper The moodle quickforms wrapper object.
+ * @param MoodleQuickForm $mform The actual form object (required to modify the form).
  *
  * @throws coding_exception
  */
@@ -270,9 +270,10 @@ function plagiarism_unicheck_coursemodule_standard_elements($formwrapper, $mform
 /**
  * Hook to save plagiarism specific settings on a module settings page
  *
- * @param $data
- * @param $course
+ * @param  stdClass  $data    Data from the form submission.
+ * @param  stdClass  $course  The course.
  *
+ * @return stdClass|void
  * @throws coding_exception
  */
 function plagiarism_unicheck_coursemodule_edit_post_actions($data, $course) {
