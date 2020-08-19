@@ -172,6 +172,9 @@ function xmldb_plagiarism_unicheck_upgrade($oldversion) {
                 (object) ['cm' => $row->cm, 'name' => 'exclude_references', 'value' => $row->value]
             );
         }
+
+        // Unicheck savepoint reached.
+        upgrade_plugin_savepoint(true, 2018021549, 'plagiarism', 'unicheck');
     }
 
     return true;
