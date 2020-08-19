@@ -163,5 +163,16 @@ function xmldb_plagiarism_unicheck_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2018021531, 'plagiarism', 'unicheck');
     }
 
+    if ($oldversion < 2018021549) {
+        $rows = $DB->get_records('plagiarism_unicheck_config', ['name' => 'exclude_citations']);
+
+        foreach ($rows as $row) {
+            $DB->insert_record(
+                'plagiarism_unicheck_config',
+                (object) ['cm' => $row->cm, 'name' => 'exclude_references', 'value' => $row->value]
+            );
+        }
+    }
+
     return true;
 }
