@@ -281,10 +281,12 @@ function plagiarism_unicheck_coursemodule_edit_post_actions($data, $course) {
         return;
     }
 
-    $data->use_unicheck = plagiarism_unicheck::is_plugin_enabled();
+    if (!isset($data->use_unicheck)) {
+        $data->use_unicheck = plagiarism_unicheck::is_plugin_enabled();
+    }
 
     if (isset($data->submissiondrafts) && !$data->submissiondrafts) {
-        $data->use_unicheck = false;
+        $data->use_unicheck = 0;
     }
 
     // First get existing values.
