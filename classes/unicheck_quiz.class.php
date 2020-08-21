@@ -14,26 +14,38 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * version.php
+ * Class unicheck_quiz
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
- * @author      Vadim Titov <v.titov@p1k.co.uk>, Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @author      Yurii Filchenko <y.filchenko@unicheck.com>
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
-if (!isset($plugin)) {
-    $plugin = new stdClass();
+namespace plagiarism_unicheck\classes;
+
+use context_module;
+use quiz_attempt;
+
+if (!defined('MOODLE_INTERNAL')) {
+    die('Direct access to this script is forbidden.');
 }
 
-$plugin->version = 2018021550; // YYYYMMDDVV.
-$plugin->requires = 2017051501; // Requires Moodle 3.3 .
-$plugin->maturity = MATURITY_STABLE;
+/**
+ * Class unicheck_quiz
+ *
+ * @package     plagiarism_unicheck
+ * @author      Yurii Filchenko <y.filchenko@unicheck.com>
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class unicheck_quiz {
 
-$plugin->component = 'plagiarism_unicheck';
-$plugin->release = '3.1.0 (Build: 20200821)'; // Human-friendly version name.
-$plugin->dependencies = [
-    'mod_assign' => ANY_VERSION
-];
+    public static function get_user_attempt($context, $linkarray) {
+        $contenthash = unicheck_core::content_hash($linkarray['content']);
+        $file = unicheck_core::get_file_by_hash($context->id, $contenthash);
+
+        return $file;
+    }
+}

@@ -39,6 +39,7 @@ use plagiarism_unicheck\classes\observers\online_text_observer;
 use plagiarism_unicheck\classes\observers\submission_observer;
 use plagiarism_unicheck\classes\observers\user_observer;
 use plagiarism_unicheck\classes\observers\workshop_observer;
+use plagiarism_unicheck\classes\observers\quiz_observer;
 use plagiarism_unicheck\classes\services\storage\pluginfile_url;
 use plagiarism_unicheck\classes\unicheck_core;
 
@@ -222,5 +223,16 @@ class plagiarism_unicheck_observer {
         }
 
         return false;
+    }
+
+    /**
+     * @param  base  $event
+     */
+    public static function mod_quiz_submitted(base $event) {
+        if (!self::can_observe($event)) {
+            return;
+        }
+
+        quiz_observer::instance()->assessable_uploaded(self::get_core($event), $event);
     }
 }

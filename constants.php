@@ -44,6 +44,7 @@ define('UNICHECK_CALLBACK_URL', '/plagiarism/unicheck/callback.php');
 define('UNICHECK_DEFAULT_FILES_AREA', 'assign_submission');
 define('UNICHECK_WORKSHOP_FILES_AREA', 'workshop_submissions');
 define('UNICHECK_FORUM_FILES_AREA', 'forum_posts');
+define('UNICHECK_QUIZ_FILES_AREA', 'quiz_attempts');
 
 /** TABLES **/
 define('UNICHECK_FILES_TABLE', 'plagiarism_unicheck_files');
@@ -61,5 +62,6 @@ define('UNICHECK_CHECK_TYPE_WEB__MY_LIB__EXTERNAL_DB', 'web_and_my_lib_and_exter
 define('UNICHECK_MODNAME_WORKSHOP', 'workshop');
 define('UNICHECK_MODNAME_FORUM', 'forum');
 define('UNICHECK_MODNAME_ASSIGN', 'assign');
+define('UNICHECK_MODNAME_QUIZ', 'quiz');
 
 define('UNICHECK_DEBUG_MODE', false);

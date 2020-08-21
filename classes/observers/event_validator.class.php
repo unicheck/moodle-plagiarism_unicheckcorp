@@ -52,6 +52,7 @@ class event_validator {
         'mod_assign',
         'mod_forum',
         'mod_workshop',
+        'mod_quiz',
         'assignsubmission_file',
         'assignsubmission_onlinetext',
     ];

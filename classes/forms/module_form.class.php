@@ -142,9 +142,13 @@ class module_form extends moodleform {
 
         $addyesnoelem(unicheck_settings::ENABLE_UNICHECK, true, 0);
 
-        if (!in_array($this->modname, [UNICHECK_MODNAME_FORUM, UNICHECK_MODNAME_WORKSHOP])) {
+        if (!in_array($this->modname, [UNICHECK_MODNAME_FORUM, UNICHECK_MODNAME_WORKSHOP, UNICHECK_MODNAME_QUIZ])) {
             $addyesnoelem(unicheck_settings::CHECK_ALREADY_DELIVERED_ASSIGNMENT_SUBMISSIONS, true, 0);
             $addyesnoelem(unicheck_settings::ADD_TO_INSTITUTIONAL_LIBRARY, true, 0);
+        }
+
+        if ($this->modname === UNICHECK_MODNAME_QUIZ) {
+            $addyesnoelem(unicheck_settings::CHECK_PREVIOUS_SUBMISSIONS, true);
         }
 
         $checktypedata = [];

@@ -88,6 +88,11 @@ class unicheck_settings {
      * Sent students report
      */
     const SENT_STUDENT_REPORT = 'sent_student_report';
+    /**
+     * Check previous submissions
+     */
+    const CHECK_PREVIOUS_SUBMISSIONS = 'check_previous_submissions';
+
 
     /**
      * DRAFT_SUBMIT
@@ -129,7 +134,8 @@ class unicheck_settings {
         self::SHOW_STUDENT_SCORE                             => capability::CHANGE_SHOW_STUDENT_SCORE_SETTING,
         self::SHOW_STUDENT_REPORT                            => capability::CHANGE_SHOW_STUDENT_REPORT_SETTING,
         self::MAX_SUPPORTED_ARCHIVE_FILES_COUNT              => capability::CHANGE_MAX_SUPPORTED_ARCHIVE_FILES_COUNT_SETTING,
-        self::SENT_STUDENT_REPORT                            => capability::CHANGE_SENT_STUDENT_REPORT_SETTING
+        self::SENT_STUDENT_REPORT                            => capability::CHANGE_SENT_STUDENT_REPORT_SETTING,
+        self::CHECK_PREVIOUS_SUBMISSIONS                     => capability::CHANGE_CHECK_PREVIOUS_SUBMISSIONS,
     ];
 
     /**
@@ -146,12 +152,13 @@ class unicheck_settings {
         self::SHOW_STUDENT_SCORE                             => PARAM_BOOL,
         self::SHOW_STUDENT_REPORT                            => PARAM_BOOL,
         self::MAX_SUPPORTED_ARCHIVE_FILES_COUNT              => PARAM_INT,
-        self::SENT_STUDENT_REPORT                            => PARAM_BOOL
+        self::SENT_STUDENT_REPORT                            => PARAM_BOOL,
+        self::CHECK_PREVIOUS_SUBMISSIONS                     => PARAM_BOOL,
     ];
 
     /**
      * Get activity settings
-     * Activity - assign,forum,workshop
+     * Activity - assign,forum,workshop,quiz
      *
      * @param int  $cmid
      * @param null $name

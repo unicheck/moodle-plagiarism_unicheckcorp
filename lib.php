@@ -68,6 +68,7 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
             'unicheck_enable_mod_assign',
             'unicheck_enable_mod_forum',
             'unicheck_enable_mod_workshop',
+            'unicheck_enable_mod_quiz',
         ];
     }
 
@@ -80,9 +81,27 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
      */
     public function get_links($linkarray) {
         global $USER;
-        if (!plagiarism_unicheck::is_plugin_enabled() || !unicheck_settings::get_activity_settings(
-                $linkarray['cmid'], unicheck_settings::ENABLE_UNICHECK
-            )
+
+        if (!plagiarism_unicheck::is_plugin_enabled()) {
+            // Not allowed access to this content.
+            return null;
+        }
+
+        // If this is a quiz, retrieve the cmid
+        $component = !empty($linkarray['component']) ? $linkarray['component'] : '';
+        if (!isset($linkarray['cmid']) && $component == 'qtype_essay' && !empty($linkarray['area'])) {
+            $questions = question_engine::load_questions_usage_by_activity($linkarray['area']);
+
+            // Try to get cm using the questions owning context.
+            $context = $questions->get_owning_context();
+            if (empty($linkarray['cmid']) && $context->contextlevel == CONTEXT_MODULE) {
+                $linkarray['cmid'] = $context->instanceid;
+            }
+        }
+
+        if (
+            !isset($linkarray['cmid'])
+            || !unicheck_settings::get_activity_settings($linkarray['cmid'], unicheck_settings::ENABLE_UNICHECK)
         ) {
             // Not allowed access to this content.
             return null;
@@ -98,6 +117,7 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
             }
 
             $file = unicheck_linkarray::get_file_from_linkarray($cm, $linkarray);
+
             if ($file && plagiarism_unicheck::is_support_filearea($file->get_filearea())) {
                 $ucore = new unicheck_core($linkarray['cmid'], $file->get_userid(), $cm->modname);
 

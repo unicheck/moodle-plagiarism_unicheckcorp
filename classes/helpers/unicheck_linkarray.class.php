@@ -28,6 +28,7 @@ namespace plagiarism_unicheck\classes\helpers;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\unicheck_assign;
 use plagiarism_unicheck\classes\unicheck_workshop;
+use plagiarism_unicheck\classes\unicheck_quiz;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -76,6 +77,14 @@ class unicheck_linkarray {
 
                     $files = \plagiarism_unicheck::get_area_files($context->id, UNICHECK_DEFAULT_FILES_AREA, $submission->id);
                     $file = array_shift($files);
+                    break;
+                case UNICHECK_MODNAME_QUIZ:
+                    if (!empty($linkarray['content'])) {
+                        $file = unicheck_quiz::get_user_attempt($context, $linkarray);
+                    }
+                    if (isset($linkarray['file'])) {
+                        $file = $linkarray['file'];
+                    }
                     break;
                 default:
                     $files = \plagiarism_unicheck::get_area_files($context->id, UNICHECK_DEFAULT_FILES_AREA);

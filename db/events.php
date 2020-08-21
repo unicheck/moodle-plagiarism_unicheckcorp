@@ -66,6 +66,10 @@ $observers = [
         'callback'  => 'plagiarism_unicheck_observer::mod_assign_submission_status_viewed',
     ],
     [
+        'eventname' => '\mod_quiz\event\attempt_submitted',
+        'callback'  => 'plagiarism_unicheck_observer::mod_quiz_submitted',
+    ],
+    [
         'eventname' => '\core\event\user_updated',
         'callback'  => 'plagiarism_unicheck_observer::core_event_user_updated',
     ],
