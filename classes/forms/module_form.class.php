@@ -162,7 +162,8 @@ class module_form extends moodleform {
 
         $addtextelem(unicheck_settings::SENSITIVITY_SETTING_NAME, unicheck_settings::$defaultsensitivity);
         $addtextelem(unicheck_settings::WORDS_SENSITIVITY, unicheck_settings::$defaultwordssensitivity);
-        $addyesnoelem(unicheck_settings::EXCLUDE_CITATIONS, true, 1);
+        $addyesnoelem(unicheck_settings::EXCLUDE_CITATIONS, true, 0);
+        $addyesnoelem(unicheck_settings::EXCLUDE_REFERENCES, true, 0);
         $addyesnoelem(unicheck_settings::SHOW_STUDENT_SCORE, true, 0);
         $addyesnoelem(unicheck_settings::SHOW_STUDENT_REPORT, true, 0);
         $addyesnoelem(unicheck_settings::SENT_STUDENT_REPORT, true, 0);
