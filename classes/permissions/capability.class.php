@@ -113,10 +113,6 @@ class capability {
      * CHANGE_SENT_STUDENT_REPORT_SETTING
      */
     const CHANGE_SENT_STUDENT_REPORT_SETTING = 'plagiarism/unicheck:changesentstudentreportsetting';
-    /**
-     * CHANGE_CHECK_PREVIOUS_SUBMISSIONS
-     */
-    const CHANGE_CHECK_PREVIOUS_SUBMISSIONS = 'plagiarism/unicheck:changecheckprevioussubmissionssetting';
 
     /**
      * Check user capability

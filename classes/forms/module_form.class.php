@@ -147,10 +147,6 @@ class module_form extends moodleform {
             $addyesnoelem(unicheck_settings::ADD_TO_INSTITUTIONAL_LIBRARY, true, 0);
         }
 
-        if ($this->modname === UNICHECK_MODNAME_QUIZ) {
-            $addyesnoelem(unicheck_settings::CHECK_PREVIOUS_SUBMISSIONS, true);
-        }
-
         $checktypedata = [];
         foreach (unicheck_settings::get_supported_check_source_types() as $checktype) {
             $checktypedata[$checktype] = plagiarism_unicheck::trans($checktype);

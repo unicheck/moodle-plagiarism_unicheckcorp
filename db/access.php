@@ -209,15 +209,4 @@ $capabilities = [
             'coursecreator'  => CAP_ALLOW
         ],
     ],
-    'plagiarism/unicheck:changecheckprevioussubmissionssetting' => [
-        'riskbitmask'  => RISK_CONFIG | RISK_SPAM,
-        'captype'      => 'write',
-        'contextlevel' => CONTEXT_MODULE,
-        'archetypes'   => [
-            'editingteacher' => CAP_ALLOW,
-            'teacher'        => CAP_ALLOW,
-            'manager'        => CAP_ALLOW,
-            'coursecreator'  => CAP_ALLOW
-        ],
-    ],
 ];

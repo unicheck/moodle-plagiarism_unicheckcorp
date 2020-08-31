@@ -87,7 +87,7 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
             return null;
         }
 
-        // If this is a quiz, retrieve the cmid
+        // If this is a quiz, retrieve the cmid.
         $component = !empty($linkarray['component']) ? $linkarray['component'] : '';
         if (!isset($linkarray['cmid']) && $component == 'qtype_essay' && !empty($linkarray['area'])) {
             $questions = question_engine::load_questions_usage_by_activity($linkarray['area']);

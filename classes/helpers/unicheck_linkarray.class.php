@@ -27,6 +27,7 @@ namespace plagiarism_unicheck\classes\helpers;
 
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
 use plagiarism_unicheck\classes\unicheck_assign;
+use plagiarism_unicheck\classes\unicheck_core;
 use plagiarism_unicheck\classes\unicheck_workshop;
 use plagiarism_unicheck\classes\unicheck_quiz;
 
@@ -80,7 +81,8 @@ class unicheck_linkarray {
                     break;
                 case UNICHECK_MODNAME_QUIZ:
                     if (!empty($linkarray['content'])) {
-                        $file = unicheck_quiz::get_user_attempt($context, $linkarray);
+                        $contenthash = unicheck_core::content_hash($linkarray['content']);
+                        $file = unicheck_core::get_file_by_hash($context->id, $contenthash);
                     }
                     if (isset($linkarray['file'])) {
                         $file = $linkarray['file'];

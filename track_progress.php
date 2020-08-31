@@ -99,8 +99,12 @@ switch ($cm->modname) {
 
         break;
     case UNICHECK_MODNAME_QUIZ:
-        $member = true;
-        $grader = true;
+        $grader = has_capability('mod/quiz:grade', $context);
+        if ($grader) {
+            break;
+        }
+
+        $member = has_capability('mod/quiz:view', $context);
 
         break;
 }

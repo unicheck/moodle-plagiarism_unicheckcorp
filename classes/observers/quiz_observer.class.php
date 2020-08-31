@@ -69,8 +69,7 @@ class quiz_observer extends abstract_observer
      *
      * @throws \plagiarism_unicheck\classes\exception\unicheck_exception
      */
-    public function assessable_uploaded(unicheck_core $core, base $event)
-    {
+    public function assessable_uploaded(unicheck_core $core, base $event) {
         $this->core = $core;
         $this->event = $event;
 
@@ -85,8 +84,7 @@ class quiz_observer extends abstract_observer
     /**
      * @throws \plagiarism_unicheck\classes\exception\unicheck_exception
      */
-    private function handle_content()
-    {
+    private function handle_content() {
         $pluginfileurl = new pluginfile_url();
         $pluginfileurl->set_component($this->event->component);
         $pluginfileurl->set_filearea('post');
@@ -119,8 +117,7 @@ class quiz_observer extends abstract_observer
     /**
      * @throws \plagiarism_unicheck\classes\exception\unicheck_exception
      */
-    private function handle_files()
-    {
+    private function handle_files() {
         foreach ($this->attempt->get_slots() as $slot) {
             $files = $this->attempt->get_question_attempt($slot)->get_last_qt_files('attachments', $this->event->contextid);
 

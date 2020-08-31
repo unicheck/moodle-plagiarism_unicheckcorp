@@ -70,8 +70,6 @@ $string['show_student_report'] = 'Show similarity reports to student';
 $string['show_student_report_help'] = 'Students only see similarity ​reports for their own submissions and do not see ​reports of other students.';
 $string['sent_student_report'] = 'Notify students via email';
 $string['sent_student_report_help'] = 'Students will receive information about the results of the check via e-mail.';
-$string['check_previous_submissions'] = 'Check previous quiz submissions';
-$string['check_previous_submissions_help'] = 'Check previous quiz submissions';
 $string['draft_submit'] = 'When should the file be submitted to Unicheck';
 $string['showwhenclosed'] = 'When Activity closed';
 $string['submitondraft'] = 'Submit file when first uploaded';
@@ -175,7 +173,6 @@ $string['unicheck:changeshowstudentreportsetting'] = 'Allow enable/disable show 
 $string['unicheck:changemaxsupportedarchivefilescountsetting'] = 'Allow change maximum number of files to be checked in archive';
 $string['unicheck:changesentstudentreportsetting'] = 'Allow enable/disable sent student report via email';
 $string['unicheck:changeexcludeselfplagiarismsetting'] = 'Allow enable/disable exclude self-plagiarism in course';
-$string['unicheck:changecheckprevioussubmissionssetting'] = 'Allow enable/disable check previous quiz submissions';
 // Archive.
 $string['archive:limitreachedshortdescripton'] = 'Not all documents were analyzed';
 $string['archive:limitreachedfulldescription'] = 'There are more documents in the file "{$a->filename}" but they have not been analyzed because the limit of documents to be analyzed within a zip file is {$a->max_supported_count}. You can check it with the administrator of this Moodle installation to modify this value';
