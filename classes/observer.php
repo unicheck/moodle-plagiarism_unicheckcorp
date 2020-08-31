@@ -226,7 +226,11 @@ class plagiarism_unicheck_observer {
     }
 
     /**
+     * mod_quiz_submitted
+     *
      * @param  base  $event
+     *
+     * @throws \plagiarism_unicheck\classes\exception\unicheck_exception
      */
     public static function mod_quiz_submitted(base $event) {
         if (!self::can_observe($event)) {

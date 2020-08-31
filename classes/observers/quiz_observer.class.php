@@ -82,6 +82,8 @@ class quiz_observer extends abstract_observer
     }
 
     /**
+     * handle content
+     *
      * @throws \plagiarism_unicheck\classes\exception\unicheck_exception
      */
     private function handle_content() {
@@ -115,6 +117,8 @@ class quiz_observer extends abstract_observer
     }
 
     /**
+     * handle files
+     *
      * @throws \plagiarism_unicheck\classes\exception\unicheck_exception
      */
     private function handle_files() {
