@@ -167,7 +167,7 @@ class plagiarism_unicheck {
      * @throws coding_exception
      */
     public static function is_plugin_enabled() {
-        return unicheck_settings::get_settings('use');
+        return unicheck_settings::get_settings('enabled');
     }
 
     /**

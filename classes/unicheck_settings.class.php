@@ -73,6 +73,10 @@ class unicheck_settings {
      */
     const EXCLUDE_CITATIONS = 'exclude_citations';
     /**
+     * Exclude references
+     */
+    const EXCLUDE_REFERENCES = 'exclude_references';
+    /**
      * Show similarity scores to student
      */
     const SHOW_STUDENT_SCORE = 'show_student_score';
@@ -126,6 +130,7 @@ class unicheck_settings {
         self::SENSITIVITY_SETTING_NAME                       => capability::CHANGE_SENSITIVITY_PERCENTAGE_SETTING,
         self::WORDS_SENSITIVITY                              => capability::CHANGE_WORD_SENSITIVITY_SETTING,
         self::EXCLUDE_CITATIONS                              => capability::CHANGE_EXCLUDE_CITATIONS_SETTING,
+        self::EXCLUDE_REFERENCES                             => capability::CHANGE_EXCLUDE_REFERENCES_SETTING,
         self::SHOW_STUDENT_SCORE                             => capability::CHANGE_SHOW_STUDENT_SCORE_SETTING,
         self::SHOW_STUDENT_REPORT                            => capability::CHANGE_SHOW_STUDENT_REPORT_SETTING,
         self::MAX_SUPPORTED_ARCHIVE_FILES_COUNT              => capability::CHANGE_MAX_SUPPORTED_ARCHIVE_FILES_COUNT_SETTING,
@@ -202,10 +207,10 @@ class unicheck_settings {
             return self::get_settings_item($settings, $key);
         }
 
-        $settings = (array) get_config('plagiarism');
+        $settings = (array) get_config('plagiarism_unicheck');
 
         // Check if enabled.
-        if (isset($settings['unicheck_use']) && $settings['unicheck_use']) {
+        if (isset($settings['enabled']) && $settings['enabled']) {
             // Now check to make sure required settings are set!
             if (empty($settings['unicheck_api_secret'])) {
                 throw new \coding_exception('API Secret not set!');
@@ -230,7 +235,9 @@ class unicheck_settings {
             return $settings;
         }
 
-        $key = 'unicheck_' . $key;
+        if ($key !== 'enabled') {
+            $key = 'unicheck_' . $key;
+        }
 
         return isset($settings[$key]) ? $settings[$key] : null;
     }

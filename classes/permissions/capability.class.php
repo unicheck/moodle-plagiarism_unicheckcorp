@@ -98,6 +98,10 @@ class capability {
      */
     const CHANGE_EXCLUDE_CITATIONS_SETTING = 'plagiarism/unicheck:changeexcludecitationssetting';
     /**
+     * CHANGE_EXCLUDE_REFERENCES_SETTING
+     */
+    const CHANGE_EXCLUDE_REFERENCES_SETTING = 'plagiarism/unicheck:changeexcludereferencessetting';
+    /**
      * CHANGE_SHOW_STUDENT_SCORE_SETTING
      */
     const CHANGE_SHOW_STUDENT_SCORE_SETTING = 'plagiarism/unicheck:changeshowstudentscoresetting';

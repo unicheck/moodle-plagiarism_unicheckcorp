@@ -61,16 +61,14 @@ class setup_form extends moodleform {
             $mform->addElement('select', $setting, plagiarism_unicheck::trans($transkey), $ynoptions);
             $mform->addHelpButton($setting, $transkey, UNICHECK_PLAGIN_NAME);
 
-            if ($defaultvalue !== null) {
-                if (!isset($mform->exportValues()[$setting]) || is_null($mform->exportValues()[$setting])) {
-                    $mform->setDefault($setting, $defaultvalue);
-                }
+            if ($defaultvalue !== null && !$mform->exportValue($setting)) {
+                $mform->setDefault($setting, $defaultvalue);
             }
         };
 
         $currentregion = unicheck_settings::get_current_region();
         $currentcorpdomain = api_regions::get_base_url_by_region($currentregion);
-        $addyesnoelem('unicheck_use', 'enable_plugin', false);
+        $addyesnoelem('enabled', 'enable_plugin', false);
 
         $settingstext = '<div id="fitem_id_settings_link" class="fitem fitem_ftext ">
                             <div class="felement ftext">
