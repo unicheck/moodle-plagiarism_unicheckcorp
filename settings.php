@@ -58,16 +58,14 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
     }
 
     foreach ($data as $field => $value) {
-        if (strpos($field, 'unicheck') === 0) {
-            set_config($field, $value, 'plagiarism');
-        }
+        set_config($field, $value, 'plagiarism_unicheck');
     }
 
     cache_helper::purge_by_definition('plagiarism_unicheck', 'debugging');
     unicheck_notification::success('savedconfigsuccess', true);
 }
 
-$mform->set_data(get_config('plagiarism'));
+$mform->set_data(get_config('plagiarism_unicheck'));
 
 echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
 $mform->display();

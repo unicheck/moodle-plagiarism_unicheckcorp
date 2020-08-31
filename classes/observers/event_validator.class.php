@@ -111,7 +111,7 @@ class event_validator {
      */
     private static function is_mod_enabled($cmid) {
         $cm = get_coursemodule_from_id('', $cmid, 0, false, MUST_EXIST);
-        if (plagiarism_plugin_unicheck::is_enabled_module('mod_' . $cm->modname)) {
+        if (plagiarism_plugin_unicheck::is_enabled_module($cm->modname)) {
             return true;
         }
 

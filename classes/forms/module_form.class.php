@@ -77,11 +77,13 @@ class module_form extends moodleform {
             $this->internalusage = true;
         }
 
-        if (!is_null($modname) && is_string($modname) && plagiarism_plugin_unicheck::is_enabled_module($modname)) {
-            $modname = str_replace('mod_', '', $modname);
-            if (plagiarism_unicheck::is_support_mod($modname)) {
-                $this->modname = $modname;
-            }
+        if (
+            !is_null($modname)
+            && is_string($modname)
+            && plagiarism_plugin_unicheck::is_enabled_module($modname)
+            && plagiarism_unicheck::is_support_mod($modname)
+        ) {
+            $this->modname = $modname;
         }
 
         $PAGE->requires->js_call_amd(UNICHECK_PLAGIN_NAME . '/activity_form', 'init');
@@ -94,8 +96,8 @@ class module_form extends moodleform {
         /** @var MoodleQuickForm $mform */
         $mform = &$this->_form;
 
-        $defaultsforfield = function(MoodleQuickForm &$mform, $setting, $defaultvalue) {
-            if (!isset($mform->exportValues()[$setting]) || is_null($mform->exportValues()[$setting])) {
+        $defaultsforfield = function (MoodleQuickForm &$mform, $setting, $defaultvalue) {
+            if (!$mform->exportValue($setting)) {
                 $mform->setDefault($setting, $defaultvalue);
             }
         };
@@ -160,7 +162,8 @@ class module_form extends moodleform {
 
         $addtextelem(unicheck_settings::SENSITIVITY_SETTING_NAME, unicheck_settings::$defaultsensitivity);
         $addtextelem(unicheck_settings::WORDS_SENSITIVITY, unicheck_settings::$defaultwordssensitivity);
-        $addyesnoelem(unicheck_settings::EXCLUDE_CITATIONS, true, 1);
+        $addyesnoelem(unicheck_settings::EXCLUDE_CITATIONS, true, 0);
+        $addyesnoelem(unicheck_settings::EXCLUDE_REFERENCES, true, 0);
         $addyesnoelem(unicheck_settings::SHOW_STUDENT_SCORE, true, 0);
         $addyesnoelem(unicheck_settings::SHOW_STUDENT_REPORT, true, 0);
         $addyesnoelem(unicheck_settings::SENT_STUDENT_REPORT, true, 0);
