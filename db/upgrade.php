@@ -46,7 +46,7 @@ if (!defined('MOODLE_INTERNAL')) {
  * @throws upgrade_exception
  */
 function xmldb_plagiarism_unicheck_upgrade($oldversion) {
-    global $DB, $CFG;
+    global $DB;
 
     if ($oldversion < 2020090100) {
         $configs = get_config('plagiarism');
