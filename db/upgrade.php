@@ -46,138 +46,9 @@ if (!defined('MOODLE_INTERNAL')) {
  * @throws upgrade_exception
  */
 function xmldb_plagiarism_unicheck_upgrade($oldversion) {
-    global $DB, $CFG;
+    global $DB;
 
-    $dbman = $DB->get_manager();
-
-    if ($oldversion < 2017120100) {
-
-        $table = new xmldb_table('plagiarism_unicheck_files');
-
-        $field = new xmldb_field('state', XMLDB_TYPE_CHAR, '63', null, XMLDB_NOTNULL, null, 'CREATED', 'reportediturl');
-        // Conditionally launch add field type.
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-
-            $sql = "UPDATE {plagiarism_unicheck_files}
-                SET state = (
-                    CASE
-                        WHEN statuscode = '200' THEN 'CHECKED'
-                        WHEN statuscode = '202' AND check_id IS NOT NULL THEN 'CHECKING'
-                        WHEN statuscode = '202' AND check_id IS NULL THEN 'UPLOADED'
-                        WHEN statuscode = 'pending' THEN 'CREATED'
-                        ELSE 'HAS_ERROR'
-                    END
-                )";
-
-            $DB->execute($sql);
-        }
-
-        $field = new xmldb_field('external_file_uuid', XMLDB_TYPE_CHAR, '63', null, null, null, null, 'state');
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-
-        // Unicheck savepoint reached.
-        upgrade_plugin_savepoint(true, 2017120100, 'plagiarism', 'unicheck');
-    }
-
-    if ($oldversion < 2018020700) {
-        $table = new xmldb_table('plagiarism_unicheck_comments');
-
-        if ($dbman->table_exists($table)) {
-            $dbman->drop_table($table);
-        }
-
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', true, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
-        $table->add_field('body', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null, null);
-        $table->add_field('commentableid', XMLDB_TYPE_INTEGER, '10', true, XMLDB_NOTNULL, null, null, null);
-        $table->add_field('commentabletype', XMLDB_TYPE_CHAR, '64', null, XMLDB_NOTNULL, null, null, null);
-        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, null);
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id'], null, null);
-        $dbman->create_table($table);
-
-        $table = new xmldb_table('plagiarism_unicheck_files');
-        $field = new xmldb_field('metadata', XMLDB_TYPE_TEXT, null, null, null, null, null, 'external_file_uuid');
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-
-        upgrade_plugin_savepoint(true, 2018020700, 'plagiarism', 'unicheck');
-    }
-
-    if ($oldversion < 2018021529) {
-
-        // Define field api_key to be added to plagiarism_unicheck_users.
-        $table = new xmldb_table('plagiarism_unicheck_users');
-        $field = new xmldb_field('api_key', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'external_token');
-        $index = new xmldb_index('user_id_api_key_idx', XMLDB_INDEX_NOTUNIQUE, ['user_id', 'api_key']);
-
-        // Conditionally launch add field api_key.
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-
-        // Conditionally launch add index user_id_api_key_idx.
-        if (!$dbman->index_exists($table, $index)) {
-            $dbman->add_index($table, $index);
-        }
-
-        // Define field id to be added to plagiarism_unicheck_callback.
-        $table = new xmldb_table('plagiarism_unicheck_callback');
-        if ($dbman->table_exists($table)) {
-            $dbman->drop_table($table);
-        }
-
-        // Define fields to be added to plagiarism_unicheck_callback.
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
-        $table->add_field('api_key', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'id');
-        $table->add_field('event_type', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'api_key');
-        $table->add_field('event_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'event_type');
-        $table->add_field('resource_type', XMLDB_TYPE_CHAR, '64', null, XMLDB_NOTNULL, null, null, 'event_id');
-        $table->add_field('resource_id', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'resource_type');
-        $table->add_field('request_body', XMLDB_TYPE_TEXT, null, null, null, null, null, 'resource_id');
-        $table->add_field('processed', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'request_body');
-        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'processed');
-        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'timecreated');
-
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id'], null, null);
-        $table->add_index('event_id_api_key_idx', XMLDB_INDEX_UNIQUE, ['event_id', 'api_key']);
-
-        $dbman->create_table($table);
-
-        // Unicheck savepoint reached.
-        upgrade_plugin_savepoint(true, 2018021529, 'plagiarism', 'unicheck');
-    }
-
-    if ($oldversion < 2018021531) {
-        $table = new xmldb_table('plagiarism_unicheck_callback');
-
-        // Changing nullability of field resource_id on table plagiarism_unicheck_callback to null.
-        $field = new xmldb_field('resource_id', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'resource_type');
-        if ($dbman->field_exists($table, $field)) {
-            $dbman->change_field_notnull($table, $field);
-        }
-
-        // Unicheck savepoint reached.
-        upgrade_plugin_savepoint(true, 2018021531, 'plagiarism', 'unicheck');
-    }
-
-    if ($oldversion < 2018021549) {
-        $rows = $DB->get_records('plagiarism_unicheck_config', ['name' => 'exclude_citations']);
-
-        foreach ($rows as $row) {
-            $DB->insert_record(
-                'plagiarism_unicheck_config',
-                (object) ['cm' => $row->cm, 'name' => 'exclude_references', 'value' => $row->value]
-            );
-        }
-
-        // Unicheck savepoint reached.
-        upgrade_plugin_savepoint(true, 2018021549, 'plagiarism', 'unicheck');
-    }
-
-    if ($CFG->branch >= 39) {
+    if ($oldversion < 2020090100) {
         $configs = get_config('plagiarism');
 
         foreach ($configs as $field => $value) {
@@ -191,6 +62,8 @@ function xmldb_plagiarism_unicheck_upgrade($oldversion) {
                 set_config($field, $value, 'plagiarism_unicheck');
             }
         }
+
+        upgrade_plugin_savepoint(true, 2020090100, 'plagiarism', 'unicheck');
     }
 
     return true;
