@@ -66,21 +66,5 @@ function xmldb_plagiarism_unicheck_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2020090100, 'plagiarism', 'unicheck');
     }
 
-    if ($CFG->branch >= 39) {
-        $configs = get_config('plagiarism');
-
-        foreach ($configs as $field => $value) {
-            if (strpos($field, 'unicheck') === 0) {
-                if ($field === 'unicheck_use') {
-                    $DB->delete_records('config_plugins', ['name' => $field, 'plugin' => 'plagiarism']);
-
-                    $field = 'enabled';
-                }
-
-                set_config($field, $value, 'plagiarism_unicheck');
-            }
-        }
-    }
-
     return true;
 }
