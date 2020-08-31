@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [3.0.0] - 2020-08-17
+## [3.0.0] - 2020-09-01
 ### Fixed
 - stop using deprecated setting `unicheck_use` (already use `enabled`) in `config_plugins` table
 - migrate all settings in `config_plugins` table from `plugin=plagiarism` to `plugin=plagiarism_unicheck`
