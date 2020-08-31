@@ -192,7 +192,11 @@ class unicheck_api {
         ];
 
         if (unicheck_settings::get_activity_settings($plagiarismfile->cm, unicheck_settings::EXCLUDE_CITATIONS)) {
-            $postdata = array_merge($postdata, ['exclude_citations' => 1, 'exclude_references' => 1]);
+            $postdata = array_merge($postdata, ['exclude_citations' => 1]);
+        }
+
+        if (unicheck_settings::get_activity_settings($plagiarismfile->cm, unicheck_settings::EXCLUDE_REFERENCES)) {
+            $postdata = array_merge($postdata, ['exclude_references' => 1]);
         }
 
         return unicheck_api_request::instance()->http_post()->request(self::CHECK_CREATE, $postdata);
