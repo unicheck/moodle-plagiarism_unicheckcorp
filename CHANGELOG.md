@@ -11,4 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - stop using deprecated methods: `\plagiarism_plugin_unicheck::get_form_elements_module` => `plagiarism_unicheck_coursemodule_standard_elements`
     and `\plagiarism_plugin_unicheck::save_form_elements` => `plagiarism_unicheck_coursemodule_edit_post_actions`
 
+### Added
+- quiz support
+
 [3.0.0]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v3.0.0
