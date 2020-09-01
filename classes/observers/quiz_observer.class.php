@@ -69,7 +69,7 @@ class quiz_observer extends abstract_observer
      *
      * @throws \plagiarism_unicheck\classes\exception\unicheck_exception
      */
-    public function assessable_uploaded(unicheck_core $core, base $event) {
+    public function attempt_submitted(unicheck_core $core, base $event) {
         $this->core = $core;
         $this->event = $event;
 

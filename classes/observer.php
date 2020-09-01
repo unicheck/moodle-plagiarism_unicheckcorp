@@ -237,6 +237,6 @@ class plagiarism_unicheck_observer {
             return;
         }
 
-        quiz_observer::instance()->assessable_uploaded(self::get_core($event), $event);
+        quiz_observer::instance()->attempt_submitted(self::get_core($event), $event);
     }
 }
