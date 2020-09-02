@@ -30,6 +30,7 @@ require(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/locallib.php');
 require_once($CFG->dirroot . '/mod/assign/locallib.php');
 require_once($CFG->dirroot . '/mod/workshop/locallib.php');
+require_once($CFG->dirroot . '/mod/quiz/locallib.php');
 
 use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\entities\providers\user_provider;
@@ -95,6 +96,15 @@ switch ($cm->modname) {
         if (has_capability('mod/workshop:view', $context)) {
             $member = true;
         }
+
+        break;
+    case UNICHECK_MODNAME_QUIZ:
+        $grader = has_capability('mod/quiz:grade', $context);
+        if ($grader) {
+            break;
+        }
+
+        $member = has_capability('mod/quiz:view', $context);
 
         break;
 }

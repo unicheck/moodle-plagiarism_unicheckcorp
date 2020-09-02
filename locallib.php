@@ -53,6 +53,7 @@ class plagiarism_unicheck {
         UNICHECK_MODNAME_ASSIGN,
         UNICHECK_MODNAME_WORKSHOP,
         UNICHECK_MODNAME_FORUM,
+        UNICHECK_MODNAME_QUIZ,
     ];
     /**
      * @var array
@@ -66,9 +67,11 @@ class plagiarism_unicheck {
         UNICHECK_WORKSHOP_FILES_AREA,
         UNICHECK_DEFAULT_FILES_AREA,
         UNICHECK_FORUM_FILES_AREA,
+        UNICHECK_QUIZ_FILES_AREA,
         'submission_files',
         'submission_attachment',
         'attachment',
+        'response_attachments',
     ];
     /**
      * @var array
@@ -92,7 +95,7 @@ class plagiarism_unicheck {
     ];
 
     /**
-     * Verify supporting for modules like: assign, workshop, forum
+     * Verify supporting for modules like: assign, workshop, forum, quiz
      *
      * @param string $modname
      *

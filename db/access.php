@@ -219,5 +219,5 @@ $capabilities = [
             'manager'        => CAP_ALLOW,
             'coursecreator'  => CAP_ALLOW
         ],
-    ]
+    ],
 ];
