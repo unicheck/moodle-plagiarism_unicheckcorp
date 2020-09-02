@@ -106,8 +106,8 @@ div.unicheck-detect_result div:first-child {
     width: inherit;
 }
 
-.unicheck-report .unicheck-reset-link:hover,
-.unicheck-report .unicheck-start-scan-link:hover {
+.unicheck-report .unicheck-reset-link,
+.unicheck-report .unicheck-start-scan-link {
     background-color: #67768a;
 }
 
