@@ -9,6 +9,7 @@
 
 | Moodle | PHP | Unicheck plugin | Branch | Changelog
 | :---: | :---: | :---: | :---: | :---: |
+| 3.9       | 7.2 - 7.4 | 3.x.x | [release/3.x](/unicheck/moodle-plagiarism_unicheckcorp/tree/release/3.x) | [link](/unicheck/moodle-plagiarism_unicheckcorp/blob/release/3.x/CHANGELOG.md)
 | 3.3 - 3.9 | 5.6 - 7.4 | 2.x.x | [release/2.x](/unicheck/moodle-plagiarism_unicheckcorp/tree/release/2.x) | [link](/unicheck/moodle-plagiarism_unicheckcorp/blob/release/2.x/CHANGELOG.md)
 | 2.7 - 3.2 | 5.4 - 7.1 | 1.x.x | [release/1.x](/unicheck/moodle-plagiarism_unicheckcorp/tree/release/1.x) | [link](/unicheck/moodle-plagiarism_unicheckcorp/blob/release/1.x/CHANGELOG.md)
 
@@ -56,3 +57,9 @@ You must open it for the following IP addresses:
 3. Install *Unicheck Plagiarism plugin for Moodle*.
 During installation all Unplag plugin data is copied to Unicheck plugin database tables.
 4. Uninstall *Unplag Plagiarism plugin for Moodle* (lose data from old plugin) or disable it (without lose data)
+
+#### Quiz - Essay question support.
+The latest version of this plugin provides support for essay questions within the quiz activity, however Moodle doesn’t provide a way for you to view the score/report.
+To allow the report to be viewed you must add a patch to the core Moodle code-base. 
+More information on this is in the Moodle Tracker: MDL-32226
+For a direct link to the patch required see: https://github.com/moodle/moodle/commit/dfe73fadfcf0bae603aa58707e48182a221eea5a
