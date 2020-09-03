@@ -110,7 +110,11 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
                     $output = unicheck_linkarray::get_output_for_linkarray($fileobj, $cm, $linkarray);
                 }
             } else {
-                if (isset($linkarray['content']) && filesize_checker::is_valid_content($linkarray['content'])) {
+                if (
+                    isset($linkarray['content'])
+                    && filesize_checker::is_valid_content($linkarray['content'])
+                    && !unicheck_assign::get($cm->instance)->teamsubmission
+                ) {
                     $output = require(__DIR__ . '/views/' . 'view_tmpl_can_check.php');
                 }
             }
