@@ -113,7 +113,10 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
                 if (
                     isset($linkarray['content'])
                     && filesize_checker::is_valid_content($linkarray['content'])
-                    && !unicheck_assign::get($cm->instance)->teamsubmission
+                    && (
+                        $cm->modname !== UNICHECK_MODNAME_ASSIGN
+                        || !unicheck_assign::get($cm->instance)->teamsubmission
+                    )
                 ) {
                     $output = require(__DIR__ . '/views/' . 'view_tmpl_can_check.php');
                 }
