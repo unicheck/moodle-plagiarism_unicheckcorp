@@ -146,7 +146,7 @@ class module_form extends moodleform {
             $addyesnoelem(unicheck_settings::CHECK_ALREADY_DELIVERED_ASSIGNMENT_SUBMISSIONS, true, 0);
         }
 
-        if (in_array($this->modname, [UNICHECK_MODNAME_ASSIGN, UNICHECK_MODNAME_QUIZ])) {
+        if (!in_array($this->modname, [UNICHECK_MODNAME_FORUM, UNICHECK_MODNAME_WORKSHOP])) {
             $addyesnoelem(unicheck_settings::ADD_TO_INSTITUTIONAL_LIBRARY, true, 0);
         }
 
