@@ -64,10 +64,11 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
      */
     public static function default_plugin_options() {
         return [
-            'unicheck_use',
+            'enabled',
             'unicheck_enable_mod_assign',
             'unicheck_enable_mod_forum',
             'unicheck_enable_mod_workshop',
+            'unicheck_enable_mod_quiz',
         ];
     }
 
@@ -80,9 +81,27 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
      */
     public function get_links($linkarray) {
         global $USER;
-        if (!plagiarism_unicheck::is_plugin_enabled() || !unicheck_settings::get_activity_settings(
-                $linkarray['cmid'], unicheck_settings::ENABLE_UNICHECK
-            )
+
+        if (!plagiarism_unicheck::is_plugin_enabled()) {
+            // Not allowed access to this content.
+            return null;
+        }
+
+        // If this is a quiz, retrieve the cmid.
+        $component = !empty($linkarray['component']) ? $linkarray['component'] : '';
+        if (!isset($linkarray['cmid']) && $component == 'qtype_essay' && !empty($linkarray['area'])) {
+            $questions = question_engine::load_questions_usage_by_activity($linkarray['area']);
+
+            // Try to get cm using the questions owning context.
+            $context = $questions->get_owning_context();
+            if (empty($linkarray['cmid']) && $context->contextlevel == CONTEXT_MODULE) {
+                $linkarray['cmid'] = $context->instanceid;
+            }
+        }
+
+        if (
+            !isset($linkarray['cmid'])
+            || !unicheck_settings::get_activity_settings($linkarray['cmid'], unicheck_settings::ENABLE_UNICHECK)
         ) {
             // Not allowed access to this content.
             return null;
@@ -91,13 +110,14 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
         $cm = get_coursemodule_from_id('', $linkarray['cmid'], 0, false, MUST_EXIST);
 
         $output = '';
-        if (self::is_enabled_module('mod_' . $cm->modname)) {
+        if (self::is_enabled_module($cm->modname)) {
             // Not allowed to view similarity check result.
             if (!capability::can_view_similarity_check_result($linkarray['cmid'], $USER->id)) {
                 return null;
             }
 
             $file = unicheck_linkarray::get_file_from_linkarray($cm, $linkarray);
+
             if ($file && plagiarism_unicheck::is_support_filearea($file->get_filearea())) {
                 $ucore = new unicheck_core($linkarray['cmid'], $file->get_userid(), $cm->modname);
 
@@ -110,74 +130,20 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
                     $output = unicheck_linkarray::get_output_for_linkarray($fileobj, $cm, $linkarray);
                 }
             } else {
-                if (isset($linkarray['content']) && filesize_checker::is_valid_content($linkarray['content'])) {
+                if (
+                    isset($linkarray['content'])
+                    && filesize_checker::is_valid_content($linkarray['content'])
+                    && (
+                        $cm->modname !== UNICHECK_MODNAME_ASSIGN
+                        || !unicheck_assign::get($cm->instance)->teamsubmission
+                    )
+                ) {
                     $output = require(__DIR__ . '/views/' . 'view_tmpl_can_check.php');
                 }
             }
         }
 
         return $output;
-    }
-
-    /**
-     *  Hook to save plagiarism specific settings on a module settings page
-     *
-     * @param object $data - data from an mform submission.
-     */
-    public function save_form_elements($data) {
-        global $DB;
-
-        if (!plagiarism_unicheck::is_support_mod($data->modulename) || !isset($data->use_unicheck)) {
-            return;
-        }
-
-        if (isset($data->submissiondrafts) && !$data->submissiondrafts) {
-            $data->use_unicheck = 0;
-        }
-
-        // First get existing values.
-        $configs = config_provider::get_configs($data->coursemodule);
-        // Array of possible plagiarism config options.
-        foreach (self::config_options() as $element) {
-            if (!isset($data->{$element})) {
-                continue;
-            }
-
-            $configvalue = isset($configs[$element]) ? $configs[$element]['value'] : null;
-            $newconfigvalue = unicheck_settings::get_sanitized_value($element, $data->{$element}, $configvalue);
-
-            $configrow = new Stdclass();
-            $configrow->cm = $data->coursemodule;
-            $configrow->name = $element;
-            $configrow->value = $newconfigvalue;
-
-            if (isset($configs[$element])) {
-                $configrow->id = $configs[$element]['id'];
-                $updates[] = $configrow;
-            } else {
-                $inserts[] = $configrow;
-            }
-        }
-
-        if (!empty($updates)) {
-            config_provider::update_configs($updates);
-        }
-
-        if (!empty($inserts)) {
-            config_provider::insert_configs($inserts);
-        }
-
-        // Plugin is enabled.
-        if ($data->use_unicheck == 1) {
-            if ($data->modulename == UNICHECK_MODNAME_ASSIGN && $data->check_all_submitted_assignments == 1) {
-                $cm = get_coursemodule_from_id('', $data->coursemodule);
-                unicheck_bulk_check_assign_files::add_task([
-                    'contextid' => $data->gradingman->get_context()->id,
-                    'cmid'      => $data->coursemodule,
-                    'modname'   => $cm->modname
-                ]);
-            }
-        }
     }
 
     /**
@@ -200,7 +166,7 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
      */
     public static function is_enabled_module($modulename) {
         $plagiarismsettings = unicheck_settings::get_settings();
-        $modname = 'unicheck_enable_' . $modulename;
+        $modname = 'unicheck_enable_mod_' . $modulename;
 
         if (!$plagiarismsettings || empty($plagiarismsettings[$modname])) {
             return false; // Return if plugin is not enabled for the module.
@@ -210,62 +176,12 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
     }
 
     /**
-     * hook to add plagiarism specific settings to a module settings page
-     *
-     * @param object  $mform   - Moodle form
-     * @param context $context - current context
-     * @param string  $modulename
-     */
-    public function get_form_elements_module($mform, $context, $modulename = "") {
-        if ($modulename && !self::is_enabled_module($modulename)) {
-            return;
-        }
-        $defaultcmid = 0;
-        $cmid = optional_param('update', $defaultcmid, PARAM_INT); // Get cm as $this->_cm is not available here.
-
-        $plagiarismelements = self::config_options();
-        if (has_capability(capability::ENABLE, $context)) {
-            $settingsform = new module_form($mform, $modulename, $context);
-            $defaultsettings = $activitysettings = unicheck_settings::get_activity_settings($defaultcmid, null, true);
-            if ($defaultcmid !== $cmid) {
-                $activitysettings = unicheck_settings::get_activity_settings($cmid, null, true);
-                foreach ($defaultsettings as $setting => $value) {
-                    if (isset($activitysettings[$setting])) {
-                        continue;
-                    }
-
-                    $activitysettings[$setting] = $defaultsettings[$setting];
-                }
-            }
-
-            $settingsform->set_data($activitysettings);
-            $settingsform->definition();
-
-            if ($mform->elementExists('submissiondrafts')) {
-                // Disable all plagiarism elements if submissiondrafts eg 0.
-                foreach ($plagiarismelements as $element) {
-                    $mform->disabledIf($element, 'submissiondrafts', 'eq', 0);
-                }
-            } else {
-                if ($mform->elementExists(unicheck_settings::DRAFT_SUBMIT) && $mform->elementExists('var4')) {
-                    $mform->disabledIf(unicheck_settings::DRAFT_SUBMIT, 'var4', 'eq', 0);
-                }
-            }
-            $this->disable_elements_if_not_use($plagiarismelements, $mform);
-        } else { // Add plagiarism settings as hidden vars.
-            $this->add_plagiarism_hidden_vars($plagiarismelements, $mform);
-        }
-
-        return;
-    }
-
-    /**
      * Disable elements if not use
      *
      * @param array  $plagiarismelements
      * @param object $mform - Moodle form
      */
-    private function disable_elements_if_not_use($plagiarismelements, $mform) {
+    public function disable_elements_if_not_use($plagiarismelements, $mform) {
         // Disable all plagiarism elements if use_plagiarism eg 0.
         foreach ($plagiarismelements as $element) {
             if ($element <> unicheck_settings::ENABLE_UNICHECK) { // Ignore this var.
@@ -280,7 +196,7 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
      * @param array                  $plagiarismelements
      * @param MoodleQuickForm|object $mform - Moodle form
      */
-    private function add_plagiarism_hidden_vars($plagiarismelements, $mform) {
+    public function add_plagiarism_hidden_vars($plagiarismelements, $mform) {
         foreach ($plagiarismelements as $element) {
             $mform->addElement('hidden', $element);
             $mform->setType($element, unicheck_settings::get_setting_type($element));
@@ -321,4 +237,130 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
         // Workaround MDL-52702 before version 3.1.
         // Affected branches moodle 2.7 - 3.0.
     }
+}
+
+/**
+ * Hook to add plagiarism specific settings to a module settings page
+ *
+ * @param moodleform $formwrapper The moodle quickforms wrapper object.
+ * @param MoodleQuickForm $mform The actual form object (required to modify the form).
+ *
+ * @throws coding_exception
+ */
+function plagiarism_unicheck_coursemodule_standard_elements($formwrapper, $mform) {
+    $context = context_course::instance($formwrapper->get_course()->id);
+    $modulename = $formwrapper->get_current()->modulename;
+
+    if ($modulename && !plagiarism_plugin_unicheck::is_enabled_module($modulename)) {
+        return;
+    }
+
+    $defaultcmid = 0;
+    $cmid = optional_param('update', $defaultcmid, PARAM_INT); // Get cm as $this->_cm is not available here.
+
+    $plagiarismelements = plagiarism_plugin_unicheck::config_options();
+
+    if (has_capability(capability::ENABLE, $context)) {
+        $settingsform = new module_form($mform, $modulename, $context);
+        $defaultsettings = $activitysettings = unicheck_settings::get_activity_settings($defaultcmid, null, true);
+
+        if ($defaultcmid !== $cmid) {
+            $activitysettings = unicheck_settings::get_activity_settings($cmid, null, true);
+            foreach ($defaultsettings as $setting => $value) {
+                if (isset($activitysettings[$setting])) {
+                    continue;
+                }
+
+                $activitysettings[$setting] = $defaultsettings[$setting];
+            }
+        }
+
+        $settingsform->set_data($activitysettings);
+        $settingsform->definition();
+
+        if ($mform->elementExists('submissiondrafts')) {
+            // Disable all plagiarism elements if submissiondrafts eg 0.
+            foreach ($plagiarismelements as $element) {
+                $mform->disabledIf($element, 'submissiondrafts', 'eq', 0);
+            }
+        } else {
+            if ($mform->elementExists(unicheck_settings::DRAFT_SUBMIT) && $mform->elementExists('var4')) {
+                $mform->disabledIf(unicheck_settings::DRAFT_SUBMIT, 'var4', 'eq', 0);
+            }
+        }
+        (new plagiarism_plugin_unicheck())->disable_elements_if_not_use($plagiarismelements, $mform);
+    } else { // Add plagiarism settings as hidden vars.
+        (new plagiarism_plugin_unicheck())->add_plagiarism_hidden_vars($plagiarismelements, $mform);
+    }
+}
+
+/**
+ * Hook to save plagiarism specific settings on a module settings page
+ *
+ * @param  stdClass  $data    Data from the form submission.
+ * @param  stdClass  $course  The course.
+ *
+ * @return stdClass|void
+ * @throws coding_exception
+ */
+function plagiarism_unicheck_coursemodule_edit_post_actions($data, $course) {
+    if (!plagiarism_unicheck::is_support_mod($data->modulename)) {
+        return;
+    }
+
+    if (!isset($data->use_unicheck)) {
+        $data->use_unicheck = plagiarism_unicheck::is_plugin_enabled();
+    }
+
+    if (isset($data->submissiondrafts) && !$data->submissiondrafts) {
+        $data->use_unicheck = 0;
+    }
+
+    // First get existing values.
+    $configs = config_provider::get_configs($data->coursemodule);
+    // Array of possible plagiarism config options.
+    foreach (plagiarism_plugin_unicheck::config_options() as $element) {
+        if (!isset($data->{$element})) {
+            continue;
+        }
+
+        $configvalue = isset($configs[$element]) ? $configs[$element]['value'] : null;
+        $newconfigvalue = unicheck_settings::get_sanitized_value($element, $data->{$element}, $configvalue);
+
+        $configrow = new Stdclass();
+        $configrow->cm = $data->coursemodule;
+        $configrow->name = $element;
+        $configrow->value = $newconfigvalue;
+
+        if (isset($configs[$element])) {
+            $configrow->id = $configs[$element]['id'];
+            $updates[] = $configrow;
+        } else {
+            $inserts[] = $configrow;
+        }
+    }
+
+    if (!empty($updates)) {
+        config_provider::update_configs($updates);
+    }
+
+    if (!empty($inserts)) {
+        config_provider::insert_configs($inserts);
+    }
+
+    // Plugin is enabled.
+    if ($data->use_unicheck) {
+        if ($data->modulename == UNICHECK_MODNAME_ASSIGN && $data->check_all_submitted_assignments == 1) {
+            $cm = get_coursemodule_from_id('', $data->coursemodule);
+            unicheck_bulk_check_assign_files::add_task(
+                [
+                    'contextid' => $data->gradingman->get_context()->id,
+                    'cmid'      => $data->coursemodule,
+                    'modname'   => $cm->modname,
+                ]
+            );
+        }
+    }
+
+    return $data;
 }

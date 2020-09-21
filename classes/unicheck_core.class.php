@@ -62,14 +62,14 @@ class unicheck_core {
     public $userid = null;
 
     /**
-     * Context module instance ID (assign/forum/workshop ID)
+     * Context module instance ID (assign/forum/workshop/quiz ID)
      *
      * @var int
      */
     public $cmid = null;
 
     /**
-     * Assign/forum/workshop
+     * Assign/forum/workshop/quiz
      *
      * @var string
      */
