@@ -111,6 +111,8 @@ class unicheck_api_request {
      * @throws OAuthException
      */
     public function request($method, $data) {
+        global $CFG;
+
         $this->set_request_data($data);
         $this->set_action($method);
 
@@ -126,6 +128,7 @@ class unicheck_api_request {
         $ch->setHeader('Plugin-Identifier: ' . $domain);
         $ch->setHeader('Plugin-Version: ' . get_config(UNICHECK_PLAGIN_NAME, 'version'));
         $ch->setHeader('Plugin-Type: ' . UNICHECK_PLAGIN_NAME);
+        $ch->setHeader('Moodle-Version: ' . $CFG->branch);
         $ch->setopt([
             'CURLOPT_RETURNTRANSFER' => true,
             'CURLOPT_CONNECTTIMEOUT' => 10,
