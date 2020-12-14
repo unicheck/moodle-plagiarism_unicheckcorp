@@ -25,6 +25,8 @@
 
 namespace plagiarism_unicheck\classes;
 
+use plagiarism_unicheck\classes\entities\providers\user_provider;
+
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
@@ -270,18 +272,12 @@ class unicheck_api {
      * Create user
      *
      * @param object $user
-     * @param bool   $cancomment
+     * @param array  $apidata
      *
      * @return \stdClass
      */
-    public function user_create($user, $cancomment = false) {
-        $postdata = [
-            'sys_id'    => $user->id,
-            'email'     => $user->email,
-            'firstname' => $user->firstname,
-            'lastname'  => $user->lastname,
-            'scope'     => $cancomment ? self::ACCESS_SCOPE_WRITE : self::ACCESS_SCOPE_READ,
-        ];
+    public function user_create($user, $apidata) {
+        $postdata = ['sys_id' => $user->id] + $apidata;
 
         return unicheck_api_request::instance()->http_post()->request(self::USER_CREATE, $postdata);
     }
@@ -306,10 +302,22 @@ class unicheck_api {
             $postdata['scope'] = $scope;
         }
 
-        return unicheck_api_request::instance()->http_post()->request(
-            str_replace('{utoken}', $externaltoken, self::USER_UPDATE),
-            $postdata
-        );
+        $apikey = unicheck_settings::get_settings('client_id');
+        $user = user_provider::find_by_user_id_and_api_key($moodleuser->id, $apikey);
+        $newapidatahash = md5(serialize($postdata));
+
+        if ($newapidatahash != $user->api_data_hash) {
+            $user->api_data_hash = $newapidatahash;
+
+            user_provider::update($user);
+
+            return unicheck_api_request::instance()->http_post()->request(
+                str_replace('{utoken}', $externaltoken, self::USER_UPDATE),
+                $postdata
+            );
+        }
+
+        return json_decode('');
     }
 
     /**
