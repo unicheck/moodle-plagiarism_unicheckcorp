@@ -72,7 +72,8 @@
                 <FIELD NAME="user_id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="id" NEXT="external_user_id"/>
                 <FIELD NAME="external_user_id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="user_id" NEXT="token"/>
                 <FIELD NAME="external_token" TYPE="char" LENGTH="64" NOTNULL="true" PREVIOUS="external_user_id" SEQUENCE="false"/>
-                <FIELD NAME="api_key" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Unicheck B2E API key"/>
+                <FIELD NAME="api_key" TYPE="char" LENGTH="255" NOTNULL="false" PREVIOUS="external_token" SEQUENCE="false" COMMENT="Unicheck B2E API key"/>
+                <FIELD NAME="api_data_hash" TYPE="char" LENGTH="32" NOTNULL="false" PREVIOUS="api_key" SEQUENCE="false" COMMENT="Data md5 hash after updating API information in Unicheck"/>
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="user_id"/>
