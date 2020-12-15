@@ -287,11 +287,12 @@ class unicheck_api {
      *
      * @param string $externaltoken
      * @param object $moodleuser
+     * @param object $plagiarismuser
      * @param string $scope
      *
      * @return \stdClass
      */
-    public function user_update($externaltoken, $moodleuser, $scope = null) {
+    public function user_update($externaltoken, $moodleuser, $plagiarismuser, $scope = null) {
         $postdata = [
             'email'     => $moodleuser->email,
             'firstname' => $moodleuser->firstname,
@@ -302,14 +303,12 @@ class unicheck_api {
             $postdata['scope'] = $scope;
         }
 
-        $apikey = unicheck_settings::get_settings('client_id');
-        $user = user_provider::find_by_user_id_and_api_key($moodleuser->id, $apikey);
         $newapidatahash = md5(serialize($postdata));
 
-        if ($newapidatahash != $user->api_data_hash) {
-            $user->api_data_hash = $newapidatahash;
+        if ($newapidatahash != $plagiarismuser->api_data_hash) {
+            $plagiarismuser->api_data_hash = $newapidatahash;
 
-            user_provider::update($user);
+            user_provider::update($plagiarismuser);
 
             return unicheck_api_request::instance()->http_post()->request(
                 str_replace('{utoken}', $externaltoken, self::USER_UPDATE),
