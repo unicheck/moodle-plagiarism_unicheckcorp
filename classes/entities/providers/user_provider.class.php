@@ -103,4 +103,18 @@ class user_provider {
 
         return $groupmembers;
     }
+
+    /**
+     * Update plagiarism user
+     *
+     * @param object $user
+     *
+     * @return bool
+     * @throws \dml_exception
+     */
+    public static function update($user) {
+        global $DB;
+
+        return $DB->update_record(UNICHECK_USER_DATA_TABLE, $user);
+    }
 }

@@ -72,7 +72,7 @@ class user_observer extends abstract_observer {
                 return;
             }
 
-            $response = unicheck_api::instance()->user_update($plagiarismuser->external_token, $moodleuser);
+            $response = unicheck_api::instance()->user_update($plagiarismuser, $moodleuser);
             if ($response && $response->result) {
                 api_user_updated::create_from_apiuser($plagiarismuser)->trigger();
             }
