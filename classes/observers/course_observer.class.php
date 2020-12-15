@@ -74,9 +74,8 @@ class course_observer extends abstract_observer {
 
             $cangrade = unicheck_core::is_teacher($event->courseid, $event->userid, CONTEXT_COURSE);
             $response = unicheck_api::instance()->user_update(
-                $plagiarismuser->external_token,
-                $moodleuser,
                 $plagiarismuser,
+                $moodleuser,
                 $cangrade ? unicheck_api::ACCESS_SCOPE_WRITE : unicheck_api::ACCESS_SCOPE_READ
             );
 
