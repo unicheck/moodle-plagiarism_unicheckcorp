@@ -25,6 +25,8 @@
 
 namespace plagiarism_unicheck\classes;
 
+use plagiarism_unicheck\classes\entities\providers\user_provider;
+
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
@@ -270,18 +272,12 @@ class unicheck_api {
      * Create user
      *
      * @param object $user
-     * @param bool   $cancomment
+     * @param array  $apidata
      *
      * @return \stdClass
      */
-    public function user_create($user, $cancomment = false) {
-        $postdata = [
-            'sys_id'    => $user->id,
-            'email'     => $user->email,
-            'firstname' => $user->firstname,
-            'lastname'  => $user->lastname,
-            'scope'     => $cancomment ? self::ACCESS_SCOPE_WRITE : self::ACCESS_SCOPE_READ,
-        ];
+    public function user_create($user, $apidata) {
+        $postdata = ['sys_id' => $user->id] + $apidata;
 
         return unicheck_api_request::instance()->http_post()->request(self::USER_CREATE, $postdata);
     }
@@ -289,13 +285,13 @@ class unicheck_api {
     /**
      * Update API user by external token and moodle user data
      *
-     * @param string $externaltoken
+     * @param object $plagiarismuser
      * @param object $moodleuser
      * @param string $scope
      *
      * @return \stdClass
      */
-    public function user_update($externaltoken, $moodleuser, $scope = null) {
+    public function user_update($plagiarismuser, $moodleuser, $scope = null) {
         $postdata = [
             'email'     => $moodleuser->email,
             'firstname' => $moodleuser->firstname,
@@ -306,10 +302,20 @@ class unicheck_api {
             $postdata['scope'] = $scope;
         }
 
-        return unicheck_api_request::instance()->http_post()->request(
-            str_replace('{utoken}', $externaltoken, self::USER_UPDATE),
-            $postdata
-        );
+        $newapidatahash = md5(serialize($postdata));
+
+        if ($newapidatahash !== $plagiarismuser->api_data_hash) {
+            $plagiarismuser->api_data_hash = $newapidatahash;
+
+            user_provider::update($plagiarismuser);
+
+            return unicheck_api_request::instance()->http_post()->request(
+                str_replace('{utoken}', $plagiarismuser->external_token, self::USER_UPDATE),
+                $postdata
+            );
+        }
+
+        return json_decode('');
     }
 
     /**

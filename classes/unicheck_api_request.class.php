@@ -132,6 +132,7 @@ class unicheck_api_request {
         $ch->setopt([
             'CURLOPT_RETURNTRANSFER' => true,
             'CURLOPT_CONNECTTIMEOUT' => 10,
+            'CURLOPT_TIMEOUT'        => 10,
         ]);
 
         if (UNICHECK_DEBUG_MODE) {
