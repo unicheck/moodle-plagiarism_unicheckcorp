@@ -133,7 +133,7 @@ class unicheck_api {
 
         $postdata = [
             'format'       => strtolower($format),
-            'file_data'    => base64_encode($content),
+            'file'         => $content,
             'name'         => $filename,
             'callback_url' => sprintf(
                 '%1$s%2$s?token=%3$s', $CFG->wwwroot, UNICHECK_CALLBACK_URL, $internalfile->identifier
@@ -144,12 +144,12 @@ class unicheck_api {
             ],
         ];
 
-        $content = null;
-
         $mustindex = (bool) unicheck_settings::get_activity_settings($cmid, unicheck_settings::ADD_TO_INSTITUTIONAL_LIBRARY);
         $postdata['options']['no_index'] = !$mustindex;
 
-        $response = unicheck_api_request::instance()->http_post()->request(self::FILE_UPLOAD, $postdata);
+        $response = unicheck_api_request::instance()
+            ->http_post()
+            ->request_multipart_form_data(self::FILE_UPLOAD, $postdata);
         if (!is_object($response)) {
             $response = (object) [
                 "result" => false,

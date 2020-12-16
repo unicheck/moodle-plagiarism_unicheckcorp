@@ -102,18 +102,51 @@ class unicheck_api_request {
     }
 
     /**
-     * Make request
-     *
-     * @param string $method
-     * @param array  $data
+     * @param $method
+     * @param $data
      *
      * @return \stdClass
      * @throws OAuthException
+     * @throws \coding_exception
+     * @throws \dml_exception
      */
     public function request($method, $data) {
+        $this->set_request_data($data);
+
+        return $this->send_request($method, $data);
+    }
+
+    /**
+     * @param $method
+     * @param $data
+     *
+     * @return \stdClass
+     * @throws OAuthException
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function request_multipart_form_data($method, $data)
+    {
+        $boundary = '----WebKitFormBoundary' . uniqid('', false);
+
+        $this->requestdata = $this->build_multipart_form_data($boundary, $data);
+
+        return $this->send_request($method, $data, 'multipart/form-data; boundary=' . $boundary);
+    }
+
+    /**
+     * @param          $method
+     * @param          $data
+     * @param  string  $contenttype
+     *
+     * @return \stdClass
+     * @throws OAuthException
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    private function send_request($method, $data, $contenttype = 'application/json') {
         global $CFG;
 
-        $this->set_request_data($data);
         $this->set_action($method);
 
         try {
@@ -124,7 +157,7 @@ class unicheck_api_request {
 
         $ch = new \curl();
         $ch->setHeader($this->gen_oauth_headers());
-        $ch->setHeader('Content-Type: application/json');
+        $ch->setHeader('Content-Type: ' . $contenttype);
         $ch->setHeader('Plugin-Identifier: ' . $domain);
         $ch->setHeader('Plugin-Version: ' . get_config(UNICHECK_PLAGIN_NAME, 'version'));
         $ch->setHeader('Plugin-Type: ' . UNICHECK_PLAGIN_NAME);
@@ -158,6 +191,46 @@ class unicheck_api_request {
         $this->lastcurl = $ch;
 
         return $this->handle_response($response);
+    }
+
+    /**
+     * @param $boundary
+     * @param $fields
+     *
+     * @return string
+     */
+    private function build_multipart_form_data($boundary, $fields)
+    {
+        $data = '';
+        $delimiter = '--';
+
+        foreach ($fields as $key => $value) {
+            if ($key === 'file') {
+                $data .= $delimiter . $boundary . PHP_EOL
+                    . 'Content-Disposition: form-data; name="' . $key . '"; filename="' . $fields['name'] . '"' . PHP_EOL
+                    . 'Content-Transfer-Encoding: binary' . PHP_EOL
+                ;
+                $data .= PHP_EOL;
+                $data .= $value . PHP_EOL;
+            } else {
+                $tmpl = $delimiter . $boundary . PHP_EOL
+                    . 'Content-Disposition: form-data; name="%s"' . PHP_EOL . PHP_EOL . '%s' . PHP_EOL;
+
+                if (is_array($value)) {
+                    foreach ($value as $k => $v) {
+                        $name =  $key . '['. $k . ']';
+
+                        $data .= sprintf($tmpl, $name, $v);
+                    }
+                } else {
+                    $data .= sprintf($tmpl, $key, $value);
+                }
+            }
+        }
+
+        $data .= $delimiter . $boundary . $delimiter . PHP_EOL;
+
+        return $data;
     }
 
     /**
