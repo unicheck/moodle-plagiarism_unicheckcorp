@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [3.1.0] - 2020-12-14
 ### Optimized
 - Connect to Unicheck
+### Fixed
+- https://github.com/unicheck/moodle-plagiarism_unicheckcorp/issues/103
 
 ## [3.0.1] - 2020-11-24
 ### Added

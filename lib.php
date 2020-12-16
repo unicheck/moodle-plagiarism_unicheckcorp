@@ -218,7 +218,9 @@ class plagiarism_plugin_unicheck extends plagiarism_plugin {
         $useplugin = unicheck_settings::get_activity_settings($cmid, unicheck_settings::ENABLE_UNICHECK);
         $disclosure = unicheck_settings::get_settings('student_disclosure');
 
-        if (!empty($disclosure) && $useplugin) {
+        $cm = get_coursemodule_from_id('', $cmid);
+
+        if (!empty($disclosure) && $useplugin && self::is_enabled_module($cm->modname)) {
             $outputhtml .= $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
             $formatoptions = new stdClass;
             $formatoptions->noclean = true;
