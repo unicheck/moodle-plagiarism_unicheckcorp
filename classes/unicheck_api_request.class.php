@@ -125,8 +125,7 @@ class unicheck_api_request {
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    public function request_multipart_form_data($method, $data)
-    {
+    public function request_multipart_form_data($method, $data) {
         $boundary = '----WebKitFormBoundary' . uniqid('', false);
 
         $this->requestdata = $this->build_multipart_form_data($boundary, $data);
@@ -199,8 +198,7 @@ class unicheck_api_request {
      *
      * @return string
      */
-    private function build_multipart_form_data($boundary, $fields)
-    {
+    private function build_multipart_form_data($boundary, $fields) {
         $data = '';
         $delimiter = '--';
 
@@ -208,8 +206,7 @@ class unicheck_api_request {
             if ($key === 'file') {
                 $data .= $delimiter . $boundary . PHP_EOL
                     . 'Content-Disposition: form-data; name="' . $key . '"; filename="' . $fields['name'] . '"' . PHP_EOL
-                    . 'Content-Transfer-Encoding: binary' . PHP_EOL
-                ;
+                    . 'Content-Transfer-Encoding: binary' . PHP_EOL;
                 $data .= PHP_EOL;
                 $data .= $value . PHP_EOL;
             } else {
@@ -218,9 +215,7 @@ class unicheck_api_request {
 
                 if (is_array($value)) {
                     foreach ($value as $k => $v) {
-                        $name =  $key . '['. $k . ']';
-
-                        $data .= sprintf($tmpl, $name, $v);
+                        $data .= sprintf($tmpl, $key . '['. $k . ']', $v);
                     }
                 } else {
                     $data .= sprintf($tmpl, $key, $value);
