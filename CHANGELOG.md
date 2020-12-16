@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.1.1] - 2020-12-16
+### Changed
+- Sending files to Unicheck (from base64 to multipart/form-data)
+
 ## [3.1.0] - 2020-12-14
 ### Optimized
 - Connect to Unicheck
@@ -24,6 +28,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - quiz support
 
+[3.1.1]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v3.1.1
 [3.1.0]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v3.1.0
 [3.0.1]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v3.0.1
 [3.0.0]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v3.0.0
