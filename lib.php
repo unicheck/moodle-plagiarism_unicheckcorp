@@ -306,12 +306,8 @@ function plagiarism_unicheck_coursemodule_standard_elements($formwrapper, $mform
  * @throws coding_exception
  */
 function plagiarism_unicheck_coursemodule_edit_post_actions($data, $course) {
-    if (!plagiarism_unicheck::is_support_mod($data->modulename)) {
+    if (!isset($data->use_unicheck) || !plagiarism_unicheck::is_support_mod($data->modulename)) {
         return;
-    }
-
-    if (!isset($data->use_unicheck)) {
-        $data->use_unicheck = plagiarism_unicheck::is_plugin_enabled();
     }
 
     if (isset($data->submissiondrafts) && !$data->submissiondrafts) {

@@ -65,6 +65,10 @@ class unicheck_api_request {
      */
     private $httpmethod = 'get';
     /**
+     * @var bool
+     */
+    private $ismultipartformdata = false;
+    /**
      * @var \curl|null
      */
     private $lastcurl;
@@ -129,9 +133,10 @@ class unicheck_api_request {
      * @throws \dml_exception
      */
     public function request_multipart_form_data($method, $data) {
+        $this->ismultipartformdata = true;
         $this->requestdata = $data;
 
-        return $this->send_request($method, $data, true);
+        return $this->send_request($method, $data, $this->ismultipartformdata);
     }
 
     /**
@@ -231,7 +236,9 @@ class unicheck_api_request {
     private function gen_oauth_headers() {
         $oauthdata = [];
         if ($this->httpmethod == 'post') {
-            $oauthdata['oauth_body_hash'] = $this->gen_oauth_body_hash();
+            if (!$this->ismultipartformdata) {
+                $oauthdata['oauth_body_hash'] = $this->gen_oauth_body_hash();
+            }
         } else {
             $oauthdata = $this->get_request_data();
         }
