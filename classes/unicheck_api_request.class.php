@@ -64,7 +64,10 @@ class unicheck_api_request {
      * @var  string
      */
     private $httpmethod = 'get';
-
+    /**
+     * @var bool
+     */
+    private $ismultipartformdata = false;
     /**
      * @var \curl|null
      */
@@ -109,11 +112,48 @@ class unicheck_api_request {
      *
      * @return \stdClass
      * @throws OAuthException
+     * @throws \coding_exception
+     * @throws \dml_exception
      */
     public function request($method, $data) {
+        $this->set_request_data($data);
+
+        return $this->send_request($method, $data);
+    }
+
+    /**
+     * Make request with multipart/form-data
+     *
+     * @param string $method
+     * @param array  $data
+     *
+     * @return \stdClass
+     * @throws OAuthException
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function request_multipart_form_data($method, $data) {
+        $this->ismultipartformdata = true;
+        $this->requestdata = $data;
+
+        return $this->send_request($method, $data, $this->ismultipartformdata);
+    }
+
+    /**
+     * Send request
+     *
+     * @param  string  $method
+     * @param  array   $data
+     * @param  bool    $ismultipartformdata
+     *
+     * @return \stdClass
+     * @throws OAuthException
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    private function send_request($method, $data, $ismultipartformdata = false) {
         global $CFG;
 
-        $this->set_request_data($data);
         $this->set_action($method);
 
         try {
@@ -124,7 +164,9 @@ class unicheck_api_request {
 
         $ch = new \curl();
         $ch->setHeader($this->gen_oauth_headers());
-        $ch->setHeader('Content-Type: application/json');
+        if (!$ismultipartformdata) {
+            $ch->setHeader('Content-Type: application/json');
+        }
         $ch->setHeader('Plugin-Identifier: ' . $domain);
         $ch->setHeader('Plugin-Version: ' . get_config(UNICHECK_PLAGIN_NAME, 'version'));
         $ch->setHeader('Plugin-Type: ' . UNICHECK_PLAGIN_NAME);
@@ -194,7 +236,9 @@ class unicheck_api_request {
     private function gen_oauth_headers() {
         $oauthdata = [];
         if ($this->httpmethod == 'post') {
-            $oauthdata['oauth_body_hash'] = $this->gen_oauth_body_hash();
+            if (!$this->ismultipartformdata) {
+                $oauthdata['oauth_body_hash'] = $this->gen_oauth_body_hash();
+            }
         } else {
             $oauthdata = $this->get_request_data();
         }

@@ -105,9 +105,8 @@ HTML;
      * @return base
      */
     public static function create_log_message($apikey, $apiurl, $requestdata, $responsedata, $responsecode = 200) {
-
-        if (is_array($requestdata) && isset($requestdata['file_data'])) {
-            $requestdata['file_data'] = 'base64 encoding of file';
+        if (is_array($requestdata) && isset($requestdata['file'])) {
+            $requestdata['file'] = 'stored_file or curl_file';
         }
 
         return self::create([

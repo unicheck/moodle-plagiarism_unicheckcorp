@@ -82,7 +82,7 @@ class plagiarism_unicheck_advanced_testcase extends advanced_testcase {
      * @throws dml_exception
      * @throws ReflectionException
      */
-    protected function setUp() {
+    protected function setUp(): void {
         global $DB;
 
         $this->resetAfterTest(true);
