@@ -102,6 +102,8 @@ class unicheck_api {
     }
 
     /**
+     * Upload file
+     *
      * @param  stored_file|string  $file
      * @param  string              $filename
      * @param  integer             $cmid
