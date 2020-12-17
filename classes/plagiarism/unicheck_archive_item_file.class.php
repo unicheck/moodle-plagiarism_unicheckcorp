@@ -65,7 +65,7 @@ class unicheck_archive_item_file extends unicheck_plagiarism_entity {
      *
      * @param  unicheck_core  $core
      * @param  array          $item
-     * @param  null           $parentid
+     * @param  int|null       $parentid
      */
     public function __construct(unicheck_core $core, array $item, $parentid = null) {
         $this->core = $core;

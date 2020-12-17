@@ -101,8 +101,10 @@ class unicheck_api_request {
     }
 
     /**
-     * @param $method
-     * @param $data
+     * Make request
+     *
+     * @param string $method
+     * @param array  $data
      *
      * @return \stdClass
      * @throws OAuthException
@@ -116,8 +118,10 @@ class unicheck_api_request {
     }
 
     /**
-     * @param $method
-     * @param $data
+     * Make request with multipart/form-data
+     *
+     * @param string $method
+     * @param array  $data
      *
      * @return \stdClass
      * @throws OAuthException
@@ -131,9 +135,11 @@ class unicheck_api_request {
     }
 
     /**
-     * @param         $method
-     * @param         $data
-     * @param  false  $ismultipartformdata
+     * Send request
+     *
+     * @param  string  $method
+     * @param  array   $data
+     * @param  bool    $ismultipartformdata
      *
      * @return \stdClass
      * @throws OAuthException

@@ -103,9 +103,9 @@ class unicheck_api {
 
     /**
      * @param  stored_file|string  $file
-     * @param                      $filename
-     * @param                      $cmid
-     * @param                      $internalfile
+     * @param  string              $filename
+     * @param  integer             $cmid
+     * @param  \stdClass           $internalfile
      * @param  string              $format
      * @param  null                $owner
      *
