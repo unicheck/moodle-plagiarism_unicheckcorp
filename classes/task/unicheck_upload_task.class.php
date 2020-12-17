@@ -27,7 +27,7 @@ namespace plagiarism_unicheck\classes\task;
 use plagiarism_unicheck\classes\entities\providers\unicheck_file_provider;
 use plagiarism_unicheck\classes\entities\unicheck_archive;
 use plagiarism_unicheck\classes\exception\unicheck_exception;
-use plagiarism_unicheck\classes\plagiarism\unicheck_content;
+use plagiarism_unicheck\classes\plagiarism\unicheck_archive_item_file;
 use plagiarism_unicheck\classes\services\storage\filesize_checker;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_metadata;
 use plagiarism_unicheck\classes\services\storage\unicheck_file_state;
@@ -185,16 +185,9 @@ class unicheck_upload_task extends unicheck_abstract_task {
      * @param array $item
      */
     protected function process_archive_item(array $item) {
-        $content = file_get_contents($item['path']);
-        $plagiarismentity = new unicheck_content(
-            $this->ucore,
-            $content,
-            $item['filename'],
-            $item['format'],
-            $this->internalfile->id
-        );
+        $plagiarismentity = new unicheck_archive_item_file($this->ucore, $item, $this->internalfile->id);
         $internalfile = $plagiarismentity->get_internal_file();
-        if ($internalfile->state == unicheck_file_state::CREATED) {
+        if ($internalfile->state === unicheck_file_state::CREATED) {
             $internalfile->state = unicheck_file_state::UPLOADING;
             unicheck_file_provider::save($internalfile);
             $plagiarismentity->upload_file_on_server();

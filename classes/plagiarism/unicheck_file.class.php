@@ -186,7 +186,7 @@ class unicheck_file extends unicheck_plagiarism_entity {
         }
 
         return [
-            $this->stored_file()->get_content_file_handle(),
+            $this->stored_file(),
             $this->stored_file()->get_filename(),
             $format,
             $this->cmid(),

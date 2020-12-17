@@ -34,7 +34,7 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 /**
- * Class unicheck_content
+ * Class unicheck_archive_item_file
  *
  * @package     plagiarism_unicheck
  * @subpackage  plagiarism
@@ -42,11 +42,11 @@ if (!defined('MOODLE_INTERNAL')) {
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class unicheck_content extends unicheck_plagiarism_entity {
+class unicheck_archive_item_file extends unicheck_plagiarism_entity {
     /**
      * @var string
      */
-    private $content;
+    private $path;
     /**
      * @var string
      */
@@ -61,27 +61,18 @@ class unicheck_content extends unicheck_plagiarism_entity {
     private $parentid;
 
     /**
-     * unicheck_content constructor.
+     * unicheck_archive_item_file constructor.
      *
-     * @param unicheck_core $core
-     * @param string        $content
-     * @param string        $name
-     * @param string|null   $ext
-     * @param int|null      $parentid
-     *
-     * @throws unicheck_exception
+     * @param  unicheck_core  $core
+     * @param  array          $item
+     * @param  null           $parentid
      */
-    public function __construct(unicheck_core $core, $content = null, $name, $ext = null, $parentid = null) {
-        if (!$ext) {
-            $ext = 'html';
-        }
-
+    public function __construct(unicheck_core $core, array $item, $parentid = null) {
         $this->core = $core;
-        $this->name = $name;
-        $this->ext = $ext;
+        $this->path = $item['path'];
+        $this->name = $item['filename'];
+        $this->ext = isset($item['format']) && $item['format'] ? $item['format'] : 'html';
         $this->parentid = $parentid;
-
-        $this->set_content($content);
     }
 
     /**
@@ -139,31 +130,13 @@ class unicheck_content extends unicheck_plagiarism_entity {
     }
 
     /**
-     * Get content
-     *
-     * @return string
-     */
-    public function get_content() {
-        return $this->content;
-    }
-
-    /**
-     * Set content
-     *
-     * @param string $content
-     */
-    public function set_content($content) {
-        $this->content = $content;
-    }
-
-    /**
      * Build upload data
      *
      * @return array
      */
     protected function build_upload_data() {
         return [
-            $this->get_content(),
+            $this->path,
             $this->name,
             $this->ext,
             $this->cmid(),

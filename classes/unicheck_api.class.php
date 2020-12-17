@@ -26,6 +26,7 @@
 namespace plagiarism_unicheck\classes;
 
 use plagiarism_unicheck\classes\entities\providers\user_provider;
+use stored_file;
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
@@ -61,7 +62,6 @@ class unicheck_api {
      * FILE_UPLOAD
      */
     const FILE_UPLOAD = 'file/async_upload';
-
     /**
      * TRACK_UPLOAD
      */
@@ -102,23 +102,20 @@ class unicheck_api {
     }
 
     /**
-     * Upload file
+     * @param  stored_file|string  $file
+     * @param                      $filename
+     * @param                      $cmid
+     * @param                      $internalfile
+     * @param  string              $format
+     * @param  null                $owner
      *
-     * @param string|resource $content
-     * @param string          $filename
-     * @param string          $format
-     * @param integer         $cmid
-     * @param object|null     $owner
-     * @param \stdClass       $internalfile
-     *
-     * @return \stdClass
+     * @return object|\stdClass
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \plagiarism_unicheck\library\OAuth\OAuthException
      */
-    public function upload_file(&$content, $filename, $format = 'html', $cmid, $owner = null, $internalfile) {
+    public function upload_file(&$file, $filename, $cmid, $internalfile, $format = 'html', $owner = null) {
         global $CFG;
-
-        if (is_resource($content)) {
-            $content = stream_get_contents($content);
-        }
 
         $contextid = $cmid;
         $excludeselfplagiarism = unicheck_settings::get_settings('exclude_self_plagiarism');
@@ -133,7 +130,7 @@ class unicheck_api {
 
         $postdata = [
             'format'       => strtolower($format),
-            'file'         => $content,
+            'file'         => $file instanceof stored_file ? $file : new \CURLFile($file),
             'name'         => $filename,
             'callback_url' => sprintf(
                 '%1$s%2$s?token=%3$s', $CFG->wwwroot, UNICHECK_CALLBACK_URL, $internalfile->identifier
@@ -150,6 +147,7 @@ class unicheck_api {
         $response = unicheck_api_request::instance()
             ->http_post()
             ->request_multipart_form_data(self::FILE_UPLOAD, $postdata);
+
         if (!is_object($response)) {
             $response = (object) [
                 "result" => false,
