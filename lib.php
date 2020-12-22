@@ -310,11 +310,7 @@ function plagiarism_unicheck_coursemodule_edit_post_actions($data, $course) {
         return;
     }
 
-    if (!isset($data->use_unicheck)) {
-        $data->use_unicheck = plagiarism_unicheck::is_plugin_enabled();
-    }
-
-    if (isset($data->submissiondrafts) && !$data->submissiondrafts) {
+    if (!isset($data->use_unicheck) || (isset($data->submissiondrafts) && !$data->submissiondrafts)) {
         $data->use_unicheck = 0;
     }
 
