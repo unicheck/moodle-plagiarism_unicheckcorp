@@ -28,7 +28,7 @@ if (!isset($plugin)) {
     $plugin = new stdClass();
 }
 
-$plugin->version = 2020090103; // YYYYMMDDVV.
+$plugin->version = 2020090104; // YYYYMMDDVV.
 $plugin->requires = 2020061501; // Requires Moodle 3.9 .
 $plugin->maturity = MATURITY_STABLE;
 
