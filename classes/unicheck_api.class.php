@@ -131,20 +131,24 @@ class unicheck_api {
         }
 
         $postdata = [
-            'format'       => strtolower($format),
-            'file'         => $file instanceof stored_file ? $file : new \CURLFile($file),
-            'name'         => $filename,
-            'callback_url' => sprintf(
-                '%1$s%2$s?token=%3$s', $CFG->wwwroot, UNICHECK_CALLBACK_URL, $internalfile->identifier
+            'format'                 => strtolower($format),
+            'file'                   => $file instanceof stored_file ? $file : new \CURLFile($file),
+            'name'                   => $filename,
+            'callback_url'           => sprintf(
+                '%1$s%2$s?token=%3$s',
+                $CFG->wwwroot,
+                UNICHECK_CALLBACK_URL,
+                $internalfile->identifier
             ),
-            'options'      => [
-                'utoken'        => unicheck_core::get_external_token($cmid, $owner),
-                'submission_id' => $contextid,
-            ],
+            'options[utoken]'        => unicheck_core::get_external_token($cmid, $owner),
+            'options[submission_id]' => $contextid,
         ];
 
-        $mustindex = (bool) unicheck_settings::get_activity_settings($cmid, unicheck_settings::ADD_TO_INSTITUTIONAL_LIBRARY);
-        $postdata['options']['no_index'] = !$mustindex;
+        $mustindex = (bool) unicheck_settings::get_activity_settings(
+            $cmid,
+            unicheck_settings::ADD_TO_INSTITUTIONAL_LIBRARY
+        );
+        $postdata['options[no_index]'] = !$mustindex;
 
         $response = unicheck_api_request::instance()
             ->http_post()
