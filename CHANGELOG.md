@@ -7,11 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [3.1.1] - 2020-12-16
 ### Added
 - `CURLOPT_TIMEOUT` for all requests to Unicheck (The maximum number of seconds to allow cURL functions to execute).
+- Added unicheck_users `api_data_hash` DB field
 
 ### Changed
 - Data transfer type when uploading a file to Unicheck. (from base64 to `multipart/form-data`)
 
 ### Fixed
+- Duplicate requests to update user rights in Unicheck
 - https://github.com/unicheck/moodle-plagiarism_unicheckcorp/issues/103
 
 ## [3.0.1] - 2020-11-24
