@@ -30,12 +30,6 @@ if (!defined('MOODLE_INTERNAL')) {
 /**
  * db plagiarism unicheck upgrade
  *
- * @package     plagiarism_unicheck
- * @subpackage  plagiarism
- * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
- * @copyright   UKU Group, LTD, https://www.unicheck.com
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
  * @param int $oldversion
  *
  * @return bool
@@ -44,6 +38,12 @@ if (!defined('MOODLE_INTERNAL')) {
  * @throws ddl_table_missing_exception
  * @throws downgrade_exception
  * @throws upgrade_exception
+ * @package     plagiarism_unicheck
+ * @subpackage  plagiarism
+ * @author      Aleksandr Kostylev <a.kostylev@p1k.co.uk>
+ * @copyright   UKU Group, LTD, https://www.unicheck.com
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
  */
 function xmldb_plagiarism_unicheck_upgrade($oldversion) {
     global $DB;
@@ -64,6 +64,22 @@ function xmldb_plagiarism_unicheck_upgrade($oldversion) {
         }
 
         upgrade_plugin_savepoint(true, 2020090100, 'plagiarism', 'unicheck');
+    }
+
+    $dbman = $DB->get_manager();
+
+    if ($oldversion < 2020090102) {
+        // Define field api_key to be added to plagiarism_unicheck_users.
+        $table = new xmldb_table('plagiarism_unicheck_users');
+        $field = new xmldb_field('api_data_hash', XMLDB_TYPE_CHAR, '32', null, null, null, null, 'api_key');
+        $field->setComment('Data md5 hash after updating API information in Unicheck');
+
+        // Conditionally launch add field api_data_hash.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2020090102, 'plagiarism', 'unicheck');
     }
 
     return true;

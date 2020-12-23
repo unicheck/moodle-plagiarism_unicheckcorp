@@ -315,7 +315,15 @@ class unicheck_core {
         if ($storeduser) {
             return $storeduser->external_token;
         } else {
-            $resp = unicheck_api::instance()->user_create($user, self::is_teacher($cmid, $user->id));
+            $apidata = [
+                'email'     => $user->email,
+                'firstname' => $user->firstname,
+                'lastname'  => $user->lastname,
+                'scope'     => self::is_teacher($cmid, $user->id)
+                    ? unicheck_api::ACCESS_SCOPE_WRITE
+                    : unicheck_api::ACCESS_SCOPE_READ,
+            ];
+            $resp = unicheck_api::instance()->user_create($user, $apidata);
 
             if ($resp && $resp->result) {
                 $externaluserdata = new \stdClass;
@@ -323,6 +331,7 @@ class unicheck_core {
                 $externaluserdata->external_user_id = $resp->user->id;
                 $externaluserdata->external_token = $resp->user->token;
                 $externaluserdata->api_key = $apikey;
+                $externaluserdata->api_data_hash = md5(serialize($apidata));
 
                 $apiuserid = user_provider::create($externaluserdata);
                 $externaluserdata->id = $apiuserid;

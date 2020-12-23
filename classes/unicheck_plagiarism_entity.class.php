@@ -127,7 +127,6 @@ abstract class unicheck_plagiarism_entity implements commentable_interface {
      * @return object
      */
     public function upload_file_on_server() {
-
         $internalfile = $this->get_internal_file();
 
         if (isset($internalfile->external_file_id)) {
@@ -140,8 +139,8 @@ abstract class unicheck_plagiarism_entity implements commentable_interface {
         }
 
         file_upload_started::create_from_plagiarismfile($internalfile)->trigger();
-        list($content, $name, $ext, $cmid, $owner) = $this->build_upload_data();
-        $uploadresponse = unicheck_api::instance()->upload_file($content, $name, $ext, $cmid, $owner, $internalfile);
+        list($file, $name, $ext, $cmid, $owner) = $this->build_upload_data();
+        $uploadresponse = unicheck_api::instance()->upload_file($file, $name, $cmid, $internalfile, $ext, $owner);
 
         // Increment attempt number.
         $internalfile->attempt++;

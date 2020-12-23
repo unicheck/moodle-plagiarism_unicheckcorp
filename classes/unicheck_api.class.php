@@ -25,6 +25,9 @@
 
 namespace plagiarism_unicheck\classes;
 
+use plagiarism_unicheck\classes\entities\providers\user_provider;
+use stored_file;
+
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
@@ -59,7 +62,6 @@ class unicheck_api {
      * FILE_UPLOAD
      */
     const FILE_UPLOAD = 'file/async_upload';
-
     /**
      * TRACK_UPLOAD
      */
@@ -102,21 +104,20 @@ class unicheck_api {
     /**
      * Upload file
      *
-     * @param string|resource $content
-     * @param string          $filename
-     * @param string          $format
-     * @param integer         $cmid
-     * @param object|null     $owner
-     * @param \stdClass       $internalfile
+     * @param  stored_file|string  $file
+     * @param  string              $filename
+     * @param  integer             $cmid
+     * @param  \stdClass           $internalfile
+     * @param  string              $format
+     * @param  null                $owner
      *
-     * @return \stdClass
+     * @return object|\stdClass
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \plagiarism_unicheck\library\OAuth\OAuthException
      */
-    public function upload_file(&$content, $filename, $format = 'html', $cmid, $owner = null, $internalfile) {
+    public function upload_file(&$file, $filename, $cmid, $internalfile, $format = 'html', $owner = null) {
         global $CFG;
-
-        if (is_resource($content)) {
-            $content = stream_get_contents($content);
-        }
 
         $contextid = $cmid;
         $excludeselfplagiarism = unicheck_settings::get_settings('exclude_self_plagiarism');
@@ -130,24 +131,29 @@ class unicheck_api {
         }
 
         $postdata = [
-            'format'       => strtolower($format),
-            'file_data'    => base64_encode($content),
-            'name'         => $filename,
-            'callback_url' => sprintf(
-                '%1$s%2$s?token=%3$s', $CFG->wwwroot, UNICHECK_CALLBACK_URL, $internalfile->identifier
+            'format'                 => strtolower($format),
+            'file'                   => $file instanceof stored_file ? $file : new \CURLFile($file),
+            'name'                   => $filename,
+            'callback_url'           => sprintf(
+                '%1$s%2$s?token=%3$s',
+                $CFG->wwwroot,
+                UNICHECK_CALLBACK_URL,
+                $internalfile->identifier
             ),
-            'options'      => [
-                'utoken'        => unicheck_core::get_external_token($cmid, $owner),
-                'submission_id' => $contextid,
-            ],
+            'options[utoken]'        => unicheck_core::get_external_token($cmid, $owner),
+            'options[submission_id]' => $contextid,
         ];
 
-        $content = null;
+        $mustindex = (bool) unicheck_settings::get_activity_settings(
+            $cmid,
+            unicheck_settings::ADD_TO_INSTITUTIONAL_LIBRARY
+        );
+        $postdata['options[no_index]'] = !$mustindex;
 
-        $mustindex = (bool) unicheck_settings::get_activity_settings($cmid, unicheck_settings::ADD_TO_INSTITUTIONAL_LIBRARY);
-        $postdata['options']['no_index'] = !$mustindex;
+        $response = unicheck_api_request::instance()
+            ->http_post()
+            ->request_multipart_form_data(self::FILE_UPLOAD, $postdata);
 
-        $response = unicheck_api_request::instance()->http_post()->request(self::FILE_UPLOAD, $postdata);
         if (!is_object($response)) {
             $response = (object) [
                 "result" => false,
@@ -270,18 +276,12 @@ class unicheck_api {
      * Create user
      *
      * @param object $user
-     * @param bool   $cancomment
+     * @param array  $apidata
      *
      * @return \stdClass
      */
-    public function user_create($user, $cancomment = false) {
-        $postdata = [
-            'sys_id'    => $user->id,
-            'email'     => $user->email,
-            'firstname' => $user->firstname,
-            'lastname'  => $user->lastname,
-            'scope'     => $cancomment ? self::ACCESS_SCOPE_WRITE : self::ACCESS_SCOPE_READ,
-        ];
+    public function user_create($user, $apidata) {
+        $postdata = ['sys_id' => $user->id] + $apidata;
 
         return unicheck_api_request::instance()->http_post()->request(self::USER_CREATE, $postdata);
     }
@@ -289,13 +289,13 @@ class unicheck_api {
     /**
      * Update API user by external token and moodle user data
      *
-     * @param string $externaltoken
+     * @param object $plagiarismuser
      * @param object $moodleuser
      * @param string $scope
      *
      * @return \stdClass
      */
-    public function user_update($externaltoken, $moodleuser, $scope = null) {
+    public function user_update($plagiarismuser, $moodleuser, $scope = null) {
         $postdata = [
             'email'     => $moodleuser->email,
             'firstname' => $moodleuser->firstname,
@@ -306,10 +306,20 @@ class unicheck_api {
             $postdata['scope'] = $scope;
         }
 
-        return unicheck_api_request::instance()->http_post()->request(
-            str_replace('{utoken}', $externaltoken, self::USER_UPDATE),
-            $postdata
-        );
+        $newapidatahash = md5(serialize($postdata));
+
+        if ($newapidatahash !== $plagiarismuser->api_data_hash) {
+            $plagiarismuser->api_data_hash = $newapidatahash;
+
+            user_provider::update($plagiarismuser);
+
+            return unicheck_api_request::instance()->http_post()->request(
+                str_replace('{utoken}', $plagiarismuser->external_token, self::USER_UPDATE),
+                $postdata
+            );
+        }
+
+        return json_decode('');
     }
 
     /**

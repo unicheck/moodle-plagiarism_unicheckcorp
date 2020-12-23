@@ -156,12 +156,12 @@ class capability {
     public static function can_view_similarity_check_result($cmid, $userid) {
         $activitycfg = unicheck_settings::get_activity_settings($cmid, null, true);
         $canviewsimilarity = self::user_can(self::VIEW_SIMILARITY, $cmid, $userid);
-        if (!$canviewsimilarity) {
+        if (!$canviewsimilarity && isset($activitycfg[unicheck_settings::SHOW_STUDENT_SCORE])) {
             $canviewsimilarity = $activitycfg[unicheck_settings::SHOW_STUDENT_SCORE];
         }
 
         $canviewreport = self::user_can(self::VIEW_REPORT, $cmid, $userid);
-        if (!$canviewreport) {
+        if (!$canviewreport && isset($activitycfg[unicheck_settings::SHOW_STUDENT_REPORT])) {
             $canviewreport = $activitycfg[unicheck_settings::SHOW_STUDENT_REPORT];
         }
 
