@@ -5,12 +5,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [3.1.1] - 2020-12-16
-### Changed
-- Sending files to Unicheck (from base64 to multipart/form-data)
+### Added
+- `CURLOPT_TIMEOUT` for all requests to Unicheck (The maximum number of seconds to allow cURL functions to execute).
 
-## [3.1.0] - 2020-12-14
-### Optimized
-- Connect to Unicheck
+### Changed
+- Data transfer type when uploading a file to Unicheck. (from base64 to `multipart/form-data`)
+
 ### Fixed
 - https://github.com/unicheck/moodle-plagiarism_unicheckcorp/issues/103
 
