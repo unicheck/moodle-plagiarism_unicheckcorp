@@ -26,7 +26,6 @@
 namespace plagiarism_unicheck\classes\observers;
 
 use core\event\base;
-use plagiarism_unicheck\classes\services\storage\pluginfile_url;
 use plagiarism_unicheck\classes\unicheck_core;
 use quiz_attempt;
 use stored_file;
@@ -44,8 +43,7 @@ if (!defined('MOODLE_INTERNAL')) {
  * @copyright   UKU Group, LTD, https://www.unicheck.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class quiz_observer extends abstract_observer
-{
+class quiz_observer extends abstract_observer {
     /**
      * @var unicheck_core
      */
@@ -64,8 +62,8 @@ class quiz_observer extends abstract_observer
     /**
      * handle event
      *
-     * @param  unicheck_core  $core
-     * @param  base           $event
+     * @param unicheck_core $core
+     * @param base          $event
      *
      * @throws \plagiarism_unicheck\classes\exception\unicheck_exception
      */
@@ -87,33 +85,33 @@ class quiz_observer extends abstract_observer
      * @throws \plagiarism_unicheck\classes\exception\unicheck_exception
      */
     private function handle_content() {
-        $pluginfileurl = new pluginfile_url();
-        $pluginfileurl->set_component($this->event->component);
-        $pluginfileurl->set_filearea('post');
-
-        $content = '';
-
         foreach ($this->attempt->get_slots() as $slot) {
-            $content = $this->attempt->get_question_attempt($slot)->get_response_summary();
+            $qa = $this->attempt->get_question_attempt($slot);
+            $content = $qa->get_response_summary();
+            if (empty($content) || count(preg_split('/\s+/', trim(strip_tags($content)))) < 30) {
+                continue;
+            }
+
+            $identifier = unicheck_core::content_hash($content);
+            $filename = sprintf("%s-content-%d-%d-%s.html",
+                str_replace('_', '-', $this->event->objecttable), $this->event->contextid, $this->core->cmid, $identifier
+            );
+
+            $file = $this->core->create_file_from_content(
+                $content,
+                $this->event->objecttable,
+                $this->event->contextid,
+                $this->event->objectid,
+                null,
+                $filename
+            );
+
+            if ($file instanceof stored_file) {
+                $this->add_after_handle_task($file);
+            }
+
+            $this->after_handle_event($this->core);
         }
-
-        if (empty($content)) {
-            return;
-        }
-
-        $file = $this->core->create_file_from_content(
-            $content,
-            $this->event->objecttable,
-            $this->event->contextid,
-            $this->event->objectid,
-            $pluginfileurl
-        );
-
-        if ($file instanceof stored_file) {
-            $this->add_after_handle_task($file);
-        }
-
-        $this->after_handle_event($this->core);
     }
 
     /**
@@ -123,7 +121,8 @@ class quiz_observer extends abstract_observer
      */
     private function handle_files() {
         foreach ($this->attempt->get_slots() as $slot) {
-            $files = $this->attempt->get_question_attempt($slot)->get_last_qt_files('attachments', $this->event->contextid);
+            $qa = $this->attempt->get_question_attempt($slot);
+            $files = $qa->get_last_qt_files('attachments', $this->event->contextid);
 
             foreach ($files as $pathnamehash => $value) {
                 $file = get_file_storage()->get_file_by_hash($pathnamehash);

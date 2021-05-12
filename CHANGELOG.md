@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.2.0] - 2021-05-12
+### Fixed
+- Some quiz answers are not getting checked
+
 ## [3.1.1] - 2020-12-16
 ### Added
 - `CURLOPT_TIMEOUT` for all requests to Unicheck (The maximum number of seconds to allow cURL functions to execute).
@@ -30,6 +34,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - quiz support
 
+[3.2.0]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v3.2.0
 [3.1.1]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v3.1.1
 [3.1.0]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v3.1.0
 [3.0.1]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v3.0.1

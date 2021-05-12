@@ -25,6 +25,7 @@
 
 namespace plagiarism_unicheck\classes;
 
+use moodle_exception;
 use plagiarism_unicheck\classes\helpers\unicheck_response;
 use plagiarism_unicheck\classes\services\comments\commentable_interface;
 use plagiarism_unicheck\classes\services\comments\commentable_type;
@@ -96,14 +97,13 @@ abstract class unicheck_plagiarism_entity implements commentable_interface {
      * @param array $data
      *
      * @return null|\stdClass
+     * @throws moodle_exception
      */
     public function new_plagiarismfile($data) {
 
         foreach (['cm', 'userid', 'identifier', 'filename'] as $key) {
             if (empty($data[$key])) {
-                print_error($key . ' value is empty');
-
-                return null;
+                throw new moodle_exception($key . ' value is empty');
             }
         }
 
@@ -139,7 +139,7 @@ abstract class unicheck_plagiarism_entity implements commentable_interface {
         }
 
         file_upload_started::create_from_plagiarismfile($internalfile)->trigger();
-        list($file, $name, $ext, $cmid, $owner) = $this->build_upload_data();
+        [$file, $name, $ext, $cmid, $owner] = $this->build_upload_data();
         $uploadresponse = unicheck_api::instance()->upload_file($file, $name, $cmid, $internalfile, $ext, $owner);
 
         // Increment attempt number.
