@@ -37,10 +37,10 @@ use plagiarism_unicheck\classes\unicheck_core;
 require_once($CFG->dirroot . '/mod/assign/locallib.php');
 require_once(__DIR__ . '/lib.php');
 
-$cmid = required_param('cmid', PARAM_INT); // Course Module ID
-$uid = required_param('uid', PARAM_INT); // User ID
-$submissiontype = required_param('submissiontype', PARAM_TEXT); // submission type.
-$pf = optional_param('pf', null, PARAM_INT); // plagiarism file id.
+$cmid = required_param('cmid', PARAM_INT); // Course Module ID.
+$uid = required_param('uid', PARAM_INT); // User ID.
+$submissiontype = required_param('submissiontype', PARAM_TEXT); // Submission type.
+$pf = optional_param('pf', null, PARAM_INT); // Plagiarism file id.
 
 require_sesskey();
 
