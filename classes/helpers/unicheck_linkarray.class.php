@@ -79,13 +79,22 @@ class unicheck_linkarray {
                     $file = array_shift($files);
                     break;
                 case UNICHECK_MODNAME_QUIZ:
-                    if (!empty($linkarray['content'])) {
-                        $contenthash = unicheck_core::content_hash($linkarray['content']);
-                        $file = unicheck_core::get_file_by_hash($context->id, $contenthash);
+                    if (!empty($linkarray['content']) && !empty($linkarray['area'])) {
+                        $attempt = \quiz_attempt::create_from_usage_id($linkarray['area']);
+                        $files = \plagiarism_unicheck::get_area_files(
+                            $context->id,
+                            UNICHECK_QUIZ_FILES_AREA,
+                            $attempt->get_attemptid()
+                        );
+
+                        foreach ($files as $storedfile) {
+                            if ($storedfile->get_contenthash() == unicheck_core::content_hash($linkarray['content'])) {
+                                $file = $storedfile;
+                                break;
+                            }
+                        }
                     }
-                    if (isset($linkarray['file'])) {
-                        $file = $linkarray['file'];
-                    }
+
                     break;
                 default:
                     $files = \plagiarism_unicheck::get_area_files($context->id, UNICHECK_DEFAULT_FILES_AREA);

@@ -211,6 +211,7 @@ class unicheck_core {
      * @param int                           $contexid
      * @param int                           $itemid
      * @param pluginfile_url_interface|null $pluginfileurl
+     * @param string|null                   $filename
      *
      * @return \stored_file
      */
@@ -219,17 +220,22 @@ class unicheck_core {
         $filearea,
         $contexid,
         $itemid,
-        pluginfile_url_interface $pluginfileurl = null
+        pluginfile_url_interface $pluginfileurl = null,
+        $filename = null
     ) {
         $author = self::get_user($this->userid);
+        if (\is_null($filename)) {
+            $filename = sprintf("%s-content-%d-%d-%s.html",
+                str_replace('_', '-', $filearea), $contexid, $this->cmid, $itemid
+            );
+        }
+
         $filerecord = [
             'component' => UNICHECK_PLAGIN_NAME,
             'filearea'  => $filearea,
             'contextid' => $contexid,
             'itemid'    => $itemid,
-            'filename'  => sprintf("%s-content-%d-%d-%d.html",
-                str_replace('_', '-', $filearea), $contexid, $this->cmid, $itemid
-            ),
+            'filename'  => $filename,
             'filepath'  => '/',
             'userid'    => $author->id,
             'license'   => 'allrightsreserved',

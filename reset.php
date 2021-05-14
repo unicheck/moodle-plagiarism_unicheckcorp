@@ -32,8 +32,8 @@ require_once(__DIR__ . '/lib.php');
 
 global $PAGE, $CFG;
 
-$cmid = required_param('cmid', PARAM_INT); // Course Module ID
-$pf = required_param('pf', PARAM_INT); // plagiarism file id.
+$cmid = required_param('cmid', PARAM_INT); // Course Module ID.
+$pf = required_param('pf', PARAM_INT); // Plagiarism file id.
 
 require_sesskey();
 

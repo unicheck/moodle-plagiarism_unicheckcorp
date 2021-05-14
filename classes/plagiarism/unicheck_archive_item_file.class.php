@@ -25,7 +25,7 @@
 
 namespace plagiarism_unicheck\classes\plagiarism;
 
-use plagiarism_unicheck\classes\exception\unicheck_exception;
+use moodle_exception;
 use plagiarism_unicheck\classes\unicheck_core;
 use plagiarism_unicheck\classes\unicheck_plagiarism_entity;
 
@@ -79,6 +79,7 @@ class unicheck_archive_item_file extends unicheck_plagiarism_entity {
      * Get internal file
      *
      * @return object
+     * @throws moodle_exception
      */
     public function get_internal_file() {
         global $DB;
@@ -121,7 +122,7 @@ class unicheck_archive_item_file extends unicheck_plagiarism_entity {
                 $plagiarismfile->id = $pid;
             }
         } catch (\Exception $ex) {
-            print_error($ex->getMessage());
+            throw new moodle_exception($ex->getMessage());
         }
 
         $this->plagiarismfile = $plagiarismfile;
