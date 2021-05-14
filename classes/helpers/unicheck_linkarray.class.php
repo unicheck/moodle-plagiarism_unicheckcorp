@@ -80,10 +80,11 @@ class unicheck_linkarray {
                     break;
                 case UNICHECK_MODNAME_QUIZ:
                     if (!empty($linkarray['content']) && !empty($linkarray['area'])) {
+                        $attempt = \quiz_attempt::create_from_usage_id($linkarray['area']);
                         $files = \plagiarism_unicheck::get_area_files(
                             $context->id,
                             UNICHECK_QUIZ_FILES_AREA,
-                            $linkarray['area']
+                            $attempt->get_attemptid()
                         );
 
                         foreach ($files as $storedfile) {

@@ -28,12 +28,12 @@ if (!isset($plugin)) {
     $plugin = new stdClass();
 }
 
-$plugin->version = 2020090105; // YYYYMMDDVV.
+$plugin->version = 2020090106; // YYYYMMDDVV.
 $plugin->requires = 2020061501; // Requires Moodle 3.9 .
 $plugin->maturity = MATURITY_STABLE;
 
 $plugin->component = 'plagiarism_unicheck';
-$plugin->release = '3.2.0 (Build: 20210512)'; // Human-friendly version name.
+$plugin->release = '3.2.0 (Build: 20210514)'; // Human-friendly version name.
 $plugin->dependencies = [
     'mod_assign' => ANY_VERSION
 ];
