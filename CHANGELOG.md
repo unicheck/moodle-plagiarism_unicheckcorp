@@ -41,7 +41,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - quiz support
 
-[3.2.2]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v3.2.1
+[3.2.2]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v3.2.2
 [3.2.0]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v3.2.0
 [3.1.1]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v3.1.1
 [3.1.0]: https://github.com/unicheck/moodle-plagiarism_unicheckcorp/releases/tag/v3.1.0
