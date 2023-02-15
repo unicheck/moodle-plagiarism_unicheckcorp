@@ -307,7 +307,7 @@ function plagiarism_unicheck_coursemodule_standard_elements($formwrapper, $mform
  */
 function plagiarism_unicheck_coursemodule_edit_post_actions($data, $course) {
     if (!plagiarism_unicheck::is_support_mod($data->modulename)) {
-        return;
+        return $data;
     }
 
     if (!isset($data->use_unicheck) || (isset($data->submissiondrafts) && !$data->submissiondrafts)) {
