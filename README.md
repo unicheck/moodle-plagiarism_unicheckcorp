@@ -1,3 +1,5 @@
+# [DEPRECATED] This project has reached the end of its development #
+
 # moodle-plagiarism_unicheck
 
 [![Build Status](https://travis-ci.org/unicheck/moodle-plagiarism_unicheckcorp.svg?branch=release%2F2.x)](https://travis-ci.org/unicheck/moodle-plagiarism_unicheckcorp)
